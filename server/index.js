@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 //Getting Mongo's connection URI
-const db = require('./config/keys_dev').mongoURI;
+const db = require('./config/keys').mongoURI;
 
 
 //Connecting to MongoDB

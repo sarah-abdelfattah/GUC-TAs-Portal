@@ -2,42 +2,34 @@ const objectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const { StaffMember } = require('../models/StaffMember');
 const tokenKey = require('../config/keys').secretOrKey;
-// const { convertMapToObject } = require('../utils/convertMapToObject');
-// const { handleError } = require("../utils/handleError");
-
 
 exports.login = async function (req, res, next) {
     const guc_id = req.body.username;
     const password = req.body.password;
 
-    try {
-        //check staff entered both
-        if (!guc_id || !password)
-            return res.send({ error: "please enter both your email and password" })
+    //both are entered
+    if (!guc_id || !password)
+        return res.send({ error: "Missing email or password" })
 
-        // check member id is found
-        const member = staffMember.findOne({ GUCID: guc_id })
-            res.status(400).json({ error: 'Email does not exist' });
-
-        //check password
-        const correctPassword = bcrypt.compareSync(password, staffMember.password);
-        if (!correctPassword) {
-            return res.status(400).send({ error: 'Invalid Password' });
-        } else {
-            //login
-            const payload = {
-                GUCID: staffMember.GUCID,
-                name: staffMember.name,
-                email: staffMember.email,
-                type: staffMember.type
-            }
-
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '24h' })
-            return res.json({ data: `Bearer ${token}` })
+    passport.authenticate("staffMembers", async function (err, staffMember, message) {
+        if (err) {
+            return next(err);
+        }
+        //no member
+        if (!staffMember) {
+            return res.send({ error: message.message });
         }
 
-    } catch (err) {
-        res.json({ error: err })
-    }
+        req.login(staffMember, async function (err) {
+            try {
+                const payload = await StaffMember.findOne({ GUCID: guc_id });
+                const token = jwt.sign(payload.toJSON(), tokenKey, { expiresIn: '24h' });
+                return res.json({ data: `Bearer ${token}`, info: payload });
+            } catch (err) {
+                return err;
+            }
+        });
+    })(req, res, next);
 };
