@@ -2,7 +2,6 @@ const { time } = require("console");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// Create the schema
 const AttendanceSchema = new Schema({
     day: {
         type: String,

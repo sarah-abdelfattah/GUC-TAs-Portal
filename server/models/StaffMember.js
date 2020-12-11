@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const academicMembers = require("./AcademicMember.js");
 
 // Create the schema
-const StaffSchema = new Schema({
+const StaffMemberSchema = new Schema({
     GUCID: {
         type: String,
         required: true,
@@ -61,4 +61,4 @@ const StaffSchema = new Schema({
     ],
 })
 
-module.exports.Staff = mongoose.model("staffs", StaffSchema);
+module.exports.StaffMember = mongoose.model("staffMembers", StaffMemberSchema);

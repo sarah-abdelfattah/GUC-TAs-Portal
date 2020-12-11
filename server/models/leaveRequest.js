@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const leaveRequestSchema = new Schema({
+const LeaveRequestSchema = new Schema({
     type: {
         type: String,
         required: true,
@@ -25,4 +25,4 @@ const leaveRequestSchema = new Schema({
     }
 })
 
-module.exports.LeaveRequest = mongoose.model("leaveRequests", leaveRequestSchema);
+module.exports.LeaveRequest = mongoose.model("leaveRequests", LeaveRequestSchema);
