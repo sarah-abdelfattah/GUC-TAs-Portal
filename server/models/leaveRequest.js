@@ -6,6 +6,14 @@ const leaveRequestSchema = new Schema({
         type: String,
         required: true,
     },
+    requester: {
+        type: Schema.Types.ObjectId,
+        ref: 'AcademicMember'
+    },
+    HOD: {
+        type: Schema.Types.ObjectId,
+        ref: 'AcademicMember'
+    },
     reason: {
         type: String,
     },

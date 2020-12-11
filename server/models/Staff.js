@@ -14,6 +14,11 @@ const StaffSchema = new Schema({
         type: String,
         required: true
     },
+    gender: {
+        type: String,
+        required: true,
+        enum: ['male', 'female']
+    },
     email: {
         type: email,
         required: true,
@@ -46,6 +51,10 @@ const StaffSchema = new Schema({
         type: String,
         required: true,
         enum: ['HR', 'Academic Member']
+    },
+    leaveBalance: {
+        type: Number,
+        default: 0
     },
     children: [
         academicMembers

@@ -8,16 +8,26 @@ const CourseSchema = new Schema({
     },
     courseCoordinator: {
         type: Schema.Types.ObjectId,
-        ref: 'TeachingAssistant',
-        required: true,
-        unique: true
-    },
-    courseMembers: [{ // el nas el betdars el course
-        type: Schema.Types.ObjectId,
         ref: 'AcademicMember',
         required: true,
-        validate: v => v != null
-    }],
+        unique: true,
+        validate: v => v.type === 'teaching assistant'
+
+    },
+    courseMembers: {
+        instructors: [{ //instructors
+            type: Schema.Types.ObjectId,
+            ref: 'AcademicMember',
+            required: true,
+            validate: v => v != null && v.type === 'course instructor'
+        }],
+        teachingAssistant: [{
+            type: Schema.Types.ObjectId,
+            ref: 'AcademicMember',
+            required: true,
+            validate: v => v != null && v.type === 'teaching assistant'
+        }]
+    },
     numberOfSlots: {
         type: Number,
         required = true,
