@@ -15,6 +15,33 @@ const errorMsgs = {
 };
 
 // Course Instructor Controller
-const courseInstructorController = {};
+const courseInstructorController = {
+  // ==> Functionality 29 <== //
+  async courseCoverage(req, res) {
+    const instructor = await AcademicMember.find({
+      gucId: req.params.instructorId,
+      type: 'Course Instructor',
+    });
+
+    // Case: instructor not found
+    if (instructor.length === 0)
+      res
+        .status(404)
+        .send(errorMsgs.notFound('instructor', req.params.instructorId));
+    // Case: instructor does not teach any courses
+    else if (instructor[0].course.length === 0)
+      res.status(200).send(errorMsgs.notAssigned('courses', 'instructor'));
+    // Case: success
+    else
+      res.status(200).send(
+        instructor[0].course.map(({ name, coverage }) => {
+          return {
+            course_name: name,
+            course_coverage: coverage,
+          };
+        })
+      );
+  },
+};
 
 module.exports.courseInstructorController = courseInstructorController;
