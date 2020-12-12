@@ -28,6 +28,9 @@ const AttendanceRecordSchema = new Schema({
       'Compensation Leave',
     ],
   },
+  description: {
+    type: String,
+  },
 });
 
 module.exports = AttendanceRecordSchema;
