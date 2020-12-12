@@ -1,64 +1,102 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { isEmail } = require('validator');
 const Schema = mongoose.Schema;
 
-const academicMembers = require("./AcademicMember.js");
+// Importing needed schemas
+const AttendanceRecord = require('./schemas/AttendanceRecord');
 
-// Create the schema
 const StaffMemberSchema = new Schema({
-    GUCID: {
+    gucId: {
         type: String,
         required: true,
         unique: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     gender: {
         type: String,
         required: true,
-        enum: ['male', 'female']
+        enum: ['male', 'female'],
     },
     email: {
-        type: email,
+        type: String, // There is not type called email, So we will validate on the value
         required: true,
-        unique: true
+        unique: true,
+        validate: [isEmail, 'Invalid email format'], // Instead of using regex validations, We used validator library to handle this
     },
     password: {
         type: String,
         required: true,
-        default: "123456"
+        default: '123456',
     },
-    daysOff: {
+    dayOff: {
         type: String,
         required: true,
-        default: "Saturday"
+        default: 'Saturday',
     },
     salary: {
         type: Number,
-        required: true
+        required: true,
+    },
+    type: {
+        type: String,
+        required: true,
+        enum: ['HR', 'Academic Member'],
+    },
+    role: {
+        type: 'String',
+        enum: [
+            'Teaching Assistant',
+            'Course Instructor',
+            'Course Coordinator',
+            'HOD',
+        ],
+    },
+    leaveBalance: {
+        type: Number,
+        default: 0,
     },
     officeLocation: {
         type: Schema.Types.ObjectId,
         ref: 'Location',
-        required: true
-    },
-    attendanceRecord: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Attendance'
-    }],
-    type: {
-        type: String,
         required: true,
-        enum: ['HR', 'Academic Member']
     },
-    leaveBalance: {
-        type: Number,
-        default: 0
-    },
-    children: [
-        academicMembers
+    courses: [
+        {
+            course: {
+                type: Schema.Types.ObjectId,
+                ref: 'Course',
+            },
+            slots: [
+                {
+                    day: {
+                        type: String,
+                        enum: [
+                            'Saturday',
+                            'Sunday',
+                            'Monday',
+                            'Tuesday',
+                            'Wednesday',
+                            'Thursday',
+                        ],
+                    },
+                    time: Date,
+                    location: {
+                        type: Schema.Types.ObjectId,
+                        ref: 'Location',
+                    },
+                },
+            ],
+            roleInCourse: {
+                type: 'String',
+                enum: ['Teaching Assistant', 'Course Instructor', 'Course Coordinator'],
+                required: true,
+            },
+        },
     ],
-})
+    attendanceRecords: [AttendanceRecord],
+});
 
-module.exports.StaffMember = mongoose.model("staffMembers", StaffMemberSchema);
+module.exports = mongoose.model('StaffMember', StaffMemberSchema);

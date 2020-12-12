@@ -4,6 +4,7 @@
   "description": "",
   "main": "/server/index.js",
   "scripts": {
+    "start": "node ./server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,9 +18,19 @@
   },
   "homepage": "https://github.com/guc-met/milestone-1-team51#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
     "mongoose": "^5.11.7",
-    "node": "^15.3.0"
+    "node": "^15.3.0",
+    "validator": "^13.5.2",
+    "nodemon": "^2.0.6",
+    "passport": "^0.4.1",
+    "path": "^0.12.7"
   }
 }

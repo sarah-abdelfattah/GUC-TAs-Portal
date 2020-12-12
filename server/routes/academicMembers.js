@@ -8,3 +8,5 @@ const {
 
 // ==> Course Instructor Routes <== //
 const courseInstructorBaseRoute = '/academicMember/courseInstructor';
+
+module.exports = router;
