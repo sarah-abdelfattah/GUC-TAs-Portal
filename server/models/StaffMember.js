@@ -38,18 +38,21 @@ const StaffMemberSchema = new Schema({
         required: true
     },
     officeLocation: {
-        type: {
-            type: String,
-            required: true,
-            enum: ['tutorial room', 'lecture hall', 'office', 'lab']
-        },
-        location: {
-            type: String,
-            required: true,
-        },
-        capacity: {
-            type: Number,
-        },
+        type: Schema.Types.ObjectId,
+        ref: 'Location',
+        required: true
+        // type: {
+        //     type: String,
+        //     required: true,
+        //     enum: ['tutorial room', 'lecture hall', 'office', 'lab']
+        // },
+        // location: {
+        //     type: String,
+        //     required: true,
+        // },
+        // capacity: {
+        //     type: Number,
+        // },
     },
     attendanceRecord: [{
         type: Schema.Types.ObjectId,
@@ -74,4 +77,4 @@ const StaffMemberSchema = new Schema({
     }]
 })
 
-module.exports.StaffMember = mongoose.model("staffMembers", StaffMemberSchema);
+module.exports = StaffMember = mongoose.model("staffMembers", StaffMemberSchema);

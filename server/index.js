@@ -11,7 +11,7 @@ const methodOverride = require("method-override");
 
 //Require Route Handlers
 const staffMembers = require('./routes/staffMembers');
-
+const locations = require('./routes/locations');
 
 // Create the app
 const app = express();
@@ -43,8 +43,8 @@ app.use(bodyParser.json());
 
 
 // TODO: use "routes"
-app.use('/routes/staffMembers', staffMembers);
-
+app.use('/staffMembers', staffMembers);
+app.use('/locations', locations);
 
 // Handling 404
 // app.use((req, res) => {
