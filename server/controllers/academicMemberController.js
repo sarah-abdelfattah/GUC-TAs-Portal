@@ -19,8 +19,8 @@ const courseInstructorController = {
   // ==> Functionality 29 <== //
   async courseCoverage(req, res) {
     const instructor = await AcademicMember.find({
-      GUCID: req.params.instructorId,
-      type: 'course instructor',
+      gucId: req.params.instructorId,
+      type: 'Course Instructor',
     });
 
     // Case: instructor not found
