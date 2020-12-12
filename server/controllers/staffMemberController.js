@@ -72,7 +72,6 @@ exports.registerStaff = async function (req, res) {
 exports.updateStaff = async function (req, res) {
     const gucId = req.body.gucId;
     const name = req.body.name;
-    const password = req.body.password;
     const dayOff = req.body.dayOff;
     const salary = req.body.salary;
     const role = req.body.role;
@@ -87,7 +86,7 @@ exports.updateStaff = async function (req, res) {
         return res.send({ msg: "No room with this location" })
 
     try {
-        const newStaff = await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { name: name, password: password, dayOff: dayOff, salary: salary, role: role, leaveBalance: leaveBalance, officeLocation: officeLocation });
+        const newStaff = await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { name: name, dayOff: dayOff, salary: salary, role: role, leaveBalance: leaveBalance, officeLocation: officeLocation });
         return res.send({ data: newStaff })
     } catch (err) {
         return res.send({ error: err })
