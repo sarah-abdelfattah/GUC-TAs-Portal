@@ -8,3 +8,9 @@ const {
 
 // ==> Course Instructor Routes <== //
 const courseInstructorBaseRoute = '/academicMember/courseInstructor';
+
+// Functionality: 29
+router.get(
+  `${courseInstructorBaseRoute}/coverage/:instructorId`,
+  courseInstructorController.courseCoverage
+);
