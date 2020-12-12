@@ -25,21 +25,22 @@ const courseInstructorController = {
 
     // Case: instructor not found
     if (instructor.length === 0)
-      res.status(404).send(errorMsgs.notFound('instructor', req.params.id));
-
+      res
+        .status(404)
+        .send(errorMsgs.notFound('instructor', req.params.instructorId));
     // Case: instructor does not teach any courses
-    if (instructor[0].course.length === 0)
+    else if (instructor[0].course.length === 0)
       res.status(200).send(errorMsgs.notAssigned('courses', 'instructor'));
-
     // Case: success
-    res.status(200).send(
-      instructor[0].course.map(({ name, coverage }) => {
-        return {
-          course_name: name,
-          course_coverage: coverage,
-        };
-      })
-    );
+    else
+      res.status(200).send(
+        instructor[0].course.map(({ name, coverage }) => {
+          return {
+            course_name: name,
+            course_coverage: coverage,
+          };
+        })
+      );
   },
 };
 

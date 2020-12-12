@@ -7,10 +7,12 @@ const {
 } = require('./../controllers/academicMemberController');
 
 // ==> Course Instructor Routes <== //
-const courseInstructorBaseRoute = '/academicMember/courseInstructor';
+const courseInstructorBaseRoute = '/courseInstructor';
 
 // Functionality: 29
 router.get(
   `${courseInstructorBaseRoute}/coverage/:instructorId`,
   courseInstructorController.courseCoverage
 );
+
+module.exports = router;
