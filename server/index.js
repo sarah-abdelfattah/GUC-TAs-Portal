@@ -8,6 +8,8 @@ const cors = require("cors");
 const path = require("path");
 const methodOverride = require("method-override");
 
+const StaffMember = require('./models/StaffMember');
+const Location = require('./models/Location');
 
 //Require Route Handlers
 const staffMembers = require('./routes/staffMembers');
@@ -29,8 +31,13 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 //Connecting to MongoDB
-mongoose.connect(db)
-    .then(() => console.log("Connected to MongoDB"))
+const connectionOptions = {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+};
+mongoose
+    .connect(db, connectionOptions)
+    .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log(err));
 
 //Passport
@@ -41,10 +48,42 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 // TODO: use "routes"
 app.use('/staffMembers', staffMembers);
 app.use('/locations', locations);
+
+// const locX = new Location({
+//   type: 'Office',
+//   location: 'C7.301',
+//   capacity: 4,
+// });
+// locX.save();
+
+// const staffX = new StaffMember({
+//   gucId: '1233',
+//   name: 'Ahmed Ashraf',
+//   gender: 'male',
+//   email: 'ahmed@mail.com',
+//   password: '123445',
+//   dayOff: 'Saturday',
+//   salary: 99999,
+//   type: 'Academic Member',
+//   leaveBalance: 99,
+//   officeLocation: locX,
+//   role: 'Teaching Assistant',
+// });
+// staffX.save();
+
+// StaffMember.find({ gucId: '1233' })
+//   .populate('officeLocation')
+//   .then((res) => {
+//     console.log(res[0]);
+//   });
+
+// Handling 404
+app.use((req, res) => {
+    res.status(404).send({ err: 'We can not find what you are looking for' });
+});
 
 // Handling 404
 // app.use((req, res) => {
