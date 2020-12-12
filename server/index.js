@@ -25,7 +25,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // TODO: use "routes"
-
+const academicMemberRoutes = require('./routes/academicMembers');
+app.use('/academicMember', academicMemberRoutes);
 
 
 // Handling 404
