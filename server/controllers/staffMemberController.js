@@ -7,11 +7,10 @@ const tokenKey = require('../config/keys').secretOrKey;
 const { StaffMember } = require('../models/StaffMember');
 
 exports.registerStaff = async function (req, res) {
-    console.log("hereee");
 
     const { name, gender, email, daysOff, salary, officeLocation, type, aType, course } = req.body;
 
-    if (!name || !gender || !email || !daysOff || !salary || !officeLocation || !type || !leaveBalance)
+    if (!name || !gender || !email || !daysOff || !salary || !officeLocation || !type)
         return res.send({ error: "please enter all data" });
 
     if (type === "Academic Member") {
@@ -21,16 +20,16 @@ exports.registerStaff = async function (req, res) {
 
     req.body.attendanceRecord = [];
 
-    const id = StaffMember.count() + 1;
-    console.log("line 18 ~ id ", id);
-    const temp = type + '-' + 1;
+    const num = (await StaffMember.find()).length + 1;
+    console.log("line 18 ~ id ", num);
+    const temp = type + '-' + num;
     req.body.GUCID = temp;
 
     try {
         const newStaffMember = await StaffMember.create(req.body);
         return res.send({ data: newStaffMember });
     } catch (err) {
-        return res.send({ error: handleError(err) });
+        return res.send({ error: err });
     }
 };
 

@@ -38,9 +38,18 @@ const StaffMemberSchema = new Schema({
         required: true
     },
     officeLocation: {
-        type: Schema.Types.ObjectId,
-        ref: 'Location',
-        required: true
+        type: {
+            type: String,
+            required: true,
+            enum: ['tutorial room', 'lecture hall', 'office', 'lab']
+        },
+        location: {
+            type: String,
+            required: true,
+        },
+        capacity: {
+            type: Number,
+        },
     },
     attendanceRecord: [{
         type: Schema.Types.ObjectId,
@@ -57,7 +66,6 @@ const StaffMemberSchema = new Schema({
     },
     aType: {
         type: String,
-        required: true,
         enum: ['teaching assistant', 'course instructor', 'course coordinator', 'HOD']
     },
     course: [{

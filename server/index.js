@@ -10,7 +10,7 @@ const methodOverride = require("method-override");
 
 
 //Require Route Handlers
-const staffMembers = require("./routes/staffMembers");
+const staffMembers = require('./routes/staffMembers');
 
 
 // Create the app
@@ -38,16 +38,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init middleware
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// app.get('/', function (req, res) {
-//     res.send('HEY!');
-// })
 
 // TODO: use "routes"
-app.use("/routes/staffMembers", staffMembers);
+app.use('/routes/staffMembers', staffMembers);
 
 
 // Handling 404
@@ -56,6 +52,6 @@ app.use("/routes/staffMembers", staffMembers);
 // });
 
 
-//runnin port
-const port = process.env.PORT || 5000;
+//running port
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server up and running on port ${port}`));
