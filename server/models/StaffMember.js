@@ -53,7 +53,6 @@ const StaffMemberSchema = new Schema({
       'Course Coordinator',
       'HOD',
     ],
-    required: true,
   },
   leaveBalance: {
     type: Number,
@@ -72,8 +71,22 @@ const StaffMemberSchema = new Schema({
       },
       slots: [
         {
-          day: String, // ? Could be an enum [Saturday, Sunday, Monday, Tuesday, Wednesday, Thursday, Friday]
+          day: {
+            type: String,
+            enum: [
+              'Saturday',
+              'Sunday',
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+            ],
+          },
           time: Date,
+          location: {
+            type: Schema.Types.ObjectId,
+            ref: 'Location',
+          },
         },
       ],
       roleInCourse: {

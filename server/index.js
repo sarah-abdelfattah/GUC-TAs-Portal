@@ -32,30 +32,29 @@ app.use(bodyParser.json());
 
 // TODO: use "routes"
 
-const locX = new Location({
-  type: 'Office',
-  location: 'C7.301',
-  capacity: 4,
-});
-locX.save();
+// const locX = new Location({
+//   type: 'Office',
+//   location: 'C7.301',
+//   capacity: 4,
+// });
+// locX.save();
 
-const staffX = new StaffMember({
-  gucId: '1233',
-  name: 'Ahmed Ashraf',
-  gender: 'male',
-  email: 'ahmed@mail.com',
-  password: '123445',
-  dayOff: 'Saturday',
-  salary: 99999,
-  type: 'Academic Member',
-  leaveBalance: 99,
-  officeLocation: locX,
-  role: 'Teaching Assistant',
-});
+// const staffX = new StaffMember({
+//   gucId: '1233',
+//   name: 'Ahmed Ashraf',
+//   gender: 'male',
+//   email: 'ahmed@mail.com',
+//   password: '123445',
+//   dayOff: 'Saturday',
+//   salary: 99999,
+//   type: 'Academic Member',
+//   leaveBalance: 99,
+//   officeLocation: locX,
+//   role: 'Teaching Assistant',
+// });
+// staffX.save();
 
-staffX.save();
-
-// StaffMember.find({ GUCID: '1233' })
+// StaffMember.find({ gucId: '1233' })
 //   .populate('officeLocation')
 //   .then((res) => {
 //     console.log(res[0]);
