@@ -7,14 +7,14 @@ const AttendanceRecordSchema = new Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   startTime: {
-    type: Date,
+    type: String,
   },
   endTime: {
-    type: Date,
+    type: String,
   },
   status: {
     type: String,

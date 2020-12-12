@@ -86,7 +86,8 @@ exports.updateStaff = async function (req, res) {
         return res.send({ msg: "No room with this location" })
 
     try {
-        const newStaff = await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { name: name, dayOff: dayOff, salary: salary, role: role, leaveBalance: leaveBalance, officeLocation: officeLocation });
+        await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { name: name, dayOff: dayOff, salary: salary, role: role, leaveBalance: leaveBalance, officeLocation: officeLocation });
+        const newStaff = await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } });
         return res.send({ data: newStaff })
     } catch (err) {
         return res.send({ error: err })
@@ -106,7 +107,6 @@ exports.deleteStaff = async function (req, res) {
         return res.send({ error: err })
     }
 }
-
 
 exports.login = async function (req, res, next) {
     const guc_id = req.body.username;
@@ -136,3 +136,68 @@ exports.login = async function (req, res, next) {
         });
     })(req, res, next);
 };
+
+exports.signIn = async function (req, res) {
+    const gucId = req.body.gucId;
+
+    if (!gucId)
+        return res.send({ error: "Missing details" });
+
+    try {
+        const staff = await StaffMember.findOne({ gucId: gucId, is_deleted: { $ne: true } })
+        if (!staff)
+            return res.send({ error: "Staff not registered in the system" });
+
+        const currentTime = new Date();
+        const newAttendance = {
+            day: currentTime.getDay(),
+            date: currentTime.getFullYear() + '-' + (currentTime.getMonth() + 1) + '-' + currentTime.getDate(),
+            startTime: currentTime.getHours() + ":" + currentTime.getMinutes() + ":" + currentTime.getSeconds(),
+            status: 'Present',
+        }
+
+        const attendanceRecord = staff.attendanceRecords;
+        const result = await attendanceRecord.find(({ date }) => date === newAttendance.date);
+        if (result)
+            return res.send({ error: "Staff already signed in today" });
+
+        attendanceRecord.push(newAttendance);
+
+        await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { attendanceRecords: attendanceRecord })
+        const updatedStaff = await StaffMember.findOne({ gucId: gucId, is_deleted: { $ne: true } })
+        return res.send({ data: updatedStaff });
+    } catch (err) {
+        return res.send({ error: err })
+    }
+}
+
+exports.signOut = async function (req, res) {
+    try {
+        const gucId = req.body.gucId;
+
+        if (!gucId)
+            return res.send({ error: "Missing details" });
+
+        const staff = await StaffMember.findOne({ gucId: gucId, is_deleted: { $ne: true } })
+        if (!staff)
+            return res.send({ error: "Staff not registered in the system" });
+
+        const today = new Date();
+        const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+        const attendanceRecord = staff.attendanceRecords;
+        for (var i in attendanceRecord) {
+            if (attendanceRecord[i].date == currentDate) {
+                attendanceRecord[i].endTime = currentTime;
+                break;
+            }
+        }
+
+        await StaffMember.findOneAndUpdate({ gucId: gucId, is_deleted: { $ne: true } }, { attendanceRecords: attendanceRecord })
+        const updatedStaff = await StaffMember.findOne({ gucId: gucId, is_deleted: { $ne: true } })
+        return res.send({ data: updatedStaff });
+    } catch (err) {
+        return res.send({ error: err })
+    }
+}
