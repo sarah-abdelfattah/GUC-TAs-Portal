@@ -2,8 +2,38 @@ const objectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const { StaffMember } = require('../models/StaffMember');
 const tokenKey = require('../config/keys').secretOrKey;
+
+const { StaffMember } = require('../models/StaffMember');
+
+exports.registerStaff = async function (req, res) {
+    console.log("hereee");
+
+    const { name, gender, email, daysOff, salary, officeLocation, type, aType, course } = req.body;
+
+    if (!name || !gender || !email || !daysOff || !salary || !officeLocation || !type || !leaveBalance)
+        return res.send({ error: "please enter all data" });
+
+    if (type === "Academic Member") {
+        if (!aType || !course)
+            return res.send({ error: "please enter all data" });
+    }
+
+    req.body.attendanceRecord = [];
+
+    const id = StaffMember.count() + 1;
+    console.log("line 18 ~ id ", id);
+    const temp = type + '-' + 1;
+    req.body.GUCID = temp;
+
+    try {
+        const newStaffMember = await StaffMember.create(req.body);
+        return res.send({ data: newStaffMember });
+    } catch (err) {
+        return res.send({ error: handleError(err) });
+    }
+};
+
 
 exports.login = async function (req, res, next) {
     const guc_id = req.body.username;

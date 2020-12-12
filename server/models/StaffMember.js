@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const academicMembers = require("./AcademicMember.js");
+const academicMembers = require("./AcademicMember");
 
 // Create the schema
 const StaffMemberSchema = new Schema({
@@ -20,13 +20,12 @@ const StaffMemberSchema = new Schema({
         enum: ['male', 'female']
     },
     email: {
-        type: email,
+        type: String,
         required: true,
         unique: true
     },
     password: {
         type: String,
-        required: true,
         default: "123456"
     },
     daysOff: {
@@ -56,9 +55,15 @@ const StaffMemberSchema = new Schema({
         type: Number,
         default: 0
     },
-    children: [
-        academicMembers
-    ],
+    aType: {
+        type: String,
+        required: true,
+        enum: ['teaching assistant', 'course instructor', 'course coordinator', 'HOD']
+    },
+    course: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Course'
+    }]
 })
 
 module.exports.StaffMember = mongoose.model("staffMembers", StaffMemberSchema);

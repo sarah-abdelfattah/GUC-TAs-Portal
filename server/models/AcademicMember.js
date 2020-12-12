@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const AcademicMemberSchema = new Schema({
-    type: {
+    aType: {
         type: String,
         required: true,
         enum: ['teaching assistant', 'course instructor', 'course coordinator', 'HOD']
