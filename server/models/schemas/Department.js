@@ -8,9 +8,10 @@ const DepartmentSchema = new Schema({
   },
   HOD: {
     type: Schema.Types.ObjectId,
-    ref: 'AcademicMember',
+    ref: 'StaffMember',
     required: true,
     unique: true,
+    validate: (v) => v.type === 'Academic Member',
   },
   Courses: [
     {
@@ -20,4 +21,4 @@ const DepartmentSchema = new Schema({
   ],
 });
 
-module.exports.Department = mongoose.model('departments', DepartmentSchema);
+module.exports = DepartmentSchema;
