@@ -3,6 +3,20 @@ const ObjectId = require('mongoose').Types.ObjectId;
 // required models
 const Location = require('../models/Location');
 
+exports.getRoom = async function (req, res) {
+    if (req.params.num === "all") {
+        const result = await Location.find({ is_deleted: { $ne: true } });
+        return res.send({ data: result });
+    }
+    else {
+        const result = await Location.findOne({ location: req.params.num, is_deleted: { $ne: true } });
+        if (result)
+            return res.send({ data: result });
+        else
+            return res.send({ msg: "Sorry no room with this location" });
+    }
+}
+
 exports.createRoom = async function (req, res) {
     const { type, location, capacity } = req.body;
 
@@ -21,12 +35,6 @@ exports.createRoom = async function (req, res) {
     }
 };
 
-// {
-//     "type": "office",
-//     "location": "c6.302",
-//     "capacity": 25
-// }
-
 exports.updateRoom = async function (req, res) {
     const location = req.body.location;
     const newCapacity = req.body.capacity;
@@ -36,10 +44,10 @@ exports.updateRoom = async function (req, res) {
 
     const newRoom = await Location.findOne({ location: location });
     if (!newRoom || newRoom.is_deleted)
-        return res.send({ error: "No room with this location" })
+        return res.send({ msg: "No room with this location" })
 
     try {
-        const newRoom = await Location.findOneAndUpdate({ location: location }, { capacity: newCapacity });
+        const newRoom = await Location.findOneAndUpdate({ location: location, is_deleted: { $ne: true } }, { capacity: newCapacity });
         return res.send({ data: newRoom })
     } catch (err) {
         return res.send({ error: err })
@@ -60,7 +68,3 @@ exports.deleteRoom = async function (req, res) {
         return res.send({ error: err })
     }
 }
-
-//{
-// "location": "c6.212"
-// }
