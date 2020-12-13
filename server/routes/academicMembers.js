@@ -6,12 +6,19 @@ const {
 } = require('./../controllers/academicMemberController');
 //const { auth } = require("../../utils/authentication");
 
-// ==> Course Instructor Routes (Course Instructors Only) <== //
+// ==> Course Instructor Routes (Auth: Course Instructors Only) <== //
 const courseInstructorBaseRoute = '/courseInstructor';
+
 // Functionality: 29
 router.get(
-  `${courseInstructorBaseRoute}/coverage/:instructorId`,
+  `${courseInstructorBaseRoute}/courseCoverage/:instructorId`,
   courseInstructorController.courseCoverage
+);
+
+// Functionality: 30
+router.get(
+  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  courseInstructorController.slotsAssignment
 );
 
 module.exports = router;

@@ -5,6 +5,7 @@ const StaffMember = require('./../models/StaffMember');
 
 // TODO: Import all the models after db connection
 const Course = require('./../models/Course');
+const Location = require('./../models/Location');
 
 // General Error Messages
 const errorMsgs = {
@@ -45,6 +46,49 @@ const courseInstructorController = {
           return {
             course_name: course.name,
             course_coverage: course.coverage,
+          };
+        }),
+      });
+    } catch (err) {
+      res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+  },
+
+  // ==> Functionality 30 <== //
+  async slotsAssignment(req, res) {
+    try {
+      const instructor = await StaffMember.findOne({
+        gucId: req.params.instructorId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      })
+        .populate('courses.course')
+        .populate('courses.slots.location');
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          message: errorMsgs.notFound('instructor', req.params.instructorId),
+        });
+
+      // Case: instructor does not have any slots
+      if (instructor.courses.length === 0)
+        return res.status(200).send({
+          data: errorMsgs.notAssigned('slots', 'instructor'),
+        });
+
+      // Case: success
+      return res.status(200).send({
+        data: instructor.courses.map(({ course, slots }) => {
+          return {
+            course_name: course.name,
+            course_slots: slots.map(({ day, time, location }) => {
+              return {
+                day: day,
+                time: `${time.getHours()}:${time.getMinutes()}`,
+                location: location['location'],
+              };
+            }),
           };
         }),
       });
