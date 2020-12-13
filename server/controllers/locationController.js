@@ -18,7 +18,7 @@ exports.getRoom = async function (req, res) {
         }
     } catch (err) {
         console.log("~ err", err);
-        return res.send({ error: err })
+        return res.send({ err: err })
     }
 }
 
@@ -47,7 +47,7 @@ exports.createRoom = async function (req, res) {
         }
     } catch (err) {
         console.log("~ err", err);
-        return res.send({ error: err })
+        return res.send({ err: err })
     }
 };
 
@@ -74,7 +74,7 @@ exports.updateRoom = async function (req, res) {
         }
     } catch (err) {
         console.log("~ err", err);
-        return res.send({ error: err })
+        return res.send({ err: err })
     }
 }
 
@@ -96,6 +96,6 @@ exports.deleteRoom = async function (req, res) {
         }
     } catch (err) {
         console.log("~ err", err);
-        return res.send({ error: err })
+        return res.send({ err: err })
     }
 }
