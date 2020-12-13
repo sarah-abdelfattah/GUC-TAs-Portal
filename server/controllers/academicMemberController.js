@@ -1,8 +1,10 @@
-const ObjectId = require('mongoose').Types.ObjectId;
 // const { handleError } = require("../utils/handleError");
 
 // required models
 const StaffMember = require('./../models/StaffMember');
+
+// TODO: Import all the models after db connection
+const Course = require('./../models/Course');
 
 // General Error Messages
 const errorMsgs = {
@@ -18,29 +20,37 @@ const errorMsgs = {
 const courseInstructorController = {
   // ==> Functionality 29 <== //
   async courseCoverage(req, res) {
-    const instructor = await StaffMember.findOne({
-      gucId: req.params.instructorId,
-      type: 'Academic Member',
-      role: 'Course Instructor',
-    }).populate('courses.course');
-    // Case: instructor not found
-    if (instructor.length === 0)
-      res
-        .status(404)
-        .send(errorMsgs.notFound('instructor', req.params.instructorId));
-    // Case: instructor does not teach any courses
-    else if (instructor.courses.length === 0)
-      res.status(200).send(errorMsgs.notAssigned('courses', 'instructor'));
-    // Case: success
-    else
-      res.status(200).send(
-        instructor.courses.map(({ course }) => {
+    try {
+      const instructor = await StaffMember.findOne({
+        gucId: req.params.instructorId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      }).populate('courses.course');
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          message: errorMsgs.notFound('instructor', req.params.instructorId),
+        });
+
+      // Case: instructor does not teach any courses
+      if (instructor.courses.length === 0)
+        return res.status(200).send({
+          data: errorMsgs.notAssigned('courses', 'instructor'),
+        });
+
+      // Case: success
+      return res.status(200).send({
+        data: instructor.courses.map(({ course }) => {
           return {
             course_name: course.name,
             course_coverage: course.coverage,
           };
-        })
-      );
+        }),
+      });
+    } catch (err) {
+      res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
   },
 };
 
