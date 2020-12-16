@@ -12,11 +12,11 @@ exports.registerStaff = async function (req, res) {
     const { name, gender, email, daysOff, salary, officeLocation, type, aType, course } = req.body;
 
     //check data needed is entered
-    if (!name || !gender || !email || !daysOff || !salary || !officeLocation || !type)
+    if (!name || !gender || !email || !salary || !officeLocation || !type)
         return res.send({ error: "please enter all data" });
 
     if (type === "Academic Member") {
-        if (!aType || !course)
+        if (!aType || !course || !daysOff)
             return res.send({ error: "please enter all data" });
     }
 
@@ -45,9 +45,8 @@ exports.registerStaff = async function (req, res) {
     const typeStaff = (await StaffMember.find({ type: type }));
     const num = typeStaff.length + 1;
     const temp = type + '-' + num;
-    req.body.GUCID = temp;
+    req.body.gucId = temp;
 
-    console.log(req.body);
     try {
         const newStaffMember = await StaffMember.create(req.body);
         return res.send({ data: newStaffMember });
@@ -55,7 +54,6 @@ exports.registerStaff = async function (req, res) {
         return res.send({ error: err });
     }
 };
-
 
 exports.login = async function (req, res, next) {
     const guc_id = req.body.username;
