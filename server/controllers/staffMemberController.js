@@ -252,14 +252,21 @@ exports.signOut = async function (req, res) {
             const today = new Date();
             const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
             const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let found = false;
 
             const attendanceRecord = staff.attendanceRecords;
             for (var i in attendanceRecord) {
+
                 if (attendanceRecord[i].date == currentDate) {
                     attendanceRecord[i].endTime = currentTime;
+                    let found = true;
                     break;
                 }
             }
+            if (!found) {
+                return res.send({ error: "Sorry staff did not sign in today" });
+            }
+
             staff.attendanceRecords = attendanceRecord;
 
             const updatedStaff = await staff.save();
