@@ -81,9 +81,9 @@ app.use('/locations', locations);
 //   });
 
 // Handling 404
-app.use((req, res) => {
-    res.status(404).send({ err: 'We can not find what you are looking for' });
-});
+// app.use((req, res) => {
+//     res.status(404).send({ err: 'We can not find what you are looking for' });
+// });
 
 // Handling 404
 // app.use((req, res) => {

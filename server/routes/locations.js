@@ -7,6 +7,7 @@ const locationController = require('../controllers/locationController');
 
 
 //HR only
+router.get("/room/:num", locationController.getRoom) //"all"" gets all rooms or the room number 
 router.post("/createRoom", locationController.createRoom);
 router.post("/updateRoom", locationController.updateRoom);
 router.post("/deleteRoom", locationController.deleteRoom);
