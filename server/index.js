@@ -14,6 +14,8 @@ const Location = require('./models/Location');
 //Require Route Handlers
 const staffMembers = require('./routes/staffMembers');
 const locations = require('./routes/locations');
+const faculties = require('./routes/faculties');
+
 
 // Create the app
 const app = express();
@@ -51,6 +53,8 @@ app.use(bodyParser.json());
 // TODO: use "routes"
 app.use('/staffMembers', staffMembers);
 app.use('/locations', locations);
+app.use('/faculties', faculties);
+
 
 // const locX = new Location({
 //   type: 'Office',

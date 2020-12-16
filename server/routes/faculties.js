@@ -1,10 +1,16 @@
-const express = require("express");
-const router = express.Router();
+var express = require("express");
+var router = express.Router();
 
-//const { auth } = require("../../utils/authentication");
+const facultyController = require('../controllers/facultyController');
 
 
+//HR 
+router.post("/add", facultyController.addFaculty);
+// router.update("/update", facultyController.updateFaculty);
+// router.delete("/delete", facultyController.deleteFaculty);
 
+
+module.exports = router;
 
 
 module.exports = router;  
