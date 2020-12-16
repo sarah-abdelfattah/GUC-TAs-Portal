@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const Department = require('./schemas/Department');
 const FacultySchema = new Schema({
   name: {
     type: String,
@@ -10,7 +10,7 @@ const FacultySchema = new Schema({
   departments: [Department],
   is_deleted: {
     type: Boolean,
-    default: false
+    default: false,
   },
 });
 
