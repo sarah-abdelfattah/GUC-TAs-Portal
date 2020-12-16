@@ -12,9 +12,17 @@ exports.addFaculty = async function (req, res) {
         if (!name)
             return res.send({ error: "Please enter the name of the faculty" });
 
-        const facultyFound = await Faculty.find({ name: name });
-        if (facultyFound)
-            return res.send({ error: "Sorry there is another faculty with the same name" });
+        const facultyFound = await Faculty.findOne({ name: name })
+        if (facultyFound) {
+            if (facultyFound.is_deleted === false)
+                return res.send({ error: "Sorry there is another faculty with the same name" });
+            else {
+                facultyFound.is_deleted = true;
+                facultyFound.departments = [];
+                const facultyCreated = await facultyFound.save();
+                return res.send({ data: facultyCreated });
+            }
+        }
 
         const newFaculty = {
             name: name,
@@ -36,7 +44,7 @@ exports.deleteFaculty = async function (req, res) {
         if (!name)
             return res.send({ error: "Please enter the name of the faculty" });
 
-        const facultyFound = await Faculty.find({ name: name });
+        const facultyFound = await Faculty.findOne({ name: name });
         if (!facultyFound)
             return res.send({ error: "Sorry no faculty with this name" });
 
