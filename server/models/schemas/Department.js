@@ -9,7 +9,6 @@ const DepartmentSchema = new Schema({
   HOD: {
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
-    required: true,
   },
   Courses: [
     {

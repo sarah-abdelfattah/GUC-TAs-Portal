@@ -6,10 +6,10 @@ const facultyController = require('../controllers/facultyController');
 
 //HR 
 router.post("/faculty", facultyController.addFaculty);
-// router.update("/faculty", facultyController.updateFaculty);
+router.put("/faculty", facultyController.updateFaculty);
 router.delete("/faculty", facultyController.deleteFaculty);
 router.post("/department", facultyController.addDepartment);
-// router.update("/faculty", facultyController.updateDepartment);
+router.put("/department", facultyController.updateDepartment);
 router.delete("/department", facultyController.deleteDepartment);
 
 module.exports = router;

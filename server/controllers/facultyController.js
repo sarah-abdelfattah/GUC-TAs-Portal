@@ -49,9 +49,9 @@ exports.updateFaculty = async function (req, res) {
         if (!facultyFound)
             return res.send({ error: "No faculty with this name" });
 
-        const nameFacultyFound = await Faculty.findOne({ name: name, is_deleted: false });
+        const nameFacultyFound = await Faculty.findOne({ name: newName, is_deleted: false });
         if (nameFacultyFound)
-            return res.send({ error: "Sorry there is a new faculty with this name" });
+            return res.send({ error: "Sorry there is a another faculty with this name" });
 
         facultyFound.name = newName;
 
@@ -70,8 +70,8 @@ exports.deleteFaculty = async function (req, res) {
         if (!name)
             return res.send({ error: "Please enter the name of the faculty" });
 
-        const facultyFound = await Faculty.findOne({ name: name });
-        if (!facultyFound || !facultyFound.is_deleted == true)
+        const facultyFound = await Faculty.findOne({ name: name, is_deleted: false });
+        if (!facultyFound)
             return res.send({ error: "Sorry no faculty with this name" });
 
         facultyFound.is_deleted = true;
@@ -89,7 +89,7 @@ exports.addDepartment = async function (req, res) {
         const { faculty, name, HOD } = req.body;
 
         //all data entered
-        if (!faculty || !name || !HOD)
+        if (!faculty || !name)
             return res.send({ error: "Please enter all details" });
 
         //faculty found? 
@@ -97,24 +97,32 @@ exports.addDepartment = async function (req, res) {
         if (!facultyFound || facultyFound.is_deleted === true)
             return res.send({ error: "No faculty with this name" });
 
-        // staff found? 
-        const staffMember = await StaffMember.findOne({ gucId: HOD, is_deleted: false })
-        if (!staffMember || staffMember.is_deleted)
-            return res.send({ error: "No staff member with this ID" });
+        let staffMember;
+        if (HOD) {
+            // staff found? 
+            staffMember = (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
+            if (!staffMember || staffMember.is_deleted)
+                return res.send({ error: "No staff member with this ID" });
 
-        //staff is not TA and not HR 
-        if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-            return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
+            //staff is not TA and not HR 
+            if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
+                return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
 
-        if (!(staffMember.faculty.equals(facultyFound._id)))
-            return res.send({ error: "Sorry Head of the department should be of the same faculty" });
+            if (!(staffMember.faculty.equals(facultyFound._id)))
+                return res.send({ error: "Sorry Head of the department should be of the same faculty" });
+
+            const allDep = facultyFound.departments
+            for (var i in allDep) {
+                if (allDep[i].HOD.equals(staffMember._id)) {
+                    return res.send({ error: "Sorry this staff is a HOD of another department" });
+                }
+            }
+        } else {
+            staffMember = undefined;
+        }
 
         const allDep = facultyFound.departments
         for (var i in allDep) {
-            if (allDep[i].HOD.equals(staffMember._id)) {
-                return res.send({ error: "Sorry this staff is a HOD of another department" });
-            }
-
             if (allDep[i].name === name) {
                 return res.send({ error: "Sorry this name is of another department" });
             }
@@ -122,7 +130,7 @@ exports.addDepartment = async function (req, res) {
 
         const department = {
             name: name,
-            HOD: staffMember._id,
+            HOD: staffMember,
             Courses: []
         }
 
@@ -141,7 +149,7 @@ exports.updateDepartment = async function (req, res) {
         const { faculty, department, HOD } = req.body;
 
         //all data entered
-        if (!faculty || !name || !HOD)
+        if (!faculty || !department || !HOD)
             return res.send({ error: "Please enter all details" });
 
         //faculty found? 
@@ -150,7 +158,7 @@ exports.updateDepartment = async function (req, res) {
             return res.send({ error: "No faculty with this name" });
 
         // staff found? 
-        const staffMember = await StaffMember.findOne({ gucId: HOD, is_deleted: false })
+        const staffMember = await (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
         if (!staffMember || staffMember.is_deleted)
             return res.send({ error: "No staff member with this ID" });
 
@@ -166,9 +174,13 @@ exports.updateDepartment = async function (req, res) {
         let found = false;
         let allDep = facultyFound.departments
         for (var i in allDep) {
-            if (allDep[i].name == department && allDep.is_deleted == false) {
+            if (allDep[i].HOD.equals(staffMember._id)) {
+                return res.send({ error: "Sorry this staff is a HOD of another department" });
+            }
+
+            if (allDep[i].name === department && allDep[i].is_deleted == false) {
                 found = true;
-                facultyFound.departments[i].HOD = staffMember._id;
+                facultyFound.departments[i].HOD = staffMember;
 
                 const updatedHOD = await facultyFound.save();
                 return res.send({ data: updatedHOD });
@@ -194,20 +206,21 @@ exports.deleteDepartment = async function (req, res) {
 
         const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false });
         if (!facultyFound)
-            return res.send({ error: "Sorry no faculty with this name" });
+            return res.send({ error: "Sorry no department with this name" });
 
         let found = false;
         let allDep = facultyFound.departments
         for (var i in allDep) {
-            if (allDep[i].name == department && allDep.is_deleted == false) {
+            if (allDep[i].name == department && allDep[i].is_deleted == false) {
                 found = true;
                 facultyFound.departments[i].is_deleted = true;
+                await facultyFound.save();
                 return res.send({ data: "Department deleted successfully " });
             }
         }
 
         if (!found)
-            return res.send({ error: "Sorry no faculty with this name" });
+            return res.send({ error: "Sorry no department with this name" });
 
     } catch (err) {
         console.log('~ err', err);
