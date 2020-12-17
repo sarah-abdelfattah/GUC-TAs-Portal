@@ -8,6 +8,10 @@ const FacultySchema = new Schema({
     unique: true,
   },
   departments: [Department],
+  is_deleted: {
+    type: Boolean,
+    default: false
+  },
 });
 
 module.exports = mongoose.model('Faculty', FacultySchema);

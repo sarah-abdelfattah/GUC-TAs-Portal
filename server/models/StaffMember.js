@@ -97,6 +97,10 @@ const StaffMemberSchema = new Schema({
         },
     ],
     attendanceRecords: [AttendanceRecord],
+    is_deleted: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model('StaffMember', StaffMemberSchema);
