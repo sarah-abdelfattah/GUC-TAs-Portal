@@ -12,7 +12,7 @@ const FacultySchema = new Schema({
   departments: [Department],
   is_deleted: {
     type: Boolean,
-    default: false
+    default: false,
   },
 });
 
