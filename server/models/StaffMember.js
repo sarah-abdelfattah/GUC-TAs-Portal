@@ -81,13 +81,12 @@ const StaffMemberSchema = new Schema({
     // },
   },
   department: {
-    type: Department,
+    type: String,
     validate: [
       function () {
         return (
-          this.faculty.departments.filter(
-            (dep) => dep.name === this.department.name
-          ).length > 0
+          this.faculty.departments.filter((dep) => dep.name === this.department)
+            .length > 0
         );
       },
       'This department is not found',

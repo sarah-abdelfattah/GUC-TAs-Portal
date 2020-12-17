@@ -6,9 +6,9 @@ const staffMemberController = require('../controllers/staffMemberController');
 //const { auth } = require("../../utils/authentication");
 
 //HR 
-router.post("/register", staffMemberController.registerStaff);
-router.post("/update", staffMemberController.updateStaff);
-router.post("/delete", staffMemberController.deleteStaff);
+router.post("/staff", staffMemberController.registerStaff);
+router.put("/staff", staffMemberController.updateStaff);
+router.delete("/staff", staffMemberController.deleteStaff);
 
 //all users
 router.post("/login", staffMemberController.login);
