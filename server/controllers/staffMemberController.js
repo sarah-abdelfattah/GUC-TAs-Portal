@@ -141,6 +141,7 @@ exports.updateStaff = async function (req, res) {
                 if (locResult.error) return res.send(locResult);
                 else newStaff.officeLocation = locResult;
             }
+            
         }
 
         const updatedStaff = await newStaff.save();

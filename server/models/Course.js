@@ -23,7 +23,7 @@ const CourseSchema = new Schema({
     type: Department,
     required: true,
   },
-  slots: [Slot],
+  slots: [Slot], 
   coverage: {
     type: Number,
     default: 0,
