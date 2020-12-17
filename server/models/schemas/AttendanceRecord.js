@@ -26,6 +26,7 @@ const AttendanceRecordSchema = new Schema({
       'Sick Leave',
       'Maternity Leave',
       'Compensation Leave',
+      
     ],
   },
   description: {

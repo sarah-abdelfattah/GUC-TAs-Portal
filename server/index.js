@@ -10,11 +10,11 @@ const methodOverride = require("method-override");
 
 const StaffMember = require('./models/StaffMember');
 const Location = require('./models/Location');
-
+const Request=require('./models/Request');
 //Require Route Handlers
 const staffMembers = require('./routes/staffMembers');
 const locations = require('./routes/locations');
-
+const requests=require('./routes/requests');
 // Create the app
 const app = express();
 
@@ -51,7 +51,7 @@ app.use(bodyParser.json());
 // TODO: use "routes"
 app.use('/staffMembers', staffMembers);
 app.use('/locations', locations);
-
+app.use('/requests',requests);
 // const locX = new Location({
 //   type: 'Office',
 //   location: 'C7.301',
@@ -92,5 +92,5 @@ app.use('/locations', locations);
 
 
 //running port
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server up and running on port ${port}`));

@@ -4,6 +4,7 @@ const NotificationSchema = new Schema({
   reciever: {
     type: Schema.Type.ObjectId,
     ref: 'StaffMember',
+    required: true,
   },
   message: {
     type: String,
