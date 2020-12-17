@@ -6,13 +6,14 @@ const tokenKey = require('../config/keys').secretOrKey;
 
 const StaffMember = require('../models/StaffMember');
 const Location = require('../models/Location');
+const Faculty = require('../models/Faculty');
 
 async function locationHelper(officeLocation) {
     //check if room is found
     const refLocation = await Location.findOne({
         location: officeLocation,
         is_deleted: { $ne: true },
-    });
+    }).populate('officeLocation');
     if (!refLocation) return { error: 'Sorry room not found' };
     else {
         //room capacity for offices
@@ -23,9 +24,20 @@ async function locationHelper(officeLocation) {
         if (occupied.length >= refLocation.capacity)
             return { error: 'Sorry room capacity is full' };
         else {
-            return refLocation.id;
+            return refLocation;
         }
     }
+}
+
+async function facultyHelper(facultyName) {
+    //check if faculty is found
+    const refFaculty = await Faculty.findOne({
+        name: facultyName,
+        is_deleted: { $ne: true },
+    }).populate('faculty')
+    if (!refFaculty) return { error: 'Sorry Faculty not found' };
+
+    return refFaculty;
 }
 
 exports.registerStaff = async function (req, res) {
@@ -34,12 +46,13 @@ exports.registerStaff = async function (req, res) {
             name,
             gender,
             email,
-            dayOff,
             salary,
+            officeLocation,
             type,
             role,
-            officeLocation,
-            daysOff,
+            dayOff,
+            faculty,
+            department
         }
             = req.body;
 
@@ -48,7 +61,7 @@ exports.registerStaff = async function (req, res) {
             return res.send({ error: 'please enter all data' });
 
         if (type === 'Academic Member') {
-            if (!role || !daysOff)
+            if (!role || !dayOff || !faculty || !department)
                 return res.send({ error: 'please enter all data' });
         }
 
@@ -70,8 +83,22 @@ exports.registerStaff = async function (req, res) {
                 if (locResult.error) return res.send(locResult);
                 else foundMail.officeLocation = locResult;
 
-                if (type === 'Academic Member') foundMail.role = role;
-                else foundMail.dayOff = 'Saturday';
+                if (type === 'Academic Member') {
+                    foundMail.role = role;
+
+                    const facultyResult = await facultyHelper(faculty);
+
+                    if (facultyResult.error) return res.send(facultyResult);
+                    else foundMail.faculty = facultyResult;
+
+                    foundMail.department = department;
+                }
+                else {
+                    foundMail.dayOff = 'Saturday';
+                    foundMail.role = undefined;
+                    foundMail.faculty = undefined;
+                    foundMail.department = undefined;
+                }
 
                 const newStaffMember = await foundMail.save();
                 return res.send({ data: newStaffMember });
@@ -81,10 +108,26 @@ exports.registerStaff = async function (req, res) {
                 });
         }
 
+        if (type === 'Academic Member') {
+            req.body.role = role;
+
+            const facultyResult = await facultyHelper(faculty);
+
+            if (facultyResult.error) return res.send(facultyResult);
+            else req.body.faculty = facultyResult;
+
+            req.body.department = department;
+        }
+        else {
+            req.body.dayOff = 'Saturday';
+            req.body.role = undefined;
+            req.body.faculty = undefined;
+            req.body.department = undefined;
+        }
+
         const locResult = await locationHelper(officeLocation);
         if (locResult.error) return res.send(locResult);
         else req.body.officeLocation = locResult;
-
 
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
@@ -100,7 +143,6 @@ exports.registerStaff = async function (req, res) {
 
         req.body.attendanceRecord = [];
         req.body.courses = [];
-
 
 
         const newStaffMember = await StaffMember.create(req.body);
@@ -120,6 +162,10 @@ exports.updateStaff = async function (req, res) {
         const role = req.body.role;
         const leaveBalance = req.body.leaveBalance;
         const officeLocation = req.body.officeLocation;
+        const faculty = req.body.faculty;
+        const department = req.body.department;
+
+
 
         if (!gucId) return res.send({ error: 'Please enter the GUC-ID ' });
 
@@ -131,7 +177,7 @@ exports.updateStaff = async function (req, res) {
             return res.send({ msg: 'No staff with this id' });
         else {
             if (name) newStaff.name = name;
-            if (dayOff) newStaff.dayOff = dayOff;
+            if (dayOff && newStaff.type === 'Academic Member') newStaff.dayOff = dayOff;
             if (salary) newStaff.salary = salary;
             if (role && newStaff.type === 'Academic Member') newStaff.name = role;
             if (leaveBalance) newStaff.leaveBalance = leaveBalance;
@@ -140,6 +186,14 @@ exports.updateStaff = async function (req, res) {
                 if (locResult.error) return res.send(locResult);
                 else newStaff.officeLocation = locResult;
             }
+            if (faculty && department && newStaff.type === 'Academic Member') {
+                const facultyResult = await facultyHelper(faculty);
+
+                if (facultyResult.error) return res.send(facultyResult);
+                else newStaff.faculty = facultyResult;
+            }
+            if (department && newStaff.type === 'Academic Member') newStaff.department = department
+            else newStaff.department = undefined
         }
 
         const updatedStaff = await newStaff.save();
