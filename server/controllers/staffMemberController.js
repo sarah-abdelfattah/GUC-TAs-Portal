@@ -39,14 +39,16 @@ exports.registerStaff = async function (req, res) {
             type,
             role,
             officeLocation,
-        } = req.body;
+            daysOff,
+        }
+            = req.body;
 
         //check data needed is entered
         if (!name || !gender || !email || !salary || !officeLocation || !type)
             return res.send({ error: 'please enter all data' });
 
         if (type === 'Academic Member') {
-            if (!aType || !course || !daysOff)
+            if (!role || !daysOff)
                 return res.send({ error: 'please enter all data' });
         }
 
@@ -90,10 +92,7 @@ exports.registerStaff = async function (req, res) {
 
         var idRole = 'HR';
         if (type === 'Academic Member') {
-            if (idRole === 'Teaching Assistant') l = 'TA';
-            else if (idRole === 'Course Instructor') l = 'CI';
-            else if (idRole === 'Course Coordinator') l = 'CC';
-            else if (idRole === 'HOD') l = 'HOD';
+            idRole = 'AC'
         }
 
         const temp = idRole + '-' + num;
