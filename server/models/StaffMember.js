@@ -22,10 +22,10 @@ const StaffMemberSchema = new Schema({
     enum: ['male', 'female'],
   },
   email: {
-    type: String, // There is not type called email, So we will validate on the value
+    type: String,
     required: true,
     unique: true,
-    validate: [isEmail, 'Invalid email format'], // Instead of using regex validations, We used validator library to handle this
+    validate: [isEmail, 'Invalid email format'],
   },
   password: {
     type: String,
@@ -80,19 +80,19 @@ const StaffMemberSchema = new Schema({
     //   return this.type === 'Academic Member';
     // },
   },
-  department: Department,
-  // department: {
-  //   type: Department,
-  //   unique: false,
-
-  // TODO: Handle the validation of dapartment in the faculty
-  // validate: (v) => {
-  //   return (
-  //     v.faculty.departments.filter((dep) => dep.name === v.department.name)
-  //       .length > 0
-  //   );
-  // },
-  // },
+  department: {
+    type: Department,
+    validate: [
+      function () {
+        return (
+          this.faculty.departments.filter(
+            (dep) => dep.name === this.department.name
+          ).length > 0
+        );
+      },
+      'This department is not found',
+    ],
+  },
   attendanceRecords: [AttendanceRecord],
   is_deleted: {
     type: Boolean,

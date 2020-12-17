@@ -10,8 +10,6 @@ const DepartmentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
     required: true,
-    // unique: true,
-    validate: (v) => v.role === 'Course Instructor',
   },
   Courses: [
     {
