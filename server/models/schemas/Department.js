@@ -17,6 +17,10 @@ const DepartmentSchema = new Schema({
       ref: 'Course',
     },
   ],
+  is_deleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = DepartmentSchema;
