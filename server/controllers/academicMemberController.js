@@ -79,16 +79,19 @@ const courseInstructorController = {
 
       // Case: success
       return res.status(200).send({
-        data: instructor.courses.map(({ course, slots }) => {
+        data: instructor.courses.map(({ course }) => {
           return {
             course_name: course.name,
-            course_slots: slots.map(({ day, time, location }) => {
-              return {
-                day: day,
-                time: `${time.getHours()}:${time.getMinutes()}`,
-                location: location['location'],
-              };
-            }),
+            course_slots: course.slots
+              .filter((slot) => slot.isAssigned._id === instructor._id) // Get all the courses of the instructor
+              .map(({ day, time, location }) => {
+                // Map them to only send back the day, time, location
+                return {
+                  day: day,
+                  time: `${time.getHours()}:${time.getMinutes()}`,
+                  location: location['location'],
+                };
+              }),
           };
         }),
       });
