@@ -76,9 +76,6 @@ const StaffMemberSchema = new Schema({
   faculty: {
     type: Schema.Types.ObjectId,
     ref: 'Faculty',
-    // required: function () {
-    //   return this.type === 'Academic Member';
-    // },
   },
   department: {
     type: Schema.Types.ObjectId,
