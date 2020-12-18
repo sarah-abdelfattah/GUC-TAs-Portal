@@ -78,7 +78,8 @@ const StaffMemberSchema = new Schema({
     ref: 'Faculty',
   },
   department: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Department',
   },
   attendanceRecords: [AttendanceRecord],
   is_deleted: {

@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const Slot = require('./schemas/Slot');
-const Department = require('./schemas/Department');
 
 const CourseSchema = new Schema({
   name: {
@@ -15,7 +14,7 @@ const CourseSchema = new Schema({
     unique: true,
   },
   department: {
-    type: Department,
+    type: String,
     required: true,
   },
   slots: [Slot],
