@@ -9,7 +9,7 @@ const FacultySchema = new Schema({
     required: true,
     unique: true,
   },
-  departments: [Department],
+  // departments: [Department],
   is_deleted: {
     type: Boolean,
     default: false,
