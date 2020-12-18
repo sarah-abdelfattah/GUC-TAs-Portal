@@ -81,16 +81,8 @@ const StaffMemberSchema = new Schema({
     // },
   },
   department: {
-    type: String,
-    validate: [
-      function () {
-        return (
-          this.faculty.departments.filter((dep) => dep.name === this.department)
-            .length > 0
-        );
-      },
-      'This department is not found',
-    ],
+    type: Schema.Types.ObjectId,
+    ref: 'Department',
   },
   attendanceRecords: [AttendanceRecord],
   is_deleted: {
