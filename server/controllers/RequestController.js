@@ -3,14 +3,16 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const { request } = require('http');
 // const { handleError } = require("../utils/handleError");
 // required models
-
+const Replacment= require('./schemas/replacment');
 const Request=require('../models/Request');
 const StaffMember = require('../models/StaffMember');
+const Course=require('../models/Course');
 const AttendanceRecordSchema = require('../models/schemas/AttendanceRecord');
 const { appendFileSync } = require('fs');
+ 
 exports.sendRequest = async function (req, res) {
   try{
-   
+  
   const type=req.body.type;
  //TODO: sender is logged in member from the header
   //  const sender=await StaffMember.findOne({gucID:req.user.gucID }); 
@@ -24,16 +26,32 @@ exports.sendRequest = async function (req, res) {
     
     if(type=='Replacement Request') {
     const recieverId = req.body.recieverId;
-    const replacementDate = req.body.replacementDate;
+    const replacmentDate = new Date(Date.parse(req.body.replacementDate)); 
+    const location=req.body.location;
+    const coursename=req.body.course;
+    const course=await Course.findOne({name:coursename})
 
     
      // const departmentt=senderInfo.
-      if(!recieverId || !replacementDate){
+      if(!recieverId || !replacementDate ||!location|| !course){
             return res.send({ error: 'please enter all data' });
       }
     const rec=await StaffMember.findOne({gucID:recieverId});
+    const department=rec.department;
     if(!rec){
   return res.send({ error: 'please enter correct  id' });
+    }
+    if(!department==sender.department){
+      return res.send({ error: 'you are not at the same department' });
+    }
+    var f4=false;
+    for(i=0;i<rec.courses.length;i++){
+      if(courses[i].name==coursename){
+        f4=true;
+      }
+    }
+    if(!f4){
+      return res.send({ error: 'this Ta doesnot teach this Course' });
     }
       
       const newRequest = new Request({
@@ -41,30 +59,25 @@ exports.sendRequest = async function (req, res) {
         sender: sender,
         reciever: rec,
         type: type,
-        replacementDate: replacementDate,
+        replacemntDate: replacmentDate,
+        location:location,
+        coursename:coursename
 });
 newRequest.save()
 const name=sender.name;
 const newNotificatin = new Notification({
   reciever: rec,
-  message:name+" "+senderId+" has send you a replacement Request"
+  message:name+" "+senderId+" has send you a replacment Request"
 
 });
 newNotificatin.save();
 return res.send({ data: newRequest  });
   }
 if(type=='Change DayOff') {
-  const faculty=sender.faculty;
-  var rec;
-  var found=false
-  i=0;
-  while(!found){
-    if(faculty.departments[i]==sender.departement){
-      found=true;
-      rec=faculty.departments[i].HOD
-    }
-    i+=1;
-  }
+  //TODO to be changed
+  const department =sender.department;
+  const rec=department.HOD
+  
   const newDayOff=req.body.newDayOff;
   const currentDayOff=req.sender.currentDayOff;
   if(!newDayOff || !currentDayOff){
@@ -72,7 +85,8 @@ if(type=='Change DayOff') {
 }
 const newRequest= new Request({
   //TODO a4eel el sender
-  senderId:senderId,
+  sender:senderId,
+  reciever:rec,
   type:type,
   newDayOff:newDayOff,
   currentDayOff:currentDayOff
@@ -88,24 +102,50 @@ const name=sender.name;
 return res.send({ data: newRequest  });
 
   }
-if(type=='Leave Request') {
-  const faculty=sender.faculty;
-  var rec;
-  found=false
-  i=0;
-  while(!found){
-    if(faculty.departments[i]==sender.departement){
-      found=true;
-      rec=faculty.departments[i].HOD
-    }
-    i+=1;
+  if(type=='Slot Request') {
+  const coursename=req.body.course;
+  const course=await Course.findOne({name:coursename});
+  const rec=course.courseCoordinator;
+  const date=new Date(Date.parse(req.body.date)); 
+  const locationType=req.body.locationType;
+  if(!course || !date || !locationType){
+    return res.send({ error: 'please enter all data' });
   }
+  const courses=sender.courses
+  var f2;
+  for(i=0; i<courses.length;i++){
+  if( courses[i].name==coursename){
+    
+    f2=true;
+ }
+ if(!f2){
+  return res.send({ error: 'please enter correct course name' });
+ }
+
+const newRequest = new Request({
+        //TODO a4eel el sender
+        sender: sender,
+        reciever: rec,
+        type: type,
+        coursename:coursename,
+        date:date,
+       locationType:locationType
+        
+});
+newRequest.save()
+return res.send({ data: newRequest  });
+  }}
+if(type=='Leave Request') {
+  const department =sender.department;
+  const rec=department.HOD
+ 
+  
   const leaveType=req.body.leaveType;
   if(!leaveType){
     return res.send({ error: 'please enter all data' });
   }
   if(leaveType=="Sick"){
-  const  SickDayDate=req.body.SickDayDate;
+  const  SickDayDate=new Date(Date.parse(req.body.SickDayDate)); 
   var reason=req.body.reason;
 if(!reason){
   reason="";
@@ -113,11 +153,37 @@ if(!reason){
    if(! SickDayDate){
     return res.send({ error: 'please enter all data' });
    } 
-   //TODO a5od function date mn reem
-    // if(SickDayDate-Date.now>3){
-    // return res.send({ error: 'not accepted you have exceeded max number of days' });
-// } 
- const document=req.body.document;
+
+   
+var flag=false;
+  
+  if(SickDayDate.getFullYear()==Date.now().getFullYear()){
+    if(SickDayDate.getMonth()==Date.now().getMonth()){
+      if(SickDayDate.getDate()-Date.now().getDate()<=3){
+        flag= true; //Ican accept annual leave
+      }
+    }
+    if(SickDayDate.getMonth()>Date.now().getMonth()){
+      var daysInCurrentMonth=new Date(Date.now().getFullYear(), Date.now().getMonth(), 0).getDate();
+      if(daysInCurrentMonth-SickDayDate.getDate()+Date.now().getDate<=3){
+ flag= true;
+      }
+   
+    }
+  }
+  if(SickDayDate.getFullYear()>Date.now().getFullYear()){
+     var daysInCurrentMonth=new Date(Date.now().getFullYear(), Date.now().getMonth(), 0).getDate();
+      if(daysInCurrentMonth-SickDayDate.getDate()+Date.now().getDate<=3){
+flag= true;
+      }
+    
+    
+  }
+if(!flag){
+  return res.send({ error: 'Sorry you Cannot submit this Request' });
+} 
+
+const document=req.body.document;
   if(!document ){
     return res.send({ error: 'please enter all data' });
   } 
@@ -144,7 +210,7 @@ if(leaveType=="Compensation"){
       return res.send({ error: 'please enter all data' });
     }
     var flag=false;
-    //TODO yb2o nafs el month
+    
   if(LeaveDate.getFullYear()<CompensationDate.getFullYear()){
     if(LeaveDate.getMonth()+1==12 && CompensationDate.getMonth()+1==1){
       if(LeaveDate.getDate>11 &&CompensationDate.getDate<10 ){
@@ -167,8 +233,51 @@ if(leaveType=="Compensation"){
   if(!flag){
    return res.send({ error: 'Sorry you Cannot submit this Request' });
   }
-  const record=await AttendanceRecordSchema.findOne({date:CompensationDate});
-  if(record.day!=sender.dayOff){
+  const AttendanceRecord=sender.attendanceRecords;
+  var record;
+  var f3;
+  for(i=0; i<AttendanceRecord.length;i++){
+   if( AttendanceRecord[i].date==CompensationDate){
+    record=AttendanceRecord[i].date;
+    f3=true;
+}
+
+  }
+  
+  var recordDay=record.day
+  
+  switch(recordDay) {
+  case "1":
+    // 
+    recordDay="Monday";
+    break;
+  case "2":
+    recordDay="Tuesday";
+    // code block
+    break;
+    case "3":
+  recordDay="Wednesday";
+    // code block
+    break;
+      case "4":
+      recordDay="Thursday";     
+    // code block
+    break;
+      case "5":
+        recordDay="Friday";
+    // code block
+    break;
+      case "6":
+        recordDay="Saturday"; 
+    // code block
+    break;
+      case "7":  
+      recordDay="Sunday";
+    // code block
+    break;
+}
+
+  if(recordDay!=sender.dayOff){
   return res.send({ error: 'Sorry you Cannot submit this Request' });
   }
   // search in his requests that there is no compansation    request of the same day
@@ -207,13 +316,12 @@ if(!reason){
 } 
     //should be submitted before targeted day
     const AnnualLeaveDate=new Date(Date.parse(req.body.CompensationDate));
-    var TAID=req.body.TAID;
+    const replacmentArray=[Replacment];
+    //var TAID=req.body.TAID;
     if(!AnnualLeaveDate){
     return res.send({ error: 'please enter all data' });
     }
-    if(!TAID){
-      TAID="";
-    }
+    
     var flag=false;
     
   if(AnnualLeaveDate.getFullYear()==Date.now().getFullYear()){
@@ -241,7 +349,7 @@ if(!flag){
         type: type,
         leavetype: leaveType,
         AnnualLeaveDate:AnnualLeaveDate,
-        TAID:TAID,
+        replacments:replacmentArray,
         reason:reason
       
 });
@@ -311,4 +419,33 @@ catch (err) {
         return res.send({ err: err });
     }
 
+}
+
+
+exports.viewmyReequests = async function (req, res) {
+  try{ 
+  senderID=req.user.gucID;
+  
+  var searchQuery = {senderID:senderID}; //or something specific  
+  var Array = [];
+
+
+Request
+  .find(searchQuery)
+  .exec()
+  .then(function(requests){
+      //here you can assign result value to your variable
+      //but this action is useless as you are working with results directly
+      Array = requests ;
+      return res.send({ data:requests});
+  })
+  .onReject(function(err){
+     res.send({ err: err }); //or something else
+  });
+  
+  }
+  catch (err) {
+        console.log('~ err', err);
+        return res.send({ err: err });
+    }
 }
