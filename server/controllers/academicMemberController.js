@@ -6,6 +6,7 @@ const StaffMember = require('./../models/StaffMember');
 // TODO: Import all the models after db connection
 const Course = require('./../models/Course');
 const Location = require('./../models/Location');
+const Faculty = require('./../models/Faculty');
 
 // General Error Messages
 const errorMsgs = {
@@ -62,8 +63,14 @@ const courseInstructorController = {
         type: 'Academic Member',
         role: 'Course Instructor',
       })
-        .populate('courses.course')
-        .populate('courses.slots.location');
+        .populate({
+          path: 'courses.course',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses.course',
+          populate: { path: 'slots.isAssigned' },
+        });
 
       // Case: instructor not found
       if (!instructor)
@@ -71,10 +78,10 @@ const courseInstructorController = {
           message: errorMsgs.notFound('instructor', req.params.instructorId),
         });
 
-      // Case: instructor does not have any slots
+      // Case: instructor does not have any courses
       if (instructor.courses.length === 0)
         return res.status(200).send({
-          data: errorMsgs.notAssigned('slots', 'instructor'),
+          data: errorMsgs.notAssigned('courses', 'instructor'),
         });
 
       // Case: success
@@ -83,12 +90,17 @@ const courseInstructorController = {
           return {
             course_name: course.name,
             course_slots: course.slots
-              .filter((slot) => slot.isAssigned._id === instructor._id) // Get all the courses of the instructor
+              .filter(
+                (slot) => `${slot.isAssigned._id}` === `${instructor._id}`
+              ) // Get the slots of the current instructor
               .map(({ day, time, location }) => {
                 // Map them to only send back the day, time, location
                 return {
                   day: day,
-                  time: `${time.getHours()}:${time.getMinutes()}`,
+                  time: `${
+                    time.toLocaleString('en-EG').split(',')[1].trim() ||
+                    time.getHours() + ':' + time.getMinutes()
+                  }`,
                   location: location['location'],
                 };
               }),
