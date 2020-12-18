@@ -12,8 +12,14 @@ const StaffMember = require('./models/StaffMember');
 const Location = require('./models/Location');
 
 //Require Route Handlers
-const staffMembers = require('./routes/staffMembers');
+const attendances = require('./routes/attendances');
+const courses = require('./routes/courses');
+const departments = require('./routes/departments');
+const faculties = require('./routes/faculties');
 const locations = require('./routes/locations');
+const slots = require('./routes/slots');
+const staffMembers = require('./routes/staffMembers');
+
 
 // Create the app
 const app = express();
@@ -24,6 +30,7 @@ app.use(cors());
 
 //Getting Mongo's connection URI
 const db = require('./config/keys').mongoURI;
+const { cpuUsage } = require("process");
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -49,8 +56,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // TODO: use "routes"
-app.use('/staffMembers', staffMembers);
+app.use('/attendances', attendances);
+app.use('/courses', courses);
+app.use('/departments', departments);
+app.use('/faculties', faculties);
 app.use('/locations', locations);
+app.use('/slots', slots);
+app.use('/staffMembers', staffMembers);
 
 // const locX = new Location({
 //   type: 'Office',
