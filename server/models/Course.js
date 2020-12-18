@@ -12,12 +12,7 @@ const CourseSchema = new Schema({
   courseCoordinator: {
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
-    required: true,
     unique: true,
-    validate: [
-      (v) => v.type === 'Academic Member' && v.role === 'Teaching Assistant',
-      'Course Coordinator can only be a Teaching Assistant',
-    ],
   },
   department: {
     type: Department,

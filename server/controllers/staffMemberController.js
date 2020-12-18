@@ -158,7 +158,6 @@ exports.updateStaff = async function (req, res) {
         const gucId = req.body.gucId;
         const name = req.body.name;
         const dayOff = req.body.dayOff;
-        const salary = req.body.salary;
         const role = req.body.role;
         const leaveBalance = req.body.leaveBalance;
         const officeLocation = req.body.officeLocation;
@@ -186,13 +185,13 @@ exports.updateStaff = async function (req, res) {
                 if (locResult.error) return res.send(locResult);
                 else newStaff.officeLocation = locResult;
             }
-            if (faculty && department && newStaff.type === 'Academic Member') {
+            if (faculty && department && newStaff.type === 'HR') {
                 const facultyResult = await facultyHelper(faculty);
 
                 if (facultyResult.error) return res.send(facultyResult);
                 else newStaff.faculty = facultyResult;
             }
-            if (department && newStaff.type === 'Academic Member') newStaff.department = department
+            if (department && newStaff.type === 'HR') newStaff.department = department
             else newStaff.department = undefined
         }
 
