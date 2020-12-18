@@ -7,6 +7,8 @@ const tokenKey = require('../config/keys').secretOrKey;
 const StaffMember = require('../models/StaffMember');
 const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
+const Department = require('../models/Department');
+
 
 async function locationHelper(officeLocation) {
     //check if room is found
@@ -38,6 +40,16 @@ async function facultyHelper(facultyName) {
     if (!refFaculty) return { error: 'Sorry Faculty not found' };
 
     return refFaculty;
+}
+
+async function departmentHelper(relatedFaculty, depName) {
+    //check if department is found
+    const faculty = await Faculty.findOne({ faculty: relatedFaculty, is_deleted: { $ne: true } })
+
+    const refDepartment = await Department.findOne({ faculty: faculty.name, name: depName, is_deleted: { $ne: true } }).populate('faculty')
+    if (!refDepartment) return { error: 'Sorry Department not found' };
+
+    return refDepartment;
 }
 
 exports.registerStaff = async function (req, res) {
@@ -91,7 +103,10 @@ exports.registerStaff = async function (req, res) {
                     if (facultyResult.error) return res.send(facultyResult);
                     else foundMail.faculty = facultyResult;
 
-                    foundMail.department = department;
+                    const departmentResult = await departmentHelper(faculty, department);
+
+                    if (departmentResult.error) return res.send(departmentResult);
+                    else foundMail.department = departmentResult;
                 }
                 else {
                     foundMail.dayOff = 'Saturday';
@@ -116,7 +131,11 @@ exports.registerStaff = async function (req, res) {
             if (facultyResult.error) return res.send(facultyResult);
             else req.body.faculty = facultyResult;
 
-            req.body.department = department;
+
+            const departmentResult = await departmentHelper(faculty, department);
+
+            if (departmentResult.error) return res.send(departmentResult);
+            else req.body.department = departmentResult;
         }
         else {
             req.body.dayOff = 'Saturday';
@@ -165,7 +184,6 @@ exports.updateStaff = async function (req, res) {
         const department = req.body.department;
 
 
-
         if (!gucId) return res.send({ error: 'Please enter the GUC-ID ' });
 
         const newStaff = await StaffMember.findOne({
@@ -185,14 +203,18 @@ exports.updateStaff = async function (req, res) {
                 if (locResult.error) return res.send(locResult);
                 else newStaff.officeLocation = locResult;
             }
-            if (faculty && department && newStaff.type === 'HR') {
+            if (faculty && department && newStaff.type === 'Academic Member') {
                 const facultyResult = await facultyHelper(faculty);
 
                 if (facultyResult.error) return res.send(facultyResult);
                 else newStaff.faculty = facultyResult;
-            }
-            if (department && newStaff.type === 'HR') newStaff.department = department
-            else newStaff.department = undefined
+            } else newStaff.faculty = undefined
+            if (department && newStaff.type === 'Academic Member') {
+                const departmentResult = await departmentHelper(newStaff.faculty, department);
+
+                if (departmentResult.error) return res.send(departmentResult);
+                else foundMail.department = departmentResult;
+            } else newStaff.department = undefined
         }
 
         const updatedStaff = await newStaff.save();

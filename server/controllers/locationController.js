@@ -88,7 +88,7 @@ exports.deleteRoom = async function (req, res) {
         if (!room)
             return res.send({ error: "No room with this location is found" })
 
-        const room = await Location.findOneAndDelete({ location: location });
+        const deleted = await Location.findOneAndDelete({ location: location });
         return res.send({ data: "Room deleted successfully" })
 
     } catch (err) {

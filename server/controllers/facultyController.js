@@ -1,30 +1,26 @@
 const ObjectId = require('mongoose').Types.ObjectId;
-// const { handleError } = require("../utils/handleError");
-const objectId = require('mongoose').Types.ObjectId;
 
-const StaffMember = require('../models/StaffMember');
 const Faculty = require('../models/Faculty');
 
 exports.addFaculty = async function (req, res) {
     try {
+        const code = req.body.code;
         const name = req.body.name;
 
-        if (!name)
-            return res.send({ error: "Please enter the name of the faculty" });
+        if (!name || !code)
+            return res.send({ error: "Please enter all details" });
 
-        const facultyFound = await Faculty.findOne({ name: name })
-        if (facultyFound) {
-            if (facultyFound.is_deleted === false)
-                return res.send({ error: "Sorry there is another faculty with the same name" });
-            else {
-                facultyFound.is_deleted = false;
-                facultyFound.departments = [];
-                const facultyCreated = await facultyFound.save();
-                return res.send({ data: facultyCreated });
-            }
-        }
+        let facultyFound = await Faculty.findOne({ code: code })
+        if (facultyFound)
+            return res.send({ error: "Sorry there is another faculty with the same code" });
+
+        facultyFound = await Faculty.findOne({ name: name })
+        if (facultyFound)
+            return res.send({ error: "Sorry there is another faculty with the same name" });
+
 
         const newFaculty = {
+            code: code,
             name: name,
             departments: [],
         }
@@ -39,19 +35,18 @@ exports.addFaculty = async function (req, res) {
 
 exports.updateFaculty = async function (req, res) {
     try {
+        const code = req.body.code;
         const name = req.body.name;
         const newName = req.body.newName;
 
-        if (!name || !newName)
+        if (!code || !name || !newName)
             return res.send({ error: "Please enter all details" });
 
-        const facultyFound = await Faculty.findOne({ name: name, is_deleted: false });
+        const facultyFound = await Faculty.findOne({ code: code, });
         if (!facultyFound)
-            return res.send({ error: "No faculty with this name" });
+            return res.send({ error: "No faculty with this code" });
 
-        const nameFacultyFound = await Faculty.findOne({ name: newName, is_deleted: false });
-        if (nameFacultyFound)
-            return res.send({ error: "Sorry there is a another faculty with this name" });
+        const nameFacultyFound = await Faculty.findOne({ name: newName });
 
         facultyFound.name = newName;
 
@@ -65,308 +60,17 @@ exports.updateFaculty = async function (req, res) {
 
 exports.deleteFaculty = async function (req, res) {
     try {
-        const name = req.body.name;
+        const code = req.body.code;
 
-        if (!name)
-            return res.send({ error: "Please enter the name of the faculty" });
+        if (!code)
+            return res.send({ error: "Please enter the code of the faculty" });
 
-        const facultyFound = await Faculty.findOne({ name: name, is_deleted: false });
+        const facultyFound = await Faculty.findOne({ code: code });
         if (!facultyFound)
-            return res.send({ error: "Sorry no faculty with this name" });
+            return res.send({ error: "Sorry no faculty with this code" });
 
-        facultyFound.is_deleted = true;
-
-        await facultyFound.save();
+        await Faculty.findOneAndDelete({ code: code });
         return res.send({ data: "Faculty deleted successfully " });
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-exports.addDepartment = async function (req, res) {
-    try {
-        const { faculty, name, HOD } = req.body;
-
-        //all data entered
-        if (!faculty || !name)
-            return res.send({ error: "Please enter all details" });
-
-        //faculty found? 
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false })
-        if (!facultyFound || facultyFound.is_deleted === true)
-            return res.send({ error: "No faculty with this name" });
-
-        let staffMember;
-        if (HOD) {
-            // staff found? 
-            staffMember = (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
-            if (!staffMember || staffMember.is_deleted)
-                return res.send({ error: "No staff member with this ID" });
-
-            //staff is not TA and not HR 
-            if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-                return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
-
-            if (!(staffMember.faculty.equals(facultyFound._id)))
-                return res.send({ error: "Sorry Head of the department should be of the same faculty" });
-
-            const allDep = facultyFound.departments
-            for (var i in allDep) {
-                if (allDep[i].HOD.equals(staffMember._id)) {
-                    return res.send({ error: "Sorry this staff is a HOD of another department" });
-                }
-            }
-        } else {
-            staffMember = undefined;
-        }
-
-        const allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].name === name) {
-                return res.send({ error: "Sorry this name is of another department" });
-            }
-        }
-
-        const department = {
-            name: name,
-            HOD: staffMember,
-            Courses: []
-        }
-
-        facultyFound.departments.push(department);
-        const newFaculty = await facultyFound.save();
-
-        return res.send({ data: newFaculty });
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-exports.updateDepartment = async function (req, res) {
-    try {
-        const { faculty, department, HOD } = req.body;
-
-        //all data entered
-        if (!faculty || !department || !HOD)
-            return res.send({ error: "Please enter all details" });
-
-        //faculty found? 
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false })
-        if (!facultyFound || facultyFound.is_deleted === true)
-            return res.send({ error: "No faculty with this name" });
-
-        // staff found? 
-        const staffMember = await (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
-        if (!staffMember || staffMember.is_deleted)
-            return res.send({ error: "No staff member with this ID" });
-
-        //staff is not TA and not HR 
-        if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-            return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
-
-        //staff of the same faculty?
-        if (!(staffMember.faculty.equals(facultyFound._id)))
-            return res.send({ error: "Sorry Head of the department should be of the same faculty" });
-
-
-        let found = false;
-        let allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].HOD.equals(staffMember._id)) {
-                return res.send({ error: "Sorry this staff is a HOD of another department" });
-            }
-
-            if (allDep[i].name === department && allDep[i].is_deleted == false) {
-                found = true;
-                facultyFound.departments[i].HOD = staffMember;
-
-                const updatedHOD = await facultyFound.save();
-                return res.send({ data: updatedHOD });
-            }
-        }
-
-        if (!found)
-            return res.send({ error: "Sorry No department with this name" });
-
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-exports.deleteDepartment = async function (req, res) {
-    try {
-        const faculty = req.body.faculty;
-        const department = req.body.department;
-
-        if (!faculty || !department)
-            return res.send({ error: "Please enter all details" });
-
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false });
-        if (!facultyFound)
-            return res.send({ error: "Sorry no department with this name" });
-
-        let found = false;
-        let allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].name == department && allDep[i].is_deleted == false) {
-                found = true;
-                facultyFound.departments[i].is_deleted = true;
-                await facultyFound.save();
-                return res.send({ data: "Department deleted successfully " });
-            }
-        }
-
-        if (!found)
-            return res.send({ error: "Sorry no department with this name" });
-
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-
-exports.addCourse = async function (req, res) {
-    try {
-        const { faculty, department, courseName } = req.body;
-
-        //all data entered
-        if (!faculty || !name)
-            return res.send({ error: "Please enter all details" });
-
-        //faculty found? 
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false })
-        if (!facultyFound || facultyFound.is_deleted === true)
-            return res.send({ error: "No faculty with this name" });
-
-        let staffMember;
-        if (HOD) {
-            // staff found? 
-            staffMember = (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
-            if (!staffMember || staffMember.is_deleted)
-                return res.send({ error: "No staff member with this ID" });
-
-            //staff is not TA and not HR 
-            if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-                return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
-
-            if (!(staffMember.faculty.equals(facultyFound._id)))
-                return res.send({ error: "Sorry Head of the department should be of the same faculty" });
-
-            const allDep = facultyFound.departments
-            for (var i in allDep) {
-                if (allDep[i].HOD.equals(staffMember._id)) {
-                    return res.send({ error: "Sorry this staff is a HOD of another department" });
-                }
-            }
-        } else {
-            staffMember = undefined;
-        }
-
-        const allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].name === name) {
-                return res.send({ error: "Sorry this name is of another department" });
-            }
-        }
-
-        const department = {
-            name: name,
-            HOD: staffMember,
-            Courses: []
-        }
-
-        facultyFound.departments.push(department);
-        const newFaculty = await facultyFound.save();
-
-        return res.send({ data: newFaculty });
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-exports.updateDepartment = async function (req, res) {
-    try {
-        const { faculty, department, HOD } = req.body;
-
-        //all data entered
-        if (!faculty || !department || !HOD)
-            return res.send({ error: "Please enter all details" });
-
-        //faculty found? 
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false })
-        if (!facultyFound || facultyFound.is_deleted === true)
-            return res.send({ error: "No faculty with this name" });
-
-        // staff found? 
-        const staffMember = await (await StaffMember.findOne({ gucId: HOD, is_deleted: false })).populate();
-        if (!staffMember || staffMember.is_deleted)
-            return res.send({ error: "No staff member with this ID" });
-
-        //staff is not TA and not HR 
-        if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-            return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
-
-        //staff of the same faculty?
-        if (!(staffMember.faculty.equals(facultyFound._id)))
-            return res.send({ error: "Sorry Head of the department should be of the same faculty" });
-
-
-        let found = false;
-        let allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].HOD.equals(staffMember._id)) {
-                return res.send({ error: "Sorry this staff is a HOD of another department" });
-            }
-
-            if (allDep[i].name === department && allDep[i].is_deleted == false) {
-                found = true;
-                facultyFound.departments[i].HOD = staffMember;
-
-                const updatedHOD = await facultyFound.save();
-                return res.send({ data: updatedHOD });
-            }
-        }
-
-        if (!found)
-            return res.send({ error: "Sorry No department with this name" });
-
-    } catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
-    }
-}
-
-exports.deleteDepartment = async function (req, res) {
-    try {
-        const faculty = req.body.faculty;
-        const department = req.body.department;
-
-        if (!faculty || !department)
-            return res.send({ error: "Please enter all details" });
-
-        const facultyFound = await Faculty.findOne({ name: faculty, is_deleted: false });
-        if (!facultyFound)
-            return res.send({ error: "Sorry no department with this name" });
-
-        let found = false;
-        let allDep = facultyFound.departments
-        for (var i in allDep) {
-            if (allDep[i].name == department && allDep[i].is_deleted == false) {
-                found = true;
-                facultyFound.departments[i].is_deleted = true;
-                await facultyFound.save();
-                return res.send({ data: "Department deleted successfully " });
-            }
-        }
-
-        if (!found)
-            return res.send({ error: "Sorry no department with this name" });
-
     } catch (err) {
         console.log('~ err', err);
         return res.send({ err: err });

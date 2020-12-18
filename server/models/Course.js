@@ -4,18 +4,18 @@ const Schema = mongoose.Schema;
 const Slot = require('./schemas/Slot');
 
 const CourseSchema = new Schema({
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: 'Department',
+  },
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   courseCoordinator: {
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
-    unique: true,
-  },
-  department: {
-    type: String,
-    required: true,
   },
   slots: [Slot],
   coverage: {
