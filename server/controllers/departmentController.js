@@ -3,6 +3,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const StaffMember = require('../models/StaffMember');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
+const Course = require('../models/Course');
 
 
 exports.addDepartment = async function (req, res) {
@@ -137,3 +138,213 @@ exports.deleteDepartment = async function (req, res) {
         return res.send({ err: err });
     }
 }
+
+// ============> HOD functionalities <=================
+
+// to get the staff members of a certain department
+exports.getAllStaffMembers = async (req, res) => {
+    try {
+      let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+      let departmentFound = await Department.findOne({
+        name: req.params.departmentName,
+      }).populate();
+  
+      // if there's no department found
+      if (!departmentFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No department found with this name ${req.params.departmentName}`,
+          });
+      }
+      // if this department has different HOD
+      if (!HOD._id.equals(departmentFound.HOD)) {
+        return res.send({
+          error: "Sorry, you don't have access to view this department",
+        });
+      }
+  
+      // case success
+      const staffMembers = await StaffMember.find({
+        type: { $in: ["Academic Member"] },
+        department: departmentFound._id,
+      });
+  
+      return res.status(200).send({
+        data: staffMembers,
+      });
+    } catch (err) {
+      return res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+};
+  
+  exports.getStaffMembersPerCourse = async (req, res) => {
+    try {
+      let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+      let departmentFound = await Department.findOne({
+        name: req.params.departmentName,
+      }).populate();
+      let courseFound = await Course.findOne({
+        name: req.params.course,
+      }).populate();
+  
+      // if there's no department found
+      if (!departmentFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No department found with this name ${req.params.departmentName}`,
+          });
+      }
+      // if this department has different HOD
+      if (!HOD._id.equals(departmentFound.HOD)) {
+        return res.send({
+          error: "Sorry, you don't have access to view this department",
+        });
+      }
+  
+      // if no course found
+      if (!courseFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No course found with this name ${req.params.course}`,
+          });
+      }
+  
+      // case success
+      const staffMembers = await StaffMember.find({
+        type: { $in: ["Academic Member"] },
+        department: departmentFound._id,
+        courses: courseFound,
+      });
+  
+      return res.status(200).send({
+        data: staffMembers,
+      });
+    } catch (err) {
+      return res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+  };
+  
+  // view day off for all staff members of this department
+  exports.viewDayOff = async (req, res) => {
+    try {
+      let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+      let departmentFound = await Department.findOne({
+        name: req.params.departmentName,
+      }).populate();
+  
+      // if there's no department found
+      if (!departmentFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No department found with this name ${req.params.departmentName}`,
+          });
+      }
+      // if this department has different HOD
+      if (!HOD._id.equals(departmentFound.HOD)) {
+        return res.send({
+          error: "Sorry, you don't have access to view this department",
+        });
+      }
+  
+      const staffMembers = await StaffMember.find({
+        type: { $in: ["Academic Member"] },
+        department: departmentFound._id,
+      });
+      return res.status(200).send({
+        data: staffMembers.map((staffMember) => {
+          return {
+            name: staffMember.name,
+            dayOff: staffMember.dayOff,
+          };
+        }),
+      });
+    } catch (err) {
+      return res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+  };
+  
+  exports.viewDayOffStaff = async (req, res) => {
+    try {
+      let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+      let departmentFound = await Department.findOne({
+        name: req.params.departmentName,
+      }).populate();
+  
+      // if there's no department found
+      if (!departmentFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No department found with this name ${req.params.departmentName}`,
+          });
+      }
+      // if this department has different HOD
+      if (!HOD._id.equals(departmentFound.HOD)) {
+        return res.send({
+          error: "Sorry, you don't have access to view this department",
+        });
+      }
+  
+      const staffMember = await StaffMember.findOne({
+        type: { $in: ["Academic Member"] },
+        gucId: req.params.idStaff,
+        department: departmentFound._id,
+      });
+  
+      // case no staff member found
+      if (!staffMember) {
+        return res.status(404).send({
+          message: `No staff member found with this id`,
+        });
+      }
+  
+      return res.status(200).send({
+        data: { dayOff: staffMember.dayOff, name: staffMember.name },
+      });
+    } catch (err) {
+      return res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+  };
+  
+  // view the course coverage of each course
+  exports.viewCourseCoverage = async (req, res) => {
+    try {
+      let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+      let departmentFound = await Department.findOne({
+        name: req.params.departmentName,
+      }).populate();
+      // if there's no department found
+      if (!departmentFound) {
+        return res
+          .status(404)
+          .send({
+            message: `No department found with this name ${req.params.departmentName}`,
+          });
+      }
+      // if this department has different HOD
+      if (!HOD._id.equals(departmentFound.HOD)) {
+        return res.send({
+          error: "Sorry, you don't have access to view this department",
+        });
+      }
+  
+      let courses = await Course.find({ department: departmentFound._id });
+
+      // if no courses found for this department
+      if(!courses) {
+        return res.send({
+            error: "No courses found for this department",
+        });
+      }
+
+      return res.status(200).send({
+        data: courses,
+      });
+    } catch (err) {
+      res.status(500).send({ message: `Internal Server Error: ${err}` });
+    }
+  };

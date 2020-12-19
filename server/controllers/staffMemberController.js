@@ -44,9 +44,9 @@ async function facultyHelper(facultyName) {
 
 async function departmentHelper(relatedFaculty, depName) {
     //check if department is found
-    const faculty = await Faculty.findOne({ faculty: relatedFaculty, is_deleted: { $ne: true } })
+    const faculty = await Faculty.findOne({ name: relatedFaculty, is_deleted: { $ne: true } })
 
-    const refDepartment = await Department.findOne({ faculty: faculty.name, name: depName, is_deleted: { $ne: true } }).populate('faculty')
+    const refDepartment = await Department.findOne({ faculty: faculty, name: depName, is_deleted: { $ne: true } }).populate('faculty')
     if (!refDepartment) return { error: 'Sorry Department not found' };
 
     return refDepartment;
