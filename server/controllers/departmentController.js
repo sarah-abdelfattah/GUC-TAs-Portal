@@ -342,7 +342,12 @@ exports.getAllStaffMembers = async (req, res) => {
       }
 
       return res.status(200).send({
-        data: courses,
+        data: courses.map((course) => {
+            return {
+                course: course.name,
+                coverage: course.coverage
+            }
+        }),
       });
     } catch (err) {
       res.status(500).send({ message: `Internal Server Error: ${err}` });
