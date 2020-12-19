@@ -15,5 +15,5 @@ router.post("/login", staffMemberController.login);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 
-
+router.post("/changePassword", staffMemberController.changePassword);
 module.exports = router;  

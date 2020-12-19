@@ -2,11 +2,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const passport = require("passport");
-const session = require("express-session");
+// const passport = require("passport");
+// const session = require("express-session");
 const cors = require("cors");
 const path = require("path");
-const methodOverride = require("method-override");
+
+const jwt = require("jsonwebtoken");
+const tokenKey = require('./config/keys').secretOrKey;
+// const methodOverride = require("method-override");
 
 //Require Route Handlers
 const attendances = require('./routes/attendances');
@@ -44,13 +47,30 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log(err));
 
-//Passport
-app.use(passport.initialize());
-app.use(passport.session());
+// //Passport
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // Init middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+
+// app.use("", authRoutes);
+app.use(async (req, res, next) => {
+    try {
+        const token = req.headers.token;
+        if (token == null)
+            return res.sendStatus(401) // there isn't any token
+
+
+        req.user = jwt.verify(token, tokenKey);
+        next();
+    } catch (err) {
+        console.log("~ err", err);
+        res.send({ err: err })
+    }
+});
 
 // TODO: use "routes"
 app.use('/attendances', attendances);
@@ -60,6 +80,8 @@ app.use('/faculties', faculties);
 app.use('/locations', locations);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
+
+
 
 // const locX = new Location({
 //   type: 'Office',
