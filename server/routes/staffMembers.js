@@ -11,7 +11,8 @@ router.put("/staff", staffMemberController.updateStaff);
 router.delete("/staff", staffMemberController.deleteStaff);
 
 //all users
-router.post("/login", staffMemberController.login);
+router.post("/logIn", staffMemberController.login);
+router.post("/logOut", staffMemberController.logout);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 

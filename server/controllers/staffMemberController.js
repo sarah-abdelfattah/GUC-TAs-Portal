@@ -374,7 +374,7 @@ exports.login = async function (req, res) {
 }
 
 exports.logout = async function (req, res) {
-
+    return res.status(200).send({ auth: false, token: null });
 }
 
 exports.changePassword = async function (req, res) {

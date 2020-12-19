@@ -2,14 +2,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-// const passport = require("passport");
-// const session = require("express-session");
 const cors = require("cors");
 const path = require("path");
 
 const jwt = require("jsonwebtoken");
 const tokenKey = require('./config/keys').secretOrKey;
-// const methodOverride = require("method-override");
+
 
 //Require Route Handlers
 const attendances = require('./routes/attendances');
@@ -56,8 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-// app.use("", authRoutes);
-app.use(async (req, res, next) => {
+app.use("", async (req, res, next) => {
     try {
         const token = req.headers.token;
         if (token == null)
