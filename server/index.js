@@ -8,9 +8,6 @@ const cors = require("cors");
 const path = require("path");
 const methodOverride = require("method-override");
 
-const StaffMember = require('./models/StaffMember');
-const Location = require('./models/Location');
-const Request=require('./models/Request');
 //Require Route Handlers
 const attendances = require('./routes/attendances');
 const courses = require('./routes/courses');

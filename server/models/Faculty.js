@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Department = require('./schemas/Department');
+//const Department = require('./schemas/Department');
 
 const FacultySchema = new Schema({
-  name: {
+  code: {
     type: String,
     required: true,
     unique: true,
   },
-  // departments: [Department],
-  is_deleted: {
-    type: Boolean,
-    default: false,
-  },
+  name: {
+    type: String,
+    required: true,
+    unique: true
+  }
 });
 
 module.exports = mongoose.model('Faculty', FacultySchema);

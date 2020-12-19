@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 // Importing needed schemas
 const AttendanceRecord = require('./schemas/AttendanceRecord');
-const Department = require('./schemas/Department');
+//const Department = require('./models/Department');
 
 const StaffMemberSchema = new Schema({
   gucId: {
@@ -76,13 +76,12 @@ const StaffMemberSchema = new Schema({
   faculty: {
     type: Schema.Types.ObjectId,
     ref: 'Faculty',
-    // required: function () {
-    //   return this.type === 'Academic Member';
-    // },
   },
   department: {
-    type: Schema.Types.ObjectId,
+     type: Schema.Types.ObjectId,
     ref: 'Department',
+       
+    
   },
   attendanceRecords: [AttendanceRecord],
   is_deleted: {

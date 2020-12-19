@@ -3,13 +3,13 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const { request } = require('http');
 // const { handleError } = require("../utils/handleError");
 // required models
-const Replacment= require('./schemas/replacment');
+const Replacment= require('../models/schemas/replacment');
 const Request=require('../models/Request');
 const StaffMember = require('../models/StaffMember');
 const Course=require('../models/Course');
-const AttendanceRecordSchema = require('../models/schemas/AttendanceRecord');
+
 const { appendFileSync } = require('fs');
- 
+
 exports.sendRequest = async function (req, res) {
   try{
   
@@ -53,7 +53,7 @@ exports.sendRequest = async function (req, res) {
     if(!f4){
       return res.send({ error: 'this Ta doesnot teach this Course' });
     }
-      
+      const subject=type+" with "+rec.name+" for course " +coursename + " at " + req.body.replacementDate;
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -61,7 +61,8 @@ exports.sendRequest = async function (req, res) {
         type: type,
         replacemntDate: replacmentDate,
         location:location,
-        coursename:coursename
+        coursename:coursename,
+        subject:subject
 });
 newRequest.save()
 const name=sender.name;
@@ -83,13 +84,15 @@ if(type=='Change DayOff') {
   if(!newDayOff || !currentDayOff){
   return res.send({ error: 'please enter all data' });
 }
+const subject=type+" Request from "+ currentDayOff +" to "+newDayOff;
 const newRequest= new Request({
   //TODO a4eel el sender
   sender:senderId,
   reciever:rec,
   type:type,
   newDayOff:newDayOff,
-  currentDayOff:currentDayOff
+  currentDayOff:currentDayOff,
+  subject:subject
 });
 newRequest.save();
 const name=sender.name;
@@ -121,7 +124,7 @@ return res.send({ data: newRequest  });
  if(!f2){
   return res.send({ error: 'please enter correct course name' });
  }
-
+const subject=type+" at "+ req.body.date +"of course "+ coursename;
 const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -129,7 +132,8 @@ const newRequest = new Request({
         type: type,
         coursename:coursename,
         date:date,
-       locationType:locationType
+      locationType:locationType,
+      subject:subject
         
 });
 newRequest.save()
@@ -138,7 +142,7 @@ return res.send({ data: newRequest  });
 if(type=='Leave Request') {
   const department =sender.department;
   const rec=department.HOD
- 
+
   
   const leaveType=req.body.leaveType;
   if(!leaveType){
@@ -187,6 +191,7 @@ const document=req.body.document;
   if(!document ){
     return res.send({ error: 'please enter all data' });
   } 
+  const subject=type+" ("+leaveType +") at " + req.body.SickDayDate;
   const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -195,7 +200,8 @@ const document=req.body.document;
         leavetype: leaveType,
         SickDayDate:SickDayDate,
         document:document,
-        reason:reason
+        reason:reason,
+        subject:subject
 });
 newRequest.save()
 return res.send({ data: newRequest  });
@@ -293,7 +299,7 @@ if(leaveType=="Compensation"){
 return res.send({ error: 'Sorry you Cannot submit this Request' });
 
   }
- 
+   const subject=type+" ("+leaveType +") at " + req.body.CompensationDate;
   const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -302,7 +308,8 @@ return res.send({ error: 'Sorry you Cannot submit this Request' });
         leavetype: leaveType,
         CompensationDate: CompensationDate,
         LeaveDate: LeaveDate,
-        reason:reason
+        reason:reason,
+        subject:subject
 });
 newRequest.save()
 return res.send({ data: newRequest  });
@@ -315,7 +322,7 @@ if(!reason){
   reason="";
 } 
     //should be submitted before targeted day
-    const AnnualLeaveDate=new Date(Date.parse(req.body.CompensationDate));
+    const AnnualLeaveDate=new Date(Date.parse(req.body.AnnualLeaveDat));
     const replacmentArray=[Replacment];
     //var TAID=req.body.TAID;
     if(!AnnualLeaveDate){
@@ -340,7 +347,7 @@ if(!reason){
 if(!flag){
   return res.send({ error: 'Sorry you Cannot submit this Request' });
 }
-
+    const subject=type+" ("+leaveType +") at " + req.body.AnnualLeaveDate;
 
     const newRequest = new Request({
         //TODO a4eel el sender
@@ -350,7 +357,8 @@ if(!flag){
         leavetype: leaveType,
         AnnualLeaveDate:AnnualLeaveDate,
         replacments:replacmentArray,
-        reason:reason
+        reason:reason,
+        subject:subject
       
 });
 newRequest.save()
@@ -366,13 +374,14 @@ if(!reason){
   reason="";
 } 
 const doc=req.body.document;
-if(!doc){
+const startDate=new Date(Date.parse(req.body.startDate));
+if(!doc || !startDate){
 return res.send({ error: 'Please enter all data' }); 
 }
 
 
 
-
+ const subject=type+" ("+leaveType +") at " + req.body.startDate;
 
 
   const newRequest = new Request({
@@ -381,9 +390,10 @@ return res.send({ error: 'Please enter all data' });
         reciever: rec,
         type: type,
         leavetype: leaveType,
-        
+        startDate:startDate,
         document:doc,
-        reason:reason
+        reason:reason,
+        subject:subject
       
 });
 newRequest.save()
@@ -394,15 +404,22 @@ return res.send({ data: newRequest  });
 if(!reason){
   reason="";
 } 
+const AccidentDate=new Date(Date.parse(req.body.AccidentDate));
+if(!AccidentDate){
+  return res.send({ error: 'Please enter all data' }); 
+}
+const subject=type+" ("+leaveType +") at " + req.body.AccidentDate;
+
     const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
         reciever: rec,
         type: type,
         leavetype: leaveType,
-        
-        
-        reason:reason
+        AccidentDate:AccidentDate,
+      
+        reason:reason,
+        subject:subject
       
 });
 newRequest.save()
@@ -435,8 +452,9 @@ Request
   .exec()
   .then(function(requests){
       //here you can assign result value to your variable
-      //but this action is useless as you are working with results directly
-      Array = requests ;
+      //but this action is useless as you are working with results directly 
+      //TODO select date and message b3deen a3ml route gdeed
+      Array = request ;
       return res.send({ data:requests});
   })
   .onReject(function(err){

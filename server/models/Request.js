@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //const Department = require('.models/StaffMember');
-
+const Replacements = require('./schemas/replacment');
 const RequestSchema = new Schema({
   sender: {
       type: Schema.Types.ObjectId,
@@ -29,6 +29,10 @@ const RequestSchema = new Schema({
     type: String,
     required: true,
     enum: [ 'Replacement Request', 'Slot Request' , 'Change DayOff','Leave Request'],
+  },
+  subject:{
+    type: String,
+    required: true,
   }
    //TODO: edit if needed el location based 3ala el slot bt-assigned ezay
 },
