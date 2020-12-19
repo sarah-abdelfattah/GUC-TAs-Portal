@@ -137,7 +137,7 @@ const courseInstructorController = {
         type: 'Academic Member',
         role: 'Course Instructor',
       })
-        // .populate('department')
+        .populate('department')
         .populate({
           path: 'courses.course',
           populate: { path: 'slots.location' },
@@ -245,7 +245,7 @@ const courseInstructorController = {
         gucId: req.body.gucId,
         type: 'Academic Member',
         role: 'Teaching Assistant',
-        // department: instructor.department,
+        department: instructor.department,
       });
 
       // Case: TA not found
