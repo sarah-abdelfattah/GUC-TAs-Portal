@@ -4,7 +4,10 @@ const Schema = mongoose.Schema;
 
 // Importing needed schemas
 const AttendanceRecord = require('./schemas/AttendanceRecord');
+<<<<<<< HEAD
 //const Department = require('./models/Department');
+=======
+>>>>>>> 9df2a365c4b02039dfef4b00a43477eecbbbd65d
 
 const StaffMemberSchema = new Schema({
   gucId: {
@@ -62,15 +65,8 @@ const StaffMemberSchema = new Schema({
   },
   courses: [
     {
-      course: {
-        type: Schema.Types.ObjectId,
-        ref: 'Course',
-      },
-      roleInCourse: {
-        type: 'String',
-        enum: ['Teaching Assistant', 'Course Instructor', 'Course Coordinator'],
-        required: true,
-      },
+      type: Schema.Types.ObjectId,
+      ref: 'Course',
     },
   ],
   faculty: {
