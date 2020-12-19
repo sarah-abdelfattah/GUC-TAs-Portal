@@ -3,9 +3,9 @@ const router = express.Router();
 
 const courseController = require('../controllers/courseController');
 
-//const { auth } = require("../../utils/authentication");
-
-
-router.post("/create", courseController.createCourse);
+//hr
+router.post("/course", courseController.addCourse);
+router.put("/course", courseController.updateCourse);
+router.delete("/course", courseController.deleteCourse);
 
 module.exports = router;  
