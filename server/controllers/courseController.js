@@ -13,17 +13,17 @@ exports.addCourse = async function (req, res) {
             return res.send({ error: "Please enter all details" });
 
         //faculty found? 
-        const facultyFound = await Faculty.findOne({ code: faculty }).populate();
+        const facultyFound = await Faculty.findOne({ code: faculty }).populate('faculty');
         if (!facultyFound)
             return res.send({ error: "No faculty with this name" });
 
         //department found? 
-        const depFound = await Department.findOne({ faculty: facultyFound._id, name: department }).populate();
+        const depFound = await Department.findOne({ faculty: facultyFound._id, name: department }).populate('department');
         if (!depFound)
             return res.send({ error: "No department with this name" });
 
         //course found ?
-        const courseFound = await Course.findOne({ department: depFound._id, name: name }).populate();
+        const courseFound = await Course.findOne({ department: depFound._id, name: name });
         if (courseFound)
             return res.send({ error: "There is another course with this name" });
 
