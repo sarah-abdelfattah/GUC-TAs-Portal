@@ -29,4 +29,7 @@ router.post('/assignInstructor', departmentController.assignInstructor);
 router.put('/assignInstructor', departmentController.updateInstructor);
 router.delete('/assignInstructor', departmentController.deleteInstructor);
 
+// view View teaching assignments (which staff members teach which slots) of course offered by his department.
+router.get('/viewTeachingAssignments/:courseName', departmentController.viewTeachingAssignments);
+
 module.exports = router;  

@@ -627,3 +627,46 @@ exports.deleteInstructor = async function (req, res) {
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 }
+
+
+exports.viewTeachingAssignments = async (req, res) => {
+    try {
+        let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+        let departmentFound = await Department.findOne({
+          _id: req.user.department,
+        }).populate('department');
+    
+        // if there's no department found
+        if (!departmentFound) {
+          return res
+            .status(404)
+            .send({
+              error: `No department found with this id ${req.user.department}`,
+            });
+        }
+        // if this department has different HOD
+        if (!HOD._id.equals(departmentFound.HOD)) {
+          return res.send({
+            error: "Sorry, you don't have access to view this department",
+          });
+        }
+
+        const course = await Course.findOne({
+            department: departmentFound._id,
+            name: req.params.courseName,
+        }).populate('slots.isAssigned');
+
+        let data1 = [];
+        for(let i = 0; i < course.slots.length; i++) {
+            data1.push(course.slots[i].isAssigned);
+        }
+
+        return res.status(200).send({
+            data: data1
+        });
+
+        
+    } catch (err) {
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
+    }
+}

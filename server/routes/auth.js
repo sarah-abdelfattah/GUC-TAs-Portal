@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const Department = require('../models/Department');
 
 exports.HRAuth = async function (req, res, next) {
     if (req.user.type === 'HR') {
@@ -34,6 +35,15 @@ exports.CIAuth = async function (req, res, next) {
 
 exports.CCAuth = async function (req, res, next) {
     if (req.user.type === 'Course Coordinator') {
+        next();
+    } else {
+        return res.sendStatus(401)
+    }
+}
+
+exports.HODAuth = async function (req, res, next) {
+    const department = await Department.findOne({department: req.user.department})
+    if (req.user._id === department.HOD) {
         next();
     } else {
         return res.sendStatus(401)
