@@ -15,6 +15,7 @@ const courses = require('./routes/courses');
 const departments = require('./routes/departments');
 const faculties = require('./routes/faculties');
 const locations = require('./routes/locations');
+const academicMemberRoutes = require('./routes/academicMembers');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
 
@@ -54,7 +55,7 @@ app.use(bodyParser.json());
 
 //seeding
 const dummy = require('./seeding');
-const { find } = require("./models/Token");
+const Tokens = require("./models/Token");
 dummy.seedDB();
 
 
@@ -91,6 +92,7 @@ app.use('/courses', courses);
 app.use('/departments', departments);
 app.use('/faculties', faculties);
 app.use('/locations', locations);
+app.use('/academicMember', academicMemberRoutes);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
 
@@ -145,7 +147,6 @@ app.post('/logOut', async function (req, res) {
 // app.use((req, res) => {
 //     res.status(404).send({ err: 'We can not find what you are looking for' });
 // });
-
 
 //running port
 const port = process.env.PORT || 3000;
