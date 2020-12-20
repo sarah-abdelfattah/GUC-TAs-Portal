@@ -25,15 +25,14 @@ exports.sendRequest = async function (req, res) {
   //let send= await StaffMember.findOne({gucID:senderId }) .populate();
     if(!senderId){
 
-       return res.send({ error: 'feeh 7aga 8alat' });}
-   
-    
+      return res.send({ error: 'feeh 7aga 8alat' });}
+  
     if(!type ){
       
     return res.send({ error: 'please enter all data' });}
     
     if(type=='Replacement Request') {
-       
+    
     const recieverId = req.body.recieverId;
     
     const location=req.body.location;
@@ -573,7 +572,7 @@ catch (err) {
 exports.viewmyReequestsByStatus = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
-  var sender= await StaffMember.find({gucId:senderId}).populate();
+  var sender= await StaffMember.findOne({gucId:senderId}).populate();
   var searchQuery = await Request.find({sender:sender,status:req.params.status}).populate() ;
    
   return res.send({data: searchQuery  }); 
@@ -589,7 +588,7 @@ catch (err) {
 exports.viewmyReequestsByType = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
-  var sender= await StaffMember.find({gucId:senderId}).populate();
+  var sender= await StaffMember.findOne({gucId:senderId}).populate();
   var searchQuery = await Request.find({sender:sender,type:req.params.type}).populate() ;
    
   return res.send({data: searchQuery  }); 
@@ -602,15 +601,75 @@ catch (err) {
 
 
 }
+exports.viewRecievedReplacementRequest= async function (req, res) {
+  try{
+  var  recId=req.user.gucId;
+  var rec= await StaffMember.findOne({gucId:recId}).populate();
+////if(!req.params){
+
+var searchQuery = await Request.find({reciever:rec , type:'Replacement Request'}).populate()   
+ 
+  return res.send({data: searchQuery }); 
+
+   }
+ 
+ catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+}
+exports.viewRecievedRequest=  async function (req, res) {
+  try{ 
+    var  recId=req.user.gucId;
+    var rec= await StaffMember.findOne({gucId:recId}).populate();
+    var searchQuery = await Request.find({reciever:rec , type:req.params.type}).populate()  ;
+    return res.send({data: searchQuery }); 
+}
+    catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    } 
+}
+exports.viewSlotRequest =  async function (req, res) {
+  try{
+    var  recId=req.user.gucId;
+    var rec= await StaffMember.findOne({gucId:recId}).populate();
+    var searchQuery = await Request.find({reciever:rec , type:'Slot Request'}).populate()  ;
+    return res.send({data: searchQuery }); 
+}
+    catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    } 
+}
+exports.viewNotification =  async function (req, res) {
+  try{
+  var  recId=req.user.gucId;
+  var rec= await StaffMember.findOne({gucId:recId}).populate();
+
+var searchQuery = await Notification.find({reciever:rec}).populate()  //or something 
+  return res.send({data: searchQuery.map((Notification)=>{
+    return{
+      Notification:Notification.message
+    } 
+   })
+   }); 
+  }
+    catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    } 
+}
 exports.viewmyReequests = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
-  var sender= await StaffMember.find({gucId:senderId}).populate();
+  var sender= await StaffMember.findOne({gucId:senderId}).populate();
 ////if(!req.params){
 
 var searchQuery = await Request.find({sender:sender}).populate()  //or something  
 //var Arr=[];
-  // for(i=0;i<searchQuery.length;i++){
+  // for(i=0;i<searchQuery.length;i++){ 
   // Arr[i]=searchQuery[i].subject
   // } 
   return res.send({data: searchQuery }); 
@@ -627,8 +686,5 @@ var searchQuery = await Request.find({sender:sender}).populate()  //or something
     catch (err) {
         console.log(err)
         return res.send({ err: err })
-    }
-
- 
-
+    } 
 }
