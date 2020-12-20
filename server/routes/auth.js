@@ -42,8 +42,8 @@ exports.CCAuth = async function (req, res, next) {
 }
 
 exports.HODAuth = async function (req, res, next) {
-    const department = await Department.findOne({department: req.user.department})
-    if (req.user._id === department.HOD) {
+    const department = await Department.findOne({HOD: req.user.gucId})
+    if (department) {
         next();
     } else {
         return res.sendStatus(401)
