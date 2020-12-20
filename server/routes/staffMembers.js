@@ -19,4 +19,7 @@ router.post("/changePassword", staffMemberController.changePassword);
 router.put("/profile", staffMemberController.updateProfile);
 router.get("/profile", staffMemberController.getProfile);
 
+router.put("/hr/updateSalary", auth.HRAuth,staffMemberController.updateSalary);
+router.get('/ac/viewMySchedule',auth.AcademicMemberAuth,staffMemberController.viewMySchedule);
+
 module.exports = router;  
