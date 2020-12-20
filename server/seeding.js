@@ -133,4 +133,32 @@ exports.seedDB = async function () {
         await StaffMember.create(newTA);
         console.log("Seeded newTA into DB")
     }
+
+    const TAmemWithCourse = await StaffMember.findOne({ gucId: 'AC-3' });
+    if (!TAmemWithCourse) {
+        const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
+        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
+        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
+        const getCourse = await (await Course.findOne({ name: 'seeded Course' })).populate('course');
+
+        const newTA = {
+            gucId: 'AC-3',
+            name: 'seeded TA2',
+            gender: 'male',
+            email: 'ta2@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 1000,
+            officeLocation: tempLoc,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            attendanceRecords: [],
+            lastLogIn: undefined,
+            faculty: getFac,
+            department: getDep,
+            courses: [getCourse],
+        }
+
+        await StaffMember.create(newTA);
+        console.log("Seeded newTA into DB")
+    }
 }

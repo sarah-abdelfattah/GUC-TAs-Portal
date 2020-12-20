@@ -13,7 +13,7 @@ router.delete("/department", auth.HRAuth, departmentController.deleteDepartment)
 router.get('/getAllStaffMembers', departmentController.getAllStaffMembers);
 
 // to get all the staff members of this department for a specific course
-router.get('/getMyStaffMembers/:course', departmentController.getStaffMembersPerCourse);
+router.get('/getAllStaffMembers/:course', departmentController.getStaffMembersPerCourse);
 
 // to view the dayOff of all staff members for this department
 router.get('/viewDayOff', departmentController.viewDayOff);
