@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const NotificationSchema = new Schema({
   reciever: {
-    type: Schema.Type.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'StaffMember',
     required: true,
   },

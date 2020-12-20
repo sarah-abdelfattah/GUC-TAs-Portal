@@ -3,8 +3,10 @@
 const express = require("express");
 const router = express.Router();
 const RequestController=require('../controllers/RequestController');
+//Accept : application/json, text/plain,
+//Content-Type : application/json;charset=UTF-8
 //const { auth } = require("../../utils/authentication");
-router.get("/viewMyRequest",RequestController.viewmyReequests); 
+//router.get("/viewMyRequest",RequestController.viewmyReequests); 
 // //with staus
 // router.get("/viewMyRequest/:type ",RequestController.viewTypeOfRequests) ;
 // router.get("/viewMyRequest/:status ",RequestController.viewStatusOfRequests) ;
@@ -15,7 +17,7 @@ router.get("/viewMyRequest",RequestController.viewmyReequests);
 
 //TODO add replacment
 
-router.post("/SendRequest", RequestController.sendRequest);
+router.post("/sendrequest", RequestController.sendRequest);
 
 
 

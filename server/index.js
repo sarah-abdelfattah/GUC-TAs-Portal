@@ -16,7 +16,7 @@ const faculties = require('./routes/faculties');
 const locations = require('./routes/locations');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
-
+const requests = require('./routes/requests');
 
 // Create the app
 const app = express();
@@ -60,7 +60,7 @@ app.use('/faculties', faculties);
 app.use('/locations', locations);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
-
+app.use('/requests', requests);
 // const locX = new Location({
 //   type: 'Office',
 //   location: 'C7.301',
