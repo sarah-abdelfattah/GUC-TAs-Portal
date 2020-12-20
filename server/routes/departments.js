@@ -10,7 +10,7 @@ router.delete("/department", auth.HRAuth, departmentController.deleteDepartment)
 // HOD
 
 // get all staff members of this department
-router.get('/:departmentName/:idHOD/getAllStaffMembers', departmentController.getAllStaffMembers);
+router.get('/getMyStaffMembers', departmentController.getAllStaffMembers);
 
 // to get all the staff members of this department for a specific course
 router.get('/:departmentName/:idHOD/:course/getAllStaffMembers', departmentController.getStaffMembersPerCourse);
