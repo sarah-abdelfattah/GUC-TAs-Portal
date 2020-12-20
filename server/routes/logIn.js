@@ -35,7 +35,7 @@ router.post("", async function (req, res) {
                 role: staff.role
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '60min' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '30m' })
 
             if (!staff.lastLogIn) {
                 console.log("not logged in before")
