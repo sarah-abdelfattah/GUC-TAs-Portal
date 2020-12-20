@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
+const Token = require('../models/Token');
 const StaffMember = require('../models/StaffMember');
 
 const readline = require('readline').createInterface({
@@ -49,7 +50,8 @@ router.post("", async function (req, res) {
                 }
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '60min' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '30min' })
+            await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
                 console.log("not logged in before")

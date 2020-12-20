@@ -6,6 +6,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const tokenKey = require('./config/keys').secretOrKey;
 
+const Token = require('./models/Token');
 
 //Require Route Handlers
 const logIn = require('./routes/logIn');
@@ -40,6 +41,7 @@ const connectionOptions = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
 };
+
 mongoose
     .connect(db, connectionOptions)
     .then(() => console.log('Connected to MongoDB'))
@@ -52,7 +54,9 @@ app.use(bodyParser.json());
 
 //seeding
 const dummy = require('./seeding');
+const { find } = require("./models/Token");
 dummy.seedDB();
+
 
 //All routes should be tested for auth except login
 app.use('/logIn', logIn);
@@ -64,6 +68,15 @@ app.all('*', async (req, res, next) => {
 
         if (token == null)
             return res.sendStatus(401) // there isn't any token
+
+        const tokenFound = await Token.findOne({ tokenId: token })
+        if (tokenFound) {
+            if (!tokenFound.valid) {
+                return res.sendStatus(401)
+            }
+        } else {
+            res.send("Sorry no token found in db");
+        }
 
         req.user = jwt.verify(token, tokenKey);
         next();
@@ -81,6 +94,18 @@ app.use('/locations', locations);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
 
+app.post('/logOut', async function (req, res) {
+    const tokenFound = await Token.findOne({ tokenId: req.header('auth-token') })
+    if (tokenFound) {
+        if (tokenFound.valid) {
+            tokenFound.valid = false;
+            await tokenFound.save();
+            res.send("Logged out successfully");
+        }
+    } else {
+        res.send("Sorry no token found in db");
+    }
+});
 
 
 // const locX = new Location({
