@@ -131,7 +131,7 @@ const courseInstructorController = {
   },
 
   // ==> Functionality 32 <== //
-  async assignSlots(req, res) {
+  async assignSlot(req, res) {
     try {
       // * Get instructor
       const instructor = await StaffMember.findOne({

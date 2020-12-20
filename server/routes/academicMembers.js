@@ -24,7 +24,7 @@ router.get(
 // Functionality: 32
 router.post(
   `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
-  courseInstructorController.assignSlots
+  courseInstructorController.assignSlot
 );
 
 module.exports = router;
