@@ -78,6 +78,10 @@ const StaffMemberSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  lastLogIn: {
+    type: Date,
+    default: null
+  }
 });
 
 module.exports = mongoose.model('StaffMember', StaffMemberSchema);

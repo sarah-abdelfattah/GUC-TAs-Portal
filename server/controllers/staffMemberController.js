@@ -31,10 +31,10 @@ async function locationHelper(officeLocation) {
     }
 }
 
-async function facultyHelper(facultyName) {
+async function facultyHelper(facultyCode) {
     //check if faculty is found
     const refFaculty = await Faculty.findOne({
-        name: facultyName,
+        code: facultyCode,
         is_deleted: { $ne: true },
     }).populate('faculty')
     if (!refFaculty) return { error: 'Sorry Faculty not found' };
@@ -44,9 +44,9 @@ async function facultyHelper(facultyName) {
 
 async function departmentHelper(relatedFaculty, depName) {
     //check if department is found
-    const faculty = await Faculty.findOne({ faculty: relatedFaculty, is_deleted: { $ne: true } })
+    const faculty = await (await Faculty.findOne({ code: relatedFaculty, is_deleted: { $ne: true } })).populate();
 
-    const refDepartment = await Department.findOne({ faculty: faculty.name, name: depName, is_deleted: { $ne: true } }).populate('faculty')
+    const refDepartment = await Department.findOne({ faculty: faculty, name: depName, is_deleted: { $ne: true } }).populate('faculty')
     if (!refDepartment) return { error: 'Sorry Department not found' };
 
     return refDepartment;
@@ -89,6 +89,7 @@ exports.registerStaff = async function (req, res) {
                 foundMail.type = type;
                 foundMail.courses = [];
                 foundMail.attendanceRecord = [];
+                foundMail.password = await bcrypt.hash('123456', 12);
 
                 const locResult = await locationHelper(officeLocation);
 
@@ -162,6 +163,7 @@ exports.registerStaff = async function (req, res) {
 
         req.body.attendanceRecord = [];
         req.body.courses = [];
+        req.body.password = await bcrypt.hash('123456', 12);;
 
 
         const newStaffMember = await StaffMember.create(req.body);
@@ -243,41 +245,6 @@ exports.deleteStaff = async function (req, res) {
         console.log('~ err', err);
         return res.send({ err: err });
     }
-};
-
-exports.login = async function (req, res, next) {
-    const guc_id = req.body.username;
-    const password = req.body.password;
-
-    //both are entered
-    if (!guc_id || !password)
-        return res.send({ error: 'Missing email or password' });
-
-    passport.authenticate(
-        'staffMembers',
-        async function (err, staffMember, message) {
-            if (err) {
-                return next(err);
-            }
-            //no member
-            if (!staffMember) {
-                return res.send({ error: message.message });
-            }
-
-            req.login(staffMember, async function (err) {
-                try {
-                    const payload = await StaffMember.findOne({ gucId: guc_id });
-                    const token = jwt.sign(payload.toJSON(), tokenKey, {
-                        expiresIn: '24h',
-                    });
-                    return res.json({ data: `Bearer ${token}`, info: payload });
-                } catch (err) {
-                    console.log('~ err', err);
-                    return res.send({ err: err });
-                }
-            });
-        }
-    )(req, res, next);
 };
 
 exports.signIn = async function (req, res) {
@@ -371,3 +338,68 @@ exports.signOut = async function (req, res) {
         return res.send({ err: err });
     }
 };
+
+exports.login = async function (req, res) {
+    try {
+        const { gucId, password } = req.body;
+
+        if (!gucId || !password)
+            return res.send({ error: "Please enter all details" });
+
+        const staff = await StaffMember.findOne({ gucId: gucId });
+        if (!staff)
+            return res.status(400).json({ error: 'Wrong Id or password' });
+
+        const match = bcrypt.compareSync(password, staff.password);
+        if (match) {
+            const payload = {
+                gucId: staff.gucId,
+                password: staff.password,
+                name: staff.name,
+                email: staff.email,
+                type: staff.type,
+                role: staff.role
+            }
+
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '60min' })
+            return res.header('token', token).send(token);
+            // return res.json({ data: `Bearer ${token}` })
+        }
+        else
+            return res.status(400).send({ error: "Wrong Id or password" });
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+}
+
+exports.logout = async function (req, res) {
+    console.log("🚀 ~ file: staffMemberController.js ~ line 377 ~ req", req.headers);
+    return res.status(200).send({ auth: false, token: null });
+}
+
+exports.changePassword = async function (req, res) {
+    const user = req.user;
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+
+    if (!newPassword)
+        return res.send({ error: 'Please enter the new password' });
+    if (!oldPassword)
+        return res.send({ error: 'Please enter the old password' });
+
+    const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
+    if (!userToEdit)
+        return res.send({ err: 'No user' });
+
+    //Checking if oldPassword matches the user password
+    const check = await bcrypt.compare(oldPassword, userToEdit.password);
+    if (check) {
+        // const salt = await bcrypt.genSalt(12);
+        userToEdit.password = await bcrypt.hash(newPassword, 12);
+        const updatedStaff = await userToEdit.save();
+        return res.send({ data: updatedStaff });
+    } else {
+        return res.send({ error: 'wrong password' });
+    }
+}
