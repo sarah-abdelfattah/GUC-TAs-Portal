@@ -55,7 +55,7 @@ exports.seedDB = async function () {
         console.log("Seeded Faculty into DB")
     }
 
-    const allDep = await Department.findOne({ dep: 'DEP 1' });
+    const allDep = await Department.findOne({ name: 'seeded department' });
     if (!allDep) {
         const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
 
