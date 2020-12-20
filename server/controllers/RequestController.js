@@ -8,7 +8,8 @@ const Request=require('../models/Request');
 const StaffMember = require('../models/StaffMember');
 const Course=require('../models/Course');
 const Department=require('../models/Department');
-const Notification=require('../models/Notification')
+const Notification=require('../models/Notification');
+//const { find } = require('../models/Request');
 //const { appendFileSync } = require('fs');
 
 exports.sendRequest = async function (req, res) {
@@ -116,8 +117,10 @@ return res.send({ data: newRequest  });
   }
 if(type=='Change DayOff') {
   //TODO to be changed
-  const department =sender.department;
-  const rec=department.HOD
+
+  var  department= await Department.findOne({_id:sender.department._id}); 
+  const recid=department.HOD._id;
+  const rec=await StaffMember.findOne({_id:recid})
   
   const newDayOff=req.body.newDayOff;
   const currentDayOff=req.body.currentDayOff;
@@ -127,14 +130,14 @@ if(type=='Change DayOff') {
 const subject=type+" Request from "+ currentDayOff +" to "+newDayOff;
 const newRequest= new Request({
   //TODO a4eel el sender
-  sender:senderId,
+  sender:sender,
   reciever:rec,
   type:type,
   newDayOff:newDayOff,
   currentDayOff:currentDayOff,
   subject:subject
 });
-newRequest.save();
+await newRequest.save();
 //const name=sender.name;
 // const newNotificatin = new Notification({
 //   reciever: rec,
@@ -180,16 +183,13 @@ const newRequest = new Request({
       subject:subject
         
 });
-newRequest.save()
+await newRequest.save();
 return res.send({ data: newRequest  });
   } 
 if(type=='Leave Request') {
   //const department =sender.department;
   
-  var  department= await Department.findOne({_id:sender.department._id});
-
-
-   
+  var  department= await Department.findOne({_id:sender.department._id}); 
   const recid=department.HOD._id;
   const rec=await StaffMember.findOne({_id:recid})
  
@@ -262,7 +262,7 @@ const document=req.body.document;
         reason:reason,
         subject:subject
 });
-newRequest.save()
+await newRequest.save();
 return res.send({ data: newRequest  });
   }
 if(leaveType=="Compensation"){
@@ -388,7 +388,7 @@ return res.send({ error: 'Sorry you Cannot submit this Request' });
         reason:reason,
         subject:subject
 });
-newRequest.save()
+await newRequest.save();
 return res.send({ data: newRequest  });
   }
 
@@ -461,7 +461,7 @@ if(!flag){
         subject:subject
       
 });
-newRequest.save()
+await newRequest.save();
 return res.send({ data: newRequest  });
   }
 if(leaveType=="Maternity"){
@@ -496,7 +496,7 @@ return res.send({ error: 'Please enter all data' });
         subject:subject
       
 });
-newRequest.save()
+await newRequest.save();
 return res.send({ data: newRequest  });
   }
 if(leaveType=="Accidental"){
@@ -535,7 +535,7 @@ if(numberOfDays>6){
         subject:subject
       
 });
-newRequest.save()
+ await newRequest.save();
 return res.send({ data: newRequest  });
   }
 
@@ -551,32 +551,84 @@ catch (err) {
 
 }
 
+// exports.viewmyReequestsById= async function (req, res) {
+//   try{
+//   console.log("hereee");
+//   var  senderId=req.user.gucId;
+//   var sender= await StaffMember.find({gucId:senderId}).populate();
+//   //var date=new Date(Date.parse(req.params.date))
+//   var ObjectId=req.params._id;
+//   console.log("hereee"+ObjectId);
+//   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate() 
+//   console.log(searchQuery);
+//   return res.send({data: searchQuery  }); 
+//   }
+//     catch (err) {
+//         console.log(err)
+//         return res.send({ err: err })
+//     }
 
+
+// }
+exports.viewmyReequestsByStatus = async function (req, res) {
+  try{ 
+  var  senderId=req.user.gucId;
+  var sender= await StaffMember.find({gucId:senderId}).populate();
+  var searchQuery = await Request.find({sender:sender,status:req.params.status}).populate() ;
+   
+  return res.send({data: searchQuery  }); 
+
+  }
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+
+}
+exports.viewmyReequestsByType = async function (req, res) {
+  try{ 
+  var  senderId=req.user.gucId;
+  var sender= await StaffMember.find({gucId:senderId}).populate();
+  var searchQuery = await Request.find({sender:sender,type:req.params.type}).populate() ;
+   
+  return res.send({data: searchQuery  }); 
+
+  }
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+
+}
 exports.viewmyReequests = async function (req, res) {
   try{ 
-  senderID=req.user.gucID;
-  
-  var searchQuery = {senderID:senderID}; //or something specific  
-  var Array = [];
+  var  senderId=req.user.gucId;
+  var sender= await StaffMember.find({gucId:senderId}).populate();
+////if(!req.params){
 
-
-Request
-  .find(searchQuery)
-  .exec()
-  .then(function(requests){
-      //here you can assign result value to your variable
-      //but this action is useless as you are working with results directly 
-      //TODO select date and message b3deen a3ml route gdeed
-      Array = request ;
-      return res.send({ data:requests});
-  })
-  .onReject(function(err){
-     res.send({ err: err }); //or something else
-  });
-  
-  }
-  catch (err) {
-        console.log('~ err', err);
-        return res.send({ err: err });
+var searchQuery = await Request.find({sender:sender}).populate()  //or something  
+//var Arr=[];
+  // for(i=0;i<searchQuery.length;i++){
+  // Arr[i]=searchQuery[i].subject
+  // } 
+  return res.send({data: searchQuery }); 
+//}  
+// else{
+    
+//   var ObjectId=req.params.id;
+//  console.log("hnaa "+ObjectId);
+//   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate() 
+//   console.log(searchQuery);
+//   return res.send({data: searchQuery  }); 
+//   }
+}
+    catch (err) {
+        console.log(err)
+        return res.send({ err: err })
     }
+
+ 
+
 }

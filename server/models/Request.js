@@ -17,7 +17,7 @@ const RequestSchema = new Schema({
   },
     date: {
     type: Date,
-    default: Date.now(),
+    default: new Date(Date.now()),
   },
   status: {
     type: String,

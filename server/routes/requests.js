@@ -4,10 +4,12 @@ const express = require("express");
 const router = express.Router();
 const RequestController=require('../controllers/RequestController');
 const auth = require('./auth');
-//Accept : application/json, text/plain,
-//Content-Type : application/json;charset=UTF-8
+ 
 //const { auth } = require("../../utils/authentication");
-//router.get("/viewMyRequest",RequestController.viewmyReequests); 
+router.get("/viewMyRequest",auth.AcademicMemberAuth,RequestController.viewmyReequests); 
+//router.get("/viewMyRequest/:id",auth.AcademicMemberAuth,RequestController.viewmyReequests);
+router.get("/viewMyRequeststatus/:status",auth.AcademicMemberAuth,RequestController.viewmyReequestsByStatus); 
+router.get("/viewMyRequestType/:type",auth.AcademicMemberAuth,RequestController.viewmyReequestsByType); 
 // //with staus
 // router.get("/viewMyRequest/:type ",RequestController.viewTypeOfRequests) ;
 // router.get("/viewMyRequest/:status ",RequestController.viewStatusOfRequests) ;
