@@ -1,6 +1,5 @@
 const objectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcryptjs');
-const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
@@ -31,10 +30,10 @@ async function locationHelper(officeLocation) {
     }
 }
 
-async function facultyHelper(facultyName) {
+async function facultyHelper(facultyCode) {
     //check if faculty is found
     const refFaculty = await Faculty.findOne({
-        name: facultyName,
+        code: facultyCode,
         is_deleted: { $ne: true },
     }).populate('faculty')
     if (!refFaculty) return { error: 'Sorry Faculty not found' };
@@ -44,12 +43,46 @@ async function facultyHelper(facultyName) {
 
 async function departmentHelper(relatedFaculty, depName) {
     //check if department is found
-    const faculty = await Faculty.findOne({ name: relatedFaculty, is_deleted: { $ne: true } })
 
+    const faculty = await (await Faculty.findOne({ code: relatedFaculty, is_deleted: { $ne: true } })).populate();
+  
     const refDepartment = await Department.findOne({ faculty: faculty, name: depName, is_deleted: { $ne: true } }).populate('faculty')
     if (!refDepartment) return { error: 'Sorry Department not found' };
 
     return refDepartment;
+}
+
+async function updateInfoHelper(user) {
+    const gucId = user.gucId;
+    const dayOff = user.dayOff;
+    const role = user.role;
+    const officeLocation = user.officeLocation;
+    const gender = user.gender;
+
+    const newStaff = await StaffMember.findOne({ gucId: gucId });
+    if (!newStaff)
+        return { error: 'No staff with this id' };
+
+    else {
+        if (gender) {
+            newStaff.gender = gender
+        }
+
+        if (officeLocation) {
+            const locResult = await locationHelper(officeLocation);
+            if (locResult.error) return res.send(locResult);
+            else newStaff.officeLocation = locResult;
+        }
+
+        if (newStaff.type === 'Academic Member') {
+            if (dayOff) newStaff.dayOff = dayOff;
+            if (role) newStaff.role = role;
+        }
+
+
+        const updatedStaff = await newStaff.save();
+        return { data: updatedStaff }
+    }
 }
 
 exports.registerStaff = async function (req, res) {
@@ -89,6 +122,7 @@ exports.registerStaff = async function (req, res) {
                 foundMail.type = type;
                 foundMail.courses = [];
                 foundMail.attendanceRecord = [];
+                foundMail.password = await bcrypt.hash('123456', 12);
 
                 const locResult = await locationHelper(officeLocation);
 
@@ -162,6 +196,7 @@ exports.registerStaff = async function (req, res) {
 
         req.body.attendanceRecord = [];
         req.body.courses = [];
+        req.body.password = await bcrypt.hash('123456', 12);;
 
 
         const newStaffMember = await StaffMember.create(req.body);
@@ -174,51 +209,33 @@ exports.registerStaff = async function (req, res) {
 
 exports.updateStaff = async function (req, res) {
     try {
-        const gucId = req.body.gucId;
-        const name = req.body.name;
-        const dayOff = req.body.dayOff;
-        const role = req.body.role;
-        const leaveBalance = req.body.leaveBalance;
-        const officeLocation = req.body.officeLocation;
-        const faculty = req.body.faculty;
-        const department = req.body.department;
 
+        if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
+        if (!newStaff)
+            return res.send({ error: 'No staff with this id' });
 
-        if (!gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
-        const newStaff = await StaffMember.findOne({
-            gucId: gucId,
-            is_deleted: { $ne: true },
-        });
-        if (!newStaff || newStaff.is_deleted)
-            return res.send({ msg: 'No staff with this id' });
-        else {
-            if (name) newStaff.name = name;
-            if (dayOff && newStaff.type === 'Academic Member') newStaff.dayOff = dayOff;
-            if (salary) newStaff.salary = salary;
-            if (role && newStaff.type === 'Academic Member') newStaff.name = role;
-            if (leaveBalance) newStaff.leaveBalance = leaveBalance;
-            if (officeLocation) {
-                const locResult = await locationHelper(officeLocation);
-                if (locResult.error) return res.send(locResult);
-                else newStaff.officeLocation = locResult;
-            }
-            if (faculty && department && newStaff.type === 'Academic Member') {
-                const facultyResult = await facultyHelper(faculty);
+        if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
+            const facultyResult = await facultyHelper(faculty);
 
-                if (facultyResult.error) return res.send(facultyResult);
-                else newStaff.faculty = facultyResult;
-            } else newStaff.faculty = undefined
-            if (department && newStaff.type === 'Academic Member') {
-                const departmentResult = await departmentHelper(newStaff.faculty, department);
+            if (facultyResult.error) return res.send(facultyResult);
+            else newStaff.faculty = facultyResult;
+        } else newStaff.faculty = undefined
+        if (req.body.department && newStaff.type === 'Academic Member') {
+            const departmentResult = await departmentHelper(newStaff.faculty, department);
 
-                if (departmentResult.error) return res.send(departmentResult);
-                else foundMail.department = departmentResult;
-            } else newStaff.department = undefined
-        }
+            if (departmentResult.error) return res.send(departmentResult);
+            else foundMail.department = departmentResult;
+        } else newStaff.department = undefined
 
-        const updatedStaff = await newStaff.save();
-        return res.send({ data: updatedStaff });
+        await newStaff.save();
+
+        const user = req.body;
+        const result = await updateInfoHelper(user);
+
+        return res.send(result);
     } catch (err) {
         console.log('~ err', err);
         return res.send({ err: err });
@@ -243,41 +260,6 @@ exports.deleteStaff = async function (req, res) {
         console.log('~ err', err);
         return res.send({ err: err });
     }
-};
-
-exports.login = async function (req, res, next) {
-    const guc_id = req.body.username;
-    const password = req.body.password;
-
-    //both are entered
-    if (!guc_id || !password)
-        return res.send({ error: 'Missing email or password' });
-
-    passport.authenticate(
-        'staffMembers',
-        async function (err, staffMember, message) {
-            if (err) {
-                return next(err);
-            }
-            //no member
-            if (!staffMember) {
-                return res.send({ error: message.message });
-            }
-
-            req.login(staffMember, async function (err) {
-                try {
-                    const payload = await StaffMember.findOne({ gucId: guc_id });
-                    const token = jwt.sign(payload.toJSON(), tokenKey, {
-                        expiresIn: '24h',
-                    });
-                    return res.json({ data: `Bearer ${token}`, info: payload });
-                } catch (err) {
-                    console.log('~ err', err);
-                    return res.send({ err: err });
-                }
-            });
-        }
-    )(req, res, next);
 };
 
 exports.signIn = async function (req, res) {
@@ -371,3 +353,99 @@ exports.signOut = async function (req, res) {
         return res.send({ err: err });
     }
 };
+
+exports.login = async function (req, res) {
+    try {
+        const { gucId, password } = req.body;
+
+        if (!gucId || !password)
+            return res.send({ error: "Please enter all details" });
+
+        const staff = await StaffMember.findOne({ gucId: gucId });
+        if (!staff)
+            return res.status(400).json({ error: 'Wrong Id or password' });
+
+        const match = bcrypt.compareSync(password, staff.password);
+        if (match) {
+            const payload = {
+                gucId: staff.gucId,
+                password: staff.password,
+                name: staff.name,
+                email: staff.email,
+                type: staff.type,
+                role: staff.role
+            }
+
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '60min' })
+            return res.header('token', token).send(token);
+            // return res.json({ data: `Bearer ${token}` })
+        }
+        else
+            return res.status(400).send({ error: "Wrong Id or password" });
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+}
+
+exports.logout = async function (req, res) {
+    console.log("🚀 ~ file: staffMemberController.js ~ line 377 ~ req", req.headers);
+    return res.status(200).send({ auth: false, token: null });
+}
+
+exports.changePassword = async function (req, res) {
+    const user = req.user;
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+
+    if (!newPassword)
+        return res.send({ error: 'Please enter the new password' });
+    if (!oldPassword)
+        return res.send({ error: 'Please enter the old password' });
+
+    const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
+    if (!userToEdit)
+        return res.send({ err: 'No user' });
+
+    //Checking if oldPassword matches the user password
+    const check = await bcrypt.compare(oldPassword, userToEdit.password);
+    if (check) {
+        // const salt = await bcrypt.genSalt(12);
+        userToEdit.password = await bcrypt.hash(newPassword, 12);
+        const updatedStaff = await userToEdit.save();
+        return res.send({ data: "Password changed successfully" });
+    } else {
+        return res.send({ error: 'wrong password' });
+    }
+}
+
+exports.updateProfile = async function (req, res) {
+    try {
+        let user = req.user;
+        req.body.gucId = req.user.gucId;
+
+        user = req.body;
+        const result = await updateInfoHelper(user);
+
+        return res.send(result);
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+}
+
+exports.getProfile = async function (req, res) {
+    try {
+        const user = req.user;
+        const staff = await StaffMember.findOne({ gucId: user.gucId });
+        if (!staff)
+            return res.send({ err: 'No user' });
+
+        return res.send({ data: staff });
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+}

@@ -2,13 +2,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const passport = require("passport");
-const session = require("express-session");
 const cors = require("cors");
-const path = require("path");
-const methodOverride = require("method-override");
+const jwt = require("jsonwebtoken");
+const tokenKey = require('./config/keys').secretOrKey;
+
 
 //Require Route Handlers
+const logIn = require('./routes/logIn');
 const attendances = require('./routes/attendances');
 const courses = require('./routes/courses');
 const departments = require('./routes/departments');
@@ -28,6 +28,7 @@ app.use(cors());
 //Getting Mongo's connection URI
 const db = require('./config/keys').mongoURI;
 const { cpuUsage } = require("process");
+const { login } = require("./controllers/staffMemberController");
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -44,15 +45,34 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log(err));
 
-//Passport
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Init middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// TODO: use "routes"
+//seeding
+const dummy = require('./seeding');
+dummy.seedDB();
+
+//All routes should be tested for auth except login
+app.use('/logIn', logIn);
+
+app.all('*', async (req, res, next) => {
+    try {
+        const token = req.header('auth-token');
+        // const token = req.headers.token;
+
+        if (token == null)
+            return res.sendStatus(401) // there isn't any token
+
+        req.user = jwt.verify(token, tokenKey);
+        next();
+    } catch (err) {
+        console.log("~ err", err);
+        res.send({ err: err })
+    }
+});
+
 app.use('/attendances', attendances);
 app.use('/courses', courses);
 app.use('/departments', departments);
@@ -60,6 +80,8 @@ app.use('/faculties', faculties);
 app.use('/locations', locations);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
+
+
 
 // const locX = new Location({
 //   type: 'Office',
