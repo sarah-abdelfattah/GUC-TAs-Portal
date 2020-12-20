@@ -25,8 +25,9 @@ router.post("", async function (req, res) {
         if (!staff)
             return res.status(400).json({ error: 'Wrong Id or password' });
 
-        // const match = bcrypt.compareSync(password, staff.password);
-        const match = true;
+        const match = bcrypt.compareSync(password, staff.password);
+        // const match = true
+
         if (match) {
             let payload;
             if (staff.type === 'HR') {
@@ -50,7 +51,7 @@ router.post("", async function (req, res) {
                 }
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '1000min' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '24h' })
             await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
