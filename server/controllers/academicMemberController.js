@@ -194,15 +194,6 @@ const courseInstructorController = {
           ),
         });
 
-      // Removed because there is no role in course anymore
-      // // Case: this courseInstructor is not this course instructor
-      // if (instructorCourse[0].roleInCourse !== 'Course Instructor')
-      //   return res.status(401).send({
-      //     message: errorMsgs.notAuthorized(
-      //       'assign academic members for this course'
-      //     ),
-      //   });
-
       const notAssignedSlots = course.slots.filter(
         ({ isAssigned }) => isAssigned === null
       );
@@ -281,28 +272,6 @@ const courseInstructorController = {
           slot: req.body.slot,
         },
       });
-      // return res.status(200).send({
-      //   data: instructor.courses.map(({ course }) => {
-      //     return {
-      //       course_name: course.name,
-      //       course_slots: course.slots
-      //         .filter(
-      //           (slot) => `${slot.isAssigned._id}` === `${instructor._id}`
-      //         ) // Get the slots of the current instructor
-      //         .map(({ day, time, location }) => {
-      //           // Map them to only send back the day, time, location
-      //           return {
-      //             day: day,
-      //             time: `${
-      //               time.toLocaleString('en-EG').split(',')[1].trim() ||
-      //               time.getHours() + ':' + time.getMinutes()
-      //             }`,
-      //             location: location['location'],
-      //           };
-      //         }),
-      //     };
-      //   }),
-      // });
     } catch (err) {
       res.status(500).send({ message: `Internal Server Error: ${err}` });
     }
