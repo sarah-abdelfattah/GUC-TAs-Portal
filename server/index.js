@@ -3,8 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
-
 const jwt = require("jsonwebtoken");
 const tokenKey = require('./config/keys').secretOrKey;
 
@@ -47,14 +45,14 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.log(err));
 
-// //Passport
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 // Init middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//seeding
+const dummy = require('./seeding');
+dummy.seedDB();
 
 //All routes should be tested for auth except login
 app.use('/logIn', logIn);
