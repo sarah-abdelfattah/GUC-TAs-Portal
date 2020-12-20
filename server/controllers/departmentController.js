@@ -149,11 +149,12 @@ exports.deleteDepartment = async function (req, res) {
 
 // to get the staff members of a certain department
 exports.getAllStaffMembers = async (req, res) => {
+  console.log("🚀 ~ file: departmentController.js ~ line 152 ~ exports.getAllStaffMembers= ~ req", req.user);
   try {
 
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
-      name: req.user.department,
+      _id: req.user.department,
     }).populate('department');
 
     // if there's no department found
