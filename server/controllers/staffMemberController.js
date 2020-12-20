@@ -374,6 +374,7 @@ exports.login = async function (req, res) {
 }
 
 exports.logout = async function (req, res) {
+    console.log("🚀 ~ file: staffMemberController.js ~ line 377 ~ req", req.headers);
     return res.status(200).send({ auth: false, token: null });
 }
 
