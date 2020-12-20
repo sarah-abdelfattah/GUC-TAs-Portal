@@ -39,14 +39,14 @@ mongoose.set('useUnifiedTopology', true);
 
 //Connecting to MongoDB
 const connectionOptions = {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
 };
 
 mongoose
-  .connect(db, connectionOptions)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log(err));
+    .connect(db, connectionOptions)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.log(err));
 
 
 // Init middleware
@@ -55,7 +55,7 @@ app.use(bodyParser.json());
 
 //seeding
 const dummy = require('./seeding');
-const { find } = require("./models/Token");
+const Tokens = require("./models/Token");
 dummy.seedDB();
 
 

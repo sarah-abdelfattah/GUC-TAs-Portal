@@ -11,31 +11,31 @@ const courseInstructorBaseRoute = '/courseInstructor';
 
 // Functionality: 29
 router.get(
-  `${courseInstructorBaseRoute}/courseCoverage/:instructorId`,
+  `${courseInstructorBaseRoute}/courseCoverage`,
   courseInstructorController.courseCoverage
 );
 
 // Functionality: 30
 router.get(
-  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  `${courseInstructorBaseRoute}/slotsAssignment`,
   courseInstructorController.slotsAssignment
 );
 
 // Functionality: 32
 router.post(
-  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  `${courseInstructorBaseRoute}/slotsAssignment`,
   courseInstructorController.assignSlot
 );
 
 // Functionality: 33
 router.put(
-  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  `${courseInstructorBaseRoute}/slotsAssignment`,
   courseInstructorController.updateSlot
 );
 
 // Functionality: 34
 router.delete(
-  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  `${courseInstructorBaseRoute}/slotsAssignment`,
   courseInstructorController.deleteSlot
 );
 
