@@ -14,10 +14,10 @@ const Notification=require('../models/Notification')
 exports.sendRequest = async function (req, res) {
   try{
   
-  const type=req.body.type;
+    const type=req.body.type;
  //TODO: sender is logged in member from the header
   //  const sender=await StaffMember.findOne({gucID:req.user.gucID }); 
-  const senderId = req.body.senderId;
+    const senderId =req.user.gucId;
   var sender= await StaffMember.findOne({gucId:senderId}).populate() ;
   // var sender= await StaffMember.findOne({gucID:senderId}). populate();
   //  senderID:req.user.gucID,

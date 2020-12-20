@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const RequestController=require('../controllers/RequestController');
+const auth = require('./auth');
 //Accept : application/json, text/plain,
 //Content-Type : application/json;charset=UTF-8
 //const { auth } = require("../../utils/authentication");
@@ -17,7 +18,7 @@ const RequestController=require('../controllers/RequestController');
 
 //TODO add replacment
 
-router.post("/sendrequest", RequestController.sendRequest);
+router.post("/sendrequest",auth.AcademicMemberAuth, RequestController.sendRequest);
 
 
 
