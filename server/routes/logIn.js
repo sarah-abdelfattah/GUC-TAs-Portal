@@ -27,13 +27,28 @@ router.post("", async function (req, res) {
 
         const match = bcrypt.compareSync(password, staff.password);
         // const match = true
+
         if (match) {
-            const payload = {
-                gucId: staff.gucId,
-                name: staff.name,
-                email: staff.email,
-                type: staff.type,
-                role: staff.role
+            let payload;
+            if (staff.type === 'HR') {
+                payload = {
+                    gucId: staff.gucId,
+                    password: staff.password,
+                    name: staff.name,
+                    email: staff.email,
+                    type: staff.type
+                }
+            } else {
+                payload = {
+                    gucId: staff.gucId,
+                    password: staff.password,
+                    name: staff.name,
+                    email: staff.email,
+                    type: staff.type,
+                    role: staff.role,
+                    faculty: staff.faculty,
+                    department: staff.department
+                }
             }
 
             const token = jwt.sign(payload, tokenKey, { expiresIn: '24h' })
