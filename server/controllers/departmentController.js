@@ -365,254 +365,265 @@ exports.viewCourseCoverage = async (req, res) => {
 };
 //////////
 exports.assignInstructor = async (req, res) => {
-    try{
-        let instructorId = req.body.gucId;
-        let courseName = req.body.name;
+  try {
+    let instructorId = req.body.gucId;
+    let courseName = req.body.name;
 
-        if (!instructorId || !courseName)
-           return res.send({ error: "Please enter all the details" });
+    if (!instructorId || !courseName)
+      return res.send({ error: "Please enter all the details" });
 
-        let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
-        let departmentFound = await Department.findOne({
-            _id: req.user.department,
-        }).populate('department');
-    
-        // if there's no department found
-        if (!departmentFound) {
-          return res
-            .status(404)
-            .send({
-              error: `No department found with this name ${req.user.department}`,
-            });
-        }
-        // if this department has different HOD
-        if (!HOD._id.equals(departmentFound.HOD)) {
-          return res.send({
-            error: "Sorry, you don't have access to view this department",
-          });
-        }
-        // here check if I have that instructor with that id
-        const instructor = await StaffMember.findOne({ 
-            gucId: instructorId,
-            department: departmentFound._id,
-            type: 'Academic Member',
-            role: 'Course Instructor'
-        }).populate();
-  
-        if(!instructor) {
-            return res.send({
-                error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
-            })
-        }
-  
-        const course = await Course.findOne({
-            department: departmentFound._id,
-            name: courseName,
-        }).populate();
-
-        if(!course) {
-            return res.send({
-                error: `Sorry, there's no course with this name ${courseName} in your department`,
-            })
-        }
-
-        // case instructor doesn't have any courses assigned in this department
-        if(instructor.courses.length === 0){
-            instructor.courses.push(course);       
-            await instructor.save();
-        }
-
-        // case he have already assigned courses
-        else{
-            let repeatedCourse = false;
-            for(let i = 0; i < instructor.courses.length; i++){
-                // check that this course is not already assigned to this instructor
-                if((instructor.courses[i]).equals(course._id)){
-                    repeatedCourse = true;
-                    break;
-                }
-            }
-    
-            if(repeatedCourse === true){
-                return res.send({
-                    error: `Sorry, this course is already assigned to instructor ${instructorId}`,
-                })
-            }
-            else{
-                instructor.courses.push(course);       
-                await instructor.save();
-            }
-        }
-
-        return res.status(200).send({
-            data:{
-                msg: `Course assigned to ${instructorId} successfully`,
-                course: courseName,
-                assigned_To: instructorId,
-            }
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId, role: "Course Instructor" }).populate('HOD');
+    // if there's no HOD found
+    if (!HOD) {
+      return res
+        .status(404)
+        .send({
+          error: `No HOD found with this id`,
         });
-        
-    } catch(err){
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
     }
+
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+      faculty: req.user.faculty
+    }).populate('department');
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res
+        .status(404)
+        .send({
+          error: `No department found with this name ${req.user.department}`,
+        });
+    }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+    // here check if I have that instructor with that id
+    const instructor = await StaffMember.findOne({
+      gucId: instructorId,
+      department: departmentFound._id,
+      type: 'Academic Member',
+      role: 'Course Instructor'
+    }).populate();
+
+    if (!instructor) {
+      return res.send({
+        error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
+      })
+    }
+
+    const course = await Course.findOne({
+      department: departmentFound._id,
+      name: courseName,
+    }).populate();
+
+    if (!course) {
+      return res.send({
+        error: `Sorry, there's no course with this name ${courseName} in your department`,
+      })
+    }
+
+    // case instructor doesn't have any courses assigned in this department
+    if (instructor.courses.length === 0) {
+      instructor.courses.push(course);
+      await instructor.save();
+    }
+
+    // case he have already assigned courses
+    else {
+      let repeatedCourse = false;
+      for (let i = 0; i < instructor.courses.length; i++) {
+        // check that this course is not already assigned to this instructor
+        if ((instructor.courses[i]).equals(course._id)) {
+          repeatedCourse = true;
+          break;
+        }
+      }
+
+      if (repeatedCourse === true) {
+        return res.send({
+          error: `Sorry, this course is already assigned to instructor ${instructorId}`,
+        })
+      }
+      else {
+        instructor.courses.push(course);
+        await instructor.save();
+      }
+    }
+
+    return res.status(200).send({
+      data: {
+        msg: `Course assigned to ${instructorId} successfully`,
+        course: courseName,
+        assigned_To: instructorId,
+      }
+    });
+
+  } catch (err) {
+    res.status(500).send({ err: `Internal Server Error: ${err}` });
+  }
 }
 
 exports.updateInstructor = async function (req, res) {
-    try{
-        let instructorId = req.body.gucId;
-        let newCourseName = req.body.newName;
-        let oldCourseName = req.body.oldName;
+  try {
+    let instructorId = req.body.gucId;
+    let newCourseName = req.body.newName;
+    let oldCourseName = req.body.oldName;
 
-        if (!instructorId || !newCourseName || !oldCourseName) 
-           return res.send({ error: "Please enter all the details" });
+    if (!instructorId || !newCourseName || !oldCourseName)
+      return res.send({ error: "Please enter all the details" });
 
-        let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
-        let departmentFound = await Department.findOne({
-            _id: req.user.department,
-        }).populate('department');
-    
-        // if there's no department found
-        if (!departmentFound) {
-          return res
-            .status(404)
-            .send({
-              error: `No department found with this name ${req.user.department}`,
-            });
-        }
-        // if this department has different HOD
-        if (!HOD._id.equals(departmentFound.HOD)) {
-          return res.send({
-            error: "Sorry, you don't have access to view this department",
-          });
-        }
-        // here check if I have that instructor with this id
-        const instructor = await StaffMember.findOne({ 
-            gucId: instructorId,
-            department: departmentFound._id,
-            type: 'Academic Member',
-            role: 'Course Instructor'
-        }).populate();
-  
-        if(!instructor) {
-            return res.send({
-                error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
-            })
-        }
-  
-        const newCourse = await Course.findOne({
-            department: departmentFound._id,
-            name: newCourseName,
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+      faculty: req.user.faculty
+    }).populate('department');
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res
+        .status(404)
+        .send({
+          error: `No department found with this name ${req.user.department}`,
         });
-
-        const oldCourse = await Course.findOne({
-            department: departmentFound._id,
-            name: oldCourseName,
-        });
-
-        if(!newCourse || !oldCourse) {
-            return res.send({
-                error: `Sorry, there's no course with this name in your department`,
-            })
-        }
-
-        for(let i = 0; i < instructor.courses.length; i++){
-            if((instructor.courses[i]).equals(oldCourse._id)){
-                instructor.courses[i] = newCourse;
-                await instructor.save();
-                break;
-            }
-        }
-
-        return res.status(200).send({
-            data:{
-                msg: `Course assigned to ${instructorId} successfully`,
-                course: newCourse,
-                assigned_To: instructorId,
-            }
-        });
-        
-    } catch(err){
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
     }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+    // here check if I have that instructor with this id
+    const instructor = await StaffMember.findOne({
+      gucId: instructorId,
+      department: departmentFound._id,
+      type: 'Academic Member',
+      role: 'Course Instructor'
+    }).populate();
+
+    if (!instructor) {
+      return res.send({
+        error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
+      })
+    }
+
+    const newCourse = await Course.findOne({
+      department: departmentFound._id,
+      name: newCourseName,
+    });
+
+    const oldCourse = await Course.findOne({
+      department: departmentFound._id,
+      name: oldCourseName,
+    });
+
+    if (!newCourse || !oldCourse) {
+      return res.send({
+        error: `Sorry, there's no course with this name in your department`,
+      })
+    }
+
+    for (let i = 0; i < instructor.courses.length; i++) {
+      if ((instructor.courses[i]).equals(oldCourse._id)) {
+        instructor.courses[i] = newCourse;
+        await instructor.save();
+        break;
+      }
+    }
+
+    return res.status(200).send({
+      data: {
+        msg: `Course assigned to ${instructorId} successfully`,
+        course: newCourse,
+        assigned_To: instructorId,
+      }
+    });
+
+  } catch (err) {
+    res.status(500).send({ message: `Internal Server Error: ${err}` });
+  }
 }
 
 exports.deleteInstructor = async function (req, res) {
-    try{
-        let instructorId = req.body.gucId;
-        let courseName = req.body.name;
+  try {
+    let instructorId = req.body.gucId;
+    let courseName = req.body.name;
 
-        if (!instructorId || !courseName)
-           return res.send({ error: "Please enter all the details" });
+    if (!instructorId || !courseName)
+      return res.send({ error: "Please enter all the details" });
 
-        let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
-        let departmentFound = await Department.findOne({
-            _id: req.user.department,
-        }).populate('department');
-    
-        // if there's no department found
-        if (!departmentFound) {
-          return res
-            .status(404)
-            .send({
-              error: `No department found with this name ${req.user.department}`,
-            });
-        }
-        // if this department has different HOD
-        if (!HOD._id.equals(departmentFound.HOD)) {
-          return res.send({
-            error: "Sorry, you don't have access to view this department",
-          });
-        }
-        // here check if I have that instructor with that id
-        const instructor = await StaffMember.findOne({ 
-            gucId: instructorId,
-            department: departmentFound._id,
-            type: 'Academic Member',
-            role: 'Course Instructor'
-        }).populate();
-  
-        if(!instructor) {
-            return res.send({
-                error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
-            })
-        }
-  
-        const course = await Course.findOne({
-            department: departmentFound._id,
-            name: courseName,
-        }).populate();
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+    }).populate('department');
 
-        if(!course) {
-            return res.send({
-                error: `Sorry, there's no course with this name ${courseName} in your department`,
-            })
-        }
-
-        // case instructor doesn't have any courses assigned in this department
-        if(instructor.courses.length === 0){
-            return res.send({
-                error: `Sorry, there's no course with this name ${courseName} assigned to this instructor`,
-            })
-        }
-
-        // case he have already assigned courses
-        else{
-            const found = instructor.courses.some((course) => {
-                return course === course._id
-            })
-            if(found){
-                instructor.courses.splice(course, 1)
-                await instructor.save();
-            }
-        }
-
-        return res.status(200).send({
-            data:{
-                msg: `Course deleted successfully`,
-            }
+    // if there's no department found
+    if (!departmentFound) {
+      return res
+        .status(404)
+        .send({
+          error: `No department found with this name ${req.user.department}`,
         });
-        
-    } catch(err){
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
     }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+    // here check if I have that instructor with that id
+    const instructor = await StaffMember.findOne({
+      gucId: instructorId,
+      department: departmentFound._id,
+      type: 'Academic Member',
+      role: 'Course Instructor'
+    }).populate();
+
+    if (!instructor) {
+      return res.send({
+        error: `Sorry, there's no instructor with this id ${instructorId} in your department`,
+      })
+    }
+
+    const course = await Course.findOne({
+      department: departmentFound._id,
+      name: courseName,
+    }).populate();
+
+    if (!course) {
+      return res.send({
+        error: `Sorry, there's no course with this name ${courseName} in your department`,
+      })
+    }
+
+    // case instructor doesn't have any courses assigned in this department
+    if (instructor.courses.length === 0) {
+      return res.send({
+        error: `Sorry, there's no course with this name ${courseName} assigned to this instructor`,
+      })
+    }
+
+    // case he have already assigned courses
+    else {
+      const found = instructor.courses.some((course) => {
+        return course === course._id
+      })
+      if (found) {
+        instructor.courses.splice(course, 1)
+        await instructor.save();
+      }
+    }
+
+    return res.status(200).send({
+      data: {
+        msg: `Course deleted successfully`,
+      }
+    });
+
+  } catch (err) {
+    res.status(500).send({ message: `Internal Server Error: ${err}` });
+  }
 }

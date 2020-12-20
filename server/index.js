@@ -53,9 +53,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //seeding
-//const dummy = require('./seeding');
-const { find } = require("./models/Token");
-//dummy.seedDB();
+const dummy = require('./seeding');
+const Tokens = require("./models/Token");
+dummy.seedDB();
 
 
 //All routes should be tested for auth except login
