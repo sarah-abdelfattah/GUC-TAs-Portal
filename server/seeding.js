@@ -82,6 +82,48 @@ exports.seedDB = async function () {
         console.log("Seeded Course into DB")
     }
 
+    //------
+    const allFac2 = await Faculty.findOne({ code: 'FAC 2' });
+    if (!allFac2) {
+        const newFac = {
+            code: 'FAC 2',
+            name: 'seeded faculty2'
+        }
+
+        await Faculty.create(newFac);
+        console.log("Seeded Faculty 2into DB")
+    }
+
+    const allDep2 = await Department.findOne({ name: 'seeded department' });
+    if (!allDep2) {
+        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
+
+        const newDep = {
+            faculty: getFac,
+            name: 'seeded department'
+        }
+
+        await Department.create(newDep);
+        console.log("Seeded Department2 into DB")
+    }
+
+    const allCourses2 = await Course.findOne({ name: 'seeded Course2' });
+    if (!allCourses2) {
+        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
+        const getDep = await (await Department.findOne({ faculty: getFac, name: 'seeded department' })).populate('department');
+
+        const newCourse = {
+            department: getDep,
+            name: 'seeded Course2'
+        }
+
+        await Course.create(newCourse);
+        console.log("Seeded Course into DB")
+    }
+
+
+    ///------
+
     const CImem = await StaffMember.findOne({ gucId: 'AC-1' });
     if (!CImem) {
         const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
