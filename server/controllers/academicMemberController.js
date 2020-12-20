@@ -31,6 +31,23 @@ const errorMsgs = {
   },
 };
 
+const checkRequiredFields = (req, fields) => {
+  const keyMyObj = (obj, prefix = '') =>
+    Object.keys(obj).reduce((res, el) => {
+      if (Array.isArray(obj[el])) {
+        return res;
+      } else if (typeof obj[el] === 'object' && obj[el] !== null) {
+        return [...res, ...keyMyObj(obj[el], prefix + el + '.')];
+      }
+      return [...res, prefix + el];
+    }, []);
+
+  const keys = keyMyObj(req.body);
+  return fields.filter((field) => {
+    return !keys.includes(field);
+  });
+};
+
 // Course Instructor Controller
 const courseInstructorController = {
   // ==> Functionality 29 <== //
@@ -124,6 +141,9 @@ const courseInstructorController = {
   // ==> Functionality 32 <== //
   async assignSlot(req, res) {
     try {
+      const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
+      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+
       // * Get instructor
       const instructor = await StaffMember.findOne({
         gucId: req.params.instructorId,
@@ -243,6 +263,9 @@ const courseInstructorController = {
   // ==> Functionality 33 <== //
   async updateSlot(req, res) {
     try {
+      const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
+      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+
       // * Get instructor
       const instructor = await StaffMember.findOne({
         gucId: req.params.instructorId,
@@ -369,6 +392,9 @@ const courseInstructorController = {
       }
       // Case: assign the newSlot (targetSlot) to target TA
       else {
+        const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time', 'newSlot.day', 'newSlot.time']);
+        if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+
         const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
           const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
           const targetTime = req.body.newSlot.time.split(' ');
@@ -416,6 +442,9 @@ const courseInstructorController = {
 
   // ==> Functionality 34 <== //
   async deleteSlot(req, res) {
+    const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
+    if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+
     // * Get instructor
     const instructor = await StaffMember.findOne({
       gucId: req.params.instructorId,
