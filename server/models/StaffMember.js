@@ -4,99 +4,92 @@ const Schema = mongoose.Schema;
 
 // Importing needed schemas
 const AttendanceRecord = require('./schemas/AttendanceRecord');
+const Department = require('./schemas/Department');
 
 const StaffMemberSchema = new Schema({
-    gucId: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    name: {
-        type: String,
-        required: true,
-    },
-    gender: {
-        type: String,
-        required: true,
-        enum: ['male', 'female'],
-    },
-    email: {
-        type: String, // There is not type called email, So we will validate on the value
-        required: true,
-        unique: true,
-        validate: [isEmail, 'Invalid email format'], // Instead of using regex validations, We used validator library to handle this
-    },
-    password: {
-        type: String,
-        required: true,
-        default: '123456',
-    },
-    dayOff: {
-        type: String,
-        required: true,
-        default: 'Saturday',
-    },
-    salary: {
-        type: Number,
-        required: true,
-    },
-    type: {
-        type: String,
-        required: true,
-        enum: ['HR', 'Academic Member'],
-    },
-    role: {
-        type: 'String',
-        enum: [
-            'Teaching Assistant',
-            'Course Instructor',
-            'Course Coordinator',
-            'HOD',
-        ],
-    },
-    leaveBalance: {
-        type: Number,
-        default: 0,
-    },
-    officeLocation: {
+  gucId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ['male', 'female'],
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: [isEmail, 'Invalid email format'],
+  },
+  password: {
+    type: String,
+    required: true,
+    default: '123456',
+  },
+  dayOff: {
+    type: String,
+    required: true,
+    default: 'Saturday',
+    enum: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+  },
+  salary: {
+    type: Number,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['HR', 'Academic Member'],
+  },
+  role: {
+    type: 'String',
+    enum: ['Teaching Assistant', 'Course Instructor'],
+  },
+  leaveBalance: {
+    type: Number,
+    default: 0,
+  },
+  officeLocation: {
+    type: Schema.Types.ObjectId,
+    ref: 'Location',
+    required: true,
+  },
+  courses: [
+    {
+      course: {
         type: Schema.Types.ObjectId,
-        ref: 'Location',
+        ref: 'Course',
+      },
+      roleInCourse: {
+        type: 'String',
+        enum: ['Teaching Assistant', 'Course Instructor', 'Course Coordinator'],
         required: true,
+      },
     },
-    courses: [
-        {
-            course: {
-                type: Schema.Types.ObjectId,
-                ref: 'Course',
-            },
-            slots: [
-                {
-                    day: {
-                        type: String,
-                        enum: [
-                            'Saturday',
-                            'Sunday',
-                            'Monday',
-                            'Tuesday',
-                            'Wednesday',
-                            'Thursday',
-                        ],
-                    },
-                    time: Date,
-                    location: {
-                        type: Schema.Types.ObjectId,
-                        ref: 'Location',
-                    },
-                },
-            ],
-            roleInCourse: {
-                type: 'String',
-                enum: ['Teaching Assistant', 'Course Instructor', 'Course Coordinator'],
-                required: true,
-            },
-        },
-    ],
-    attendanceRecords: [AttendanceRecord],
+  ],
+  faculty: {
+    type: Schema.Types.ObjectId,
+    ref: 'Faculty',
+  },
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: 'Department',
+  },
+  attendanceRecords: [AttendanceRecord],
+  is_deleted: {
+    type: Boolean,
+    default: false,
+  },
+  lastLogIn: {
+    type: Date,
+    default: null
+  }
 });
 
 module.exports = mongoose.model('StaffMember', StaffMemberSchema);

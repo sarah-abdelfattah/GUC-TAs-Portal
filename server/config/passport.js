@@ -13,9 +13,9 @@ opts.secretOrKey = tokenKey
 
 module.exports = function (passport) {
     passport.use('staffMembers',
-        new LocalStrategy({ GUCID: 'GUCID' }, (GUCID, password, done) => {
+        new LocalStrategy({ gucId: 'gucId' }, (gucId, password, done) => {
             //Match User
-            User.findOne({ GUCID: GUCID })
+            User.findOne({ gucId: gucId })
                 .then(staffMember => {
                     if (!staffMember) {
                         return done(null, false, { message: 'This id is not registered' })
@@ -35,53 +35,53 @@ module.exports = function (passport) {
         })
     )
     passport.serializeUser(function (member, done) {
-        done(null, member.GUCID)
+        done(null, member.gucId)
     })
 
-    passport.deserializeUser(function (GUCID, done) {
-        StaffMember.findById(GUCID, function (err, member) {
+    passport.deserializeUser(function (gucId, done) {
+        StaffMember.findById(gucId, function (err, member) {
             done(err, member)
         })
     })
 
     passport.use('memberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff) return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('HRAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type === 'HR') return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('AcademicMemberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type === 'Academic Member') return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('AcademicMemberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type.type === 'teaching assistant') return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('AcademicMemberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type.type === 'course instructor') return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('AcademicMemberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type.type === 'course coordinator') return done(null, currentStaff)
         return done(null, false)
     }))
 
     passport.use('AcademicMemberAuth', new JwtStrategy(opts, async (jwtPayload, done) => {
-        const currentStaff = await StaffMember.findById(jwtPayload.GUCID)
+        const currentStaff = await StaffMember.findById(jwtPayload.gucId)
         if (currentStaff && currentStaff.type.type === 'HOD') return done(null, currentStaff)
         return done(null, false)
     }))

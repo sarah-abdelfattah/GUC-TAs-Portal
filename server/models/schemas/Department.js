@@ -9,9 +9,7 @@ const DepartmentSchema = new Schema({
   HOD: {
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
-    required: true,
-    unique: true,
-    validate: (v) => v.type === 'Academic Member',
+    // required: true,
   },
   Courses: [
     {
@@ -19,6 +17,10 @@ const DepartmentSchema = new Schema({
       ref: 'Course',
     },
   ],
+  is_deleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = DepartmentSchema;

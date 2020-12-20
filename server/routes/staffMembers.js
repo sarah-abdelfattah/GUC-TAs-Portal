@@ -1,14 +1,18 @@
 var express = require("express");
 var router = express.Router();
+const auth = require('./auth');
 
 const staffMemberController = require('../controllers/staffMemberController');
 
-//const { auth } = require("../../utils/authentication");
+//HR 
+router.post("/staff", auth.HRAuth, staffMemberController.registerStaff);
+router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
+router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
 
-//
-router.post("/register", staffMemberController.registerStaff);
 //all users
-router.post("/login", staffMemberController.login);
+router.post("/logOut", staffMemberController.logout);
+router.post("/signIn", staffMemberController.signIn);
+router.post("/signOut", staffMemberController.signOut);
 
-
+router.post("/changePassword", staffMemberController.changePassword);
 module.exports = router;  
