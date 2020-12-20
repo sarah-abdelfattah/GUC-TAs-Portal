@@ -5,7 +5,6 @@ const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 
-
 exports.addDepartment = async function (req, res) {
     try {
         const { facultyCode, depName, HOD } = req.body;
@@ -19,7 +18,7 @@ exports.addDepartment = async function (req, res) {
         if (!facultyFound)
             return res.send({ error: "No faculty with this code" });
 
-        facultyFound = await (await Faculty.findOne({ code: facultyCode })).populate();
+        facultyFound = await (await Faculty.findOne({ code: facultyCode })).populate('faculty');
 
         //faculty found? 
         const depFound = await Department.findOne({ faculty: facultyFound._id, name: depName })
@@ -29,7 +28,7 @@ exports.addDepartment = async function (req, res) {
         let staffMember;
         if (HOD) {
             // staff found? 
-            staffMember = (await StaffMember.findOne({ gucId: HOD })).populate();
+            staffMember = (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
             if (!staffMember)
                 return res.send({ error: "No staff member with this ID" });
 
@@ -71,16 +70,16 @@ exports.updateDepartment = async function (req, res) {
             return res.send({ error: "Please enter all details" });
 
         //faculty found? 
-        const facultyFound = await Faculty.findOne({ code: facultyCode }).populate();
+        const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');
         if (!facultyFound)
             return res.send({ error: "No faculty with this name" });
 
-        const depFound = await Department.findOne({ name: depName }).populate();
+        const depFound = await Department.findOne({ name: depName }).populate('department');
         if (!depFound)
             return res.send({ error: "No department with this name" });
 
         if (HOD) {// staff found? 
-            const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate();
+            const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
             if (!staffMember)
                 return res.send({ error: "No staff member with this ID" });
 
@@ -130,6 +129,13 @@ exports.deleteDepartment = async function (req, res) {
         let depFound = await Department.findOne({ faculty: facultyFound._id, name: department });
         if (!depFound)
             return res.send({ error: "Sorry no department with this name" });
+
+
+        const courses = await Course.find({ department: depFound._id })
+        for (let i = 0; i < courses.length; i++) {
+            courses[i].department = undefined;
+            await courses[i].save();
+        }
 
         depFound = await Department.findOneAndDelete({ faculty: facultyFound._id, name: department });
         return res.send({ data: "Department deleted successfully" });
