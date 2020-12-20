@@ -651,18 +651,19 @@ exports.viewTeachingAssignments = async (req, res) => {
           });
         }
 
-        const course = await Course.findOne({
+        const teachingAssigned = await StaffMember.find({
             department: departmentFound._id,
             name: req.params.courseName,
-        }).populate('slots.isAssigned');
+        }).populate('courses');
 
-        let data1 = [];
-        for(let i = 0; i < course.slots.length; i++) {
-            data1.push(course.slots[i].isAssigned);
+        if(!teachingAssigned) {
+            return res.send({
+                error: `sorry, we couldn't find the course that you are looking for`,
+            });
         }
 
         return res.status(200).send({
-            data: data1
+            data: teachingAssigned
         });
 
         
