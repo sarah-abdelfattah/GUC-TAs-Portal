@@ -24,8 +24,8 @@ exports.seedDB = async function () {
     }
 
     //adding starting HR 
-    const allStaff = await StaffMember.find();
-    if (allStaff.length == 0) {
+    const allStaff = await StaffMember.findOne({ gucId: 'HR-1' });
+    if (!allStaff) {
         const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
 
         const newStaff = {
