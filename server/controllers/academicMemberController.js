@@ -37,7 +37,7 @@ const courseInstructorController = {
         gucId: req.params.instructorId,
         type: 'Academic Member',
         role: 'Course Instructor',
-      }).populate('courses.course');
+      }).populate('courses');
 
       // Case: instructor not found
       if (!instructor)
@@ -56,7 +56,7 @@ const courseInstructorController = {
 
       // Case: success
       return res.status(200).send({
-        data: instructor.courses.map(({ course }) => {
+        data: instructor.courses.map((course) => {
           return {
             course_name: course.name,
             course_coverage: course.coverage,
@@ -77,11 +77,11 @@ const courseInstructorController = {
         role: 'Course Instructor',
       })
         .populate({
-          path: 'courses.course',
+          path: 'courses',
           populate: { path: 'slots.location' },
         })
         .populate({
-          path: 'courses.course',
+          path: 'courses',
           populate: { path: 'slots.isAssigned' },
         });
 
@@ -102,12 +102,14 @@ const courseInstructorController = {
 
       // Case: success
       return res.status(200).send({
-        data: instructor.courses.map(({ course }) => {
+        data: instructor.courses.map((course) => {
           return {
             course_name: course.name,
             course_slots: course.slots
               .filter(
-                (slot) => `${slot.isAssigned._id}` === `${instructor._id}`
+                (slot) =>
+                  slot.isAssigned &&
+                  `${slot.isAssigned._id}` === `${instructor._id}`
               ) // Get the slots of the current instructor
               .map(({ day, time, location }) => {
                 // Map them to only send back the day, time, location
@@ -139,11 +141,11 @@ const courseInstructorController = {
       })
         .populate('department')
         .populate({
-          path: 'courses.course',
+          path: 'courses',
           populate: { path: 'slots.location' },
         })
         .populate({
-          path: 'courses.course',
+          path: 'courses',
           populate: { path: 'slots.isAssigned' },
         });
 
@@ -179,7 +181,7 @@ const courseInstructorController = {
         });
 
       const instructorCourse = instructor.courses.filter(
-        ({ course }) =>
+        (course) =>
           course.name.toLowerCase() === req.body.courseName.toLowerCase()
       );
 
@@ -192,13 +194,14 @@ const courseInstructorController = {
           ),
         });
 
-      // Case: this courseInstructor is not this course instructor
-      if (instructorCourse[0].roleInCourse !== 'Course Instructor')
-        return res.status(401).send({
-          message: errorMsgs.notAuthorized(
-            'assign academic members for this course'
-          ),
-        });
+      // Removed because there is no role in course anymore
+      // // Case: this courseInstructor is not this course instructor
+      // if (instructorCourse[0].roleInCourse !== 'Course Instructor')
+      //   return res.status(401).send({
+      //     message: errorMsgs.notAuthorized(
+      //       'assign academic members for this course'
+      //     ),
+      //   });
 
       const notAssignedSlots = course.slots.filter(
         ({ isAssigned }) => isAssigned === null
@@ -267,7 +270,7 @@ const courseInstructorController = {
         { _id: targetTa._id },
         {
           $push: {
-            courses: { course: course, roleInCourse: 'Teaching Assistant' },
+            courses: course,
           },
         }
       );
