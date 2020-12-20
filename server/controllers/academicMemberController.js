@@ -18,9 +18,7 @@ const errorMsgs = {
     return `There are no ${assignmentName} assigned to this ${assignee}`;
   },
   notAssigned: (assignmentName, extraInfo) => {
-    return `The current ${assignmentName} is not assigned. ${
-      extraInfo ? extraInfo : ''
-    }`;
+    return `The current ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
   },
   notAuthorized: (action) => {
     return `You are not authorized to ${action}`;
@@ -47,10 +45,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'instructor',
-            `id ${req.params.instructorId}`
-          ),
+          message: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
         });
 
       // Case: instructor does not teach any courses
@@ -93,10 +88,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'instructor',
-            `id ${req.params.instructorId}`
-          ),
+          message: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
         });
 
       // Case: instructor does not have any courses
@@ -111,19 +103,13 @@ const courseInstructorController = {
           return {
             course_name: course.name,
             course_slots: course.slots
-              .filter(
-                (slot) =>
-                  slot.isAssigned &&
-                  `${slot.isAssigned._id}` === `${instructor._id}`
-              ) // Get the slots of the current instructor
+              // Get the slots of the current instructor
+              .filter((slot) => slot.isAssigned && `${slot.isAssigned._id}` === `${instructor._id}`)
+              // Map them to only send back the day, time, location
               .map(({ day, time, location }) => {
-                // Map them to only send back the day, time, location
                 return {
                   day: day,
-                  time: `${
-                    time.toLocaleString('en-EG').split(',')[1].trim() ||
-                    time.getHours() + ':' + time.getMinutes()
-                  }`,
+                  time: `${time.toLocaleString('en-EG').split(',')[1].trim() || time.getHours() + ':' + time.getMinutes()}`,
                   location: location['location'],
                 };
               }),
@@ -157,10 +143,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'instructor',
-            `id ${req.params.instructorId}`
-          ),
+          message: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
         });
 
       // Case: instructor does not have any courses
@@ -179,29 +162,18 @@ const courseInstructorController = {
       // Case: course not found
       if (!course)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'course',
-            `name (${req.body.courseName})`
-          ),
+          message: errorMsgs.notFound('course', `name (${req.body.courseName})`),
         });
 
-      const instructorCourse = instructor.courses.filter(
-        (course) =>
-          course.name.toLowerCase() === req.body.courseName.toLowerCase()
-      );
+      const instructorCourse = instructor.courses.filter((course) => course.name.toLowerCase() === req.body.courseName.toLowerCase());
 
       // Case: this courseInstructor does not have this course
       if (instructorCourse.length === 0)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'course',
-            `name ${req.body.courseName} assigned to this instructor`
-          ),
+          message: errorMsgs.notFound('course', `name ${req.body.courseName} assigned to this instructor`),
         });
 
-      const notAssignedSlots = course.slots.filter(
-        ({ isAssigned }) => isAssigned === null
-      );
+      const notAssignedSlots = course.slots.filter(({ isAssigned }) => isAssigned === null);
 
       // Case: all the slots are assigned
       if (notAssignedSlots.length === 0)
@@ -210,27 +182,16 @@ const courseInstructorController = {
         });
 
       const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
-        const slotTime = time
-          .toLocaleString('en-EG')
-          .split(',')[1]
-          .trim()
-          .split(' '); // Should have an array with this ['11:45:00', 'AM']
+        const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
         const targetTime = req.body.slot.time.split(' ');
         targetTime[0] += ':00';
-        return (
-          day.toLowerCase() === req.body.slot.day.toLowerCase() &&
-          slotTime[0] === targetTime[0] &&
-          slotTime[1] === targetTime[1]
-        );
+        return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === targetTime[0] && slotTime[1] === targetTime[1];
       });
 
       // Case: target slot is not found
       if (targetSlotIndex === -1)
         return res.status(200).send({
-          message: errorMsgs.notFound(
-            'slot',
-            `time ${req.body.slot.time} on ${req.body.slot.day}`
-          ),
+          message: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
         });
 
       // Case: target slot is already assigned
@@ -250,10 +211,7 @@ const courseInstructorController = {
       // Case: TA not found
       if (!targetTa)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'teaching assistant',
-            `id ${req.body.gucId}`
-          ),
+          message: errorMsgs.notFound('teaching assistant', `id ${req.body.gucId}`),
         });
 
       // * Case: everything passed
@@ -304,10 +262,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'instructor',
-            `id ${req.params.instructorId}`
-          ),
+          message: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
         });
 
       // Case: instructor does not have any courses
@@ -336,10 +291,7 @@ const courseInstructorController = {
       // Case: TA not found
       if (!targetTa)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'teaching assistant',
-            `id ${req.body.gucId}`
-          ),
+          message: errorMsgs.notFound('teaching assistant', `id ${req.body.gucId}`),
         });
 
       // * Get Course
@@ -352,69 +304,40 @@ const courseInstructorController = {
       // Case: course not found
       if (!course)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'course',
-            `name (${req.body.courseName})`
-          ),
+          message: errorMsgs.notFound('course', `name (${req.body.courseName})`),
         });
 
-      const instructorCourse = instructor.courses.filter(
-        (course) =>
-          course.name.toLowerCase() === req.body.courseName.toLowerCase()
-      );
+      const instructorCourse = instructor.courses.filter((course) => course.name.toLowerCase() === req.body.courseName.toLowerCase());
 
       // Case: this courseInstructor does not have this course
       if (instructorCourse.length === 0)
         return res.status(404).send({
-          message: errorMsgs.notFound(
-            'course',
-            `name ${req.body.courseName} assigned to this instructor`
-          ),
+          message: errorMsgs.notFound('course', `name ${req.body.courseName} assigned to this instructor`),
         });
 
       const currentSlotIndex = course.slots.findIndex(({ day, time }) => {
-        const slotTime = time
-          .toLocaleString('en-EG')
-          .split(',')[1]
-          .trim()
-          .split(' '); // Should have an array with this ['11:45:00', 'AM']
+        const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
         const currentTime = req.body.slot.time.split(' ');
         currentTime[0] += ':00';
-        return (
-          day.toLowerCase() === req.body.slot.day.toLowerCase() &&
-          slotTime[0] === currentTime[0] &&
-          slotTime[1] === currentTime[1]
-        );
+        return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
       });
 
       // Case: current slot is not found
       if (currentSlotIndex === -1)
         return res.status(200).send({
-          message: errorMsgs.notFound(
-            'slot',
-            `time ${req.body.slot.time} on ${req.body.slot.day}`
-          ),
+          message: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
         });
 
       // Case: assign the currentSlot to target TA
       if (!req.body.newSlot) {
-        if (course.slots[currentSlotIndex].isAssigned === null)
-          res.send(
-            errorMsgs.notAssigned(
-              'slot',
-              'You can use the "assign slot" route to assign it'
-            )
-          );
+        if (course.slots[currentSlotIndex].isAssigned === null) res.send(errorMsgs.notAssigned('slot', 'You can use the "assign slot" route to assign it'));
 
         const currTa = course.slots[currentSlotIndex].isAssigned;
         course.slots[currentSlotIndex].isAssigned = targetTa;
         await course.save();
 
         // if target ta does not have this course, add it to the targetTa's courses
-        const newCourse =
-          targetTa.courses.findIndex(
-            (el) => `${el._id}` === `${course._id}`
-          ) === -1;
+        const newCourse = targetTa.courses.findIndex((el) => `${el._id}` === `${course._id}`) === -1;
 
         if (newCourse)
           await StaffMember.updateOne(
@@ -427,16 +350,10 @@ const courseInstructorController = {
           );
 
         // if current ta does not have another slots in this course, remove it from the currTa's courses
-        const stillHaveSlots =
-          course.slots.filter(
-            (slot) =>
-              slot.isAssigned !== null && slot.isAssigned._id === currTa._id
-          ).length > 0;
+        const stillHaveSlots = course.slots.filter((slot) => slot.isAssigned !== null && slot.isAssigned._id === currTa._id).length > 0;
 
         if (!stillHaveSlots) {
-          const courseIndex = currTa.courses.findIndex(
-            (el) => `${el._id}` === `${course._id}`
-          );
+          const courseIndex = currTa.courses.findIndex((el) => `${el._id}` === `${course._id}`);
           currTa.courses = currTa.courses.splice(courseIndex, 1);
           await currTa.save();
         }
@@ -453,36 +370,21 @@ const courseInstructorController = {
       // Case: assign the newSlot (targetSlot) to target TA
       else {
         const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
-          const slotTime = time
-            .toLocaleString('en-EG')
-            .split(',')[1]
-            .trim()
-            .split(' '); // Should have an array with this ['11:45:00', 'AM']
+          const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
           const targetTime = req.body.newSlot.time.split(' ');
           targetTime[0] += ':00';
-          return (
-            day.toLowerCase() === req.body.newSlot.day.toLowerCase() &&
-            slotTime[0] === targetTime[0] &&
-            slotTime[1] === targetTime[1]
-          );
+          return day.toLowerCase() === req.body.newSlot.day.toLowerCase() && slotTime[0] === targetTime[0] && slotTime[1] === targetTime[1];
         });
 
         // Case: target slot is not found
         if (targetSlotIndex === -1)
           return res.status(404).send({
-            message: errorMsgs.notFound(
-              'slot',
-              `time ${req.body.slot.time} on ${req.body.slot.day}`
-            ),
+            message: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
           });
 
         // If currentSlot is assigned to this TA, check that the new slot is available. Remove from oldSlot. Assign to the newSlot
 
-        if (
-          course.slots[currentSlotIndex].isAssigned !== null &&
-          `${course.slots[currentSlotIndex].isAssigned._id}` ===
-            `${targetTa._id}`
-        ) {
+        if (course.slots[currentSlotIndex].isAssigned !== null && `${course.slots[currentSlotIndex].isAssigned._id}` === `${targetTa._id}`) {
           // Case: want to assign the TA to a new slot and remove the old assignment
           if (course.slots[targetSlotIndex].isAssigned === null) {
             course.slots[currentSlotIndex].isAssigned = null;
@@ -499,19 +401,11 @@ const courseInstructorController = {
             });
           }
           // Case: the target slot is already assigned to another TA
-          else
-            return res
-              .status(400)
-              .send({ message: errorMsgs.alreadyAssigned('new slot') });
+          else return res.status(400).send({ message: errorMsgs.alreadyAssigned('new slot') });
         } else {
-          const maleTa =
-            course.slots[currentSlotIndex].isAssigned.gender === 'male';
+          const maleTa = course.slots[currentSlotIndex].isAssigned.gender === 'male';
           res.status(400).send({
-            message: `${errorMsgs.alreadyAssigned(
-              'current slot'
-            )} to another TA. Please enter ${
-              maleTa ? 'his' : 'her'
-            } ID to re-assign ${maleTa ? 'him' : 'her'}.`,
+            message: `${errorMsgs.alreadyAssigned('current slot')} to another TA. Please enter ${maleTa ? 'his' : 'her'} ID to re-assign ${maleTa ? 'him' : 'her'}.`,
           });
         }
       }
