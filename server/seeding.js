@@ -2,6 +2,7 @@ const StaffMember = require('./models/StaffMember');
 const Location = require('./models/Location');
 const Faculty = require('./models/Faculty');
 const Department = require('./models/Department');
+const Course = require('./models/Course');
 
 
 const bcrypt = require('bcryptjs');
@@ -66,5 +67,18 @@ exports.seedDB = async function () {
 
         await Department.create(newDep);
         console.log("Seeded Department into DB")
+    }
+
+    const allCourses = await Course.findOne({ name: 'seeded Course' });
+    if (!allCourses) {
+        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
+
+        const newCourse = {
+            department: getDep,
+            name: 'seeded Course'
+        }
+
+        await Course.create(newCourse);
+        console.log("Seeded Course into DB")
     }
 }
