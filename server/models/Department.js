@@ -6,7 +6,6 @@ const DepartmentSchema = new Schema({
     faculty: {
         type: Schema.Types.ObjectId,
         ref: 'Faculty',
-        required: true
     },
     name: {
         type: String,

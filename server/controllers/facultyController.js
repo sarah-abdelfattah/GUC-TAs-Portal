@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const Faculty = require('../models/Faculty');
+const Department = require('../models/Department');
 
 exports.addFaculty = async function (req, res) {
     try {
@@ -68,6 +69,13 @@ exports.deleteFaculty = async function (req, res) {
         const facultyFound = await Faculty.findOne({ code: code });
         if (!facultyFound)
             return res.send({ error: "Sorry no faculty with this code" });
+
+
+        const departments = await Department.find({ faculty: facultyFound._id })
+        for (let i = 0; i < departments.length; i++) {
+            departments[i].faculty = undefined;
+            await departments[i].save();
+        }
 
         await Faculty.findOneAndDelete({ code: code });
         return res.send({ data: "Faculty deleted successfully " });
