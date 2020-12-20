@@ -33,4 +33,10 @@ router.put(
   courseInstructorController.updateSlot
 );
 
+// Functionality: 34
+router.delete(
+  `${courseInstructorBaseRoute}/slotsAssignment/:instructorId`,
+  courseInstructorController.deleteSlot
+);
+
 module.exports = router;
