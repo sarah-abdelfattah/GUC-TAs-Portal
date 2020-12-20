@@ -1,6 +1,5 @@
 const objectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcryptjs');
-const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
@@ -50,6 +49,39 @@ async function departmentHelper(relatedFaculty, depName) {
     if (!refDepartment) return { error: 'Sorry Department not found' };
 
     return refDepartment;
+}
+
+async function updateInfoHelper(user) {
+    const gucId = user.gucId;
+    const dayOff = user.dayOff;
+    const role = user.role;
+    const officeLocation = user.officeLocation;
+    const gender = user.gender;
+
+    const newStaff = await StaffMember.findOne({ gucId: gucId });
+    if (!newStaff)
+        return { error: 'No staff with this id' };
+
+    else {
+        if (gender) {
+            newStaff.gender = gender
+        }
+
+        if (officeLocation) {
+            const locResult = await locationHelper(officeLocation);
+            if (locResult.error) return res.send(locResult);
+            else newStaff.officeLocation = locResult;
+        }
+
+        if (newStaff.type === 'Academic Member') {
+            if (dayOff) newStaff.dayOff = dayOff;
+            if (role) newStaff.role = role;
+        }
+
+
+        const updatedStaff = await newStaff.save();
+        return { data: updatedStaff }
+    }
 }
 
 exports.registerStaff = async function (req, res) {
@@ -176,51 +208,33 @@ exports.registerStaff = async function (req, res) {
 
 exports.updateStaff = async function (req, res) {
     try {
-        const gucId = req.body.gucId;
-        const name = req.body.name;
-        const dayOff = req.body.dayOff;
-        const role = req.body.role;
-        const leaveBalance = req.body.leaveBalance;
-        const officeLocation = req.body.officeLocation;
-        const faculty = req.body.faculty;
-        const department = req.body.department;
 
+        if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
+        if (!newStaff)
+            return res.send({ error: 'No staff with this id' });
 
-        if (!gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
-        const newStaff = await StaffMember.findOne({
-            gucId: gucId,
-            is_deleted: { $ne: true },
-        });
-        if (!newStaff || newStaff.is_deleted)
-            return res.send({ msg: 'No staff with this id' });
-        else {
-            if (name) newStaff.name = name;
-            if (dayOff && newStaff.type === 'Academic Member') newStaff.dayOff = dayOff;
-            if (salary) newStaff.salary = salary;
-            if (role && newStaff.type === 'Academic Member') newStaff.name = role;
-            if (leaveBalance) newStaff.leaveBalance = leaveBalance;
-            if (officeLocation) {
-                const locResult = await locationHelper(officeLocation);
-                if (locResult.error) return res.send(locResult);
-                else newStaff.officeLocation = locResult;
-            }
-            if (faculty && department && newStaff.type === 'Academic Member') {
-                const facultyResult = await facultyHelper(faculty);
+        if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
+            const facultyResult = await facultyHelper(faculty);
 
-                if (facultyResult.error) return res.send(facultyResult);
-                else newStaff.faculty = facultyResult;
-            } else newStaff.faculty = undefined
-            if (department && newStaff.type === 'Academic Member') {
-                const departmentResult = await departmentHelper(newStaff.faculty, department);
+            if (facultyResult.error) return res.send(facultyResult);
+            else newStaff.faculty = facultyResult;
+        } else newStaff.faculty = undefined
+        if (req.body.department && newStaff.type === 'Academic Member') {
+            const departmentResult = await departmentHelper(newStaff.faculty, department);
 
-                if (departmentResult.error) return res.send(departmentResult);
-                else foundMail.department = departmentResult;
-            } else newStaff.department = undefined
-        }
+            if (departmentResult.error) return res.send(departmentResult);
+            else foundMail.department = departmentResult;
+        } else newStaff.department = undefined
 
-        const updatedStaff = await newStaff.save();
-        return res.send({ data: updatedStaff });
+        await newStaff.save();
+
+        const user = req.body;
+        const result = await updateInfoHelper(user);
+
+        return res.send(result);
     } catch (err) {
         console.log('~ err', err);
         return res.send({ err: err });
@@ -398,8 +412,39 @@ exports.changePassword = async function (req, res) {
         // const salt = await bcrypt.genSalt(12);
         userToEdit.password = await bcrypt.hash(newPassword, 12);
         const updatedStaff = await userToEdit.save();
-        return res.send({ data: updatedStaff });
+        return res.send({ data: "Password changed successfully" });
     } else {
         return res.send({ error: 'wrong password' });
     }
+}
+
+exports.updateProfile = async function (req, res) {
+    try {
+        let user = req.user;
+        req.body.gucId = req.user.gucId;
+
+        user = req.body;
+        const result = await updateInfoHelper(user);
+
+        return res.send(result);
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
+}
+
+exports.getProfile = async function (req, res) {
+    try {
+        const user = req.user;
+        const staff = await StaffMember.findOne({ gucId: user.gucId });
+        if (!staff)
+            return res.send({ err: 'No user' });
+
+        return res.send({ data: staff });
+    } catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+
 }
