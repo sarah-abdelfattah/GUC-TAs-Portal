@@ -187,20 +187,17 @@ exports.getAllStaffMembers = async (req, res) => {
 
 exports.getStaffMembersPerCourse = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
-      name: req.params.departmentName,
-    }).populate();
-    let courseFound = await Course.findOne({
-      name: req.params.course,
-    }).populate();
+      name: req.user.department,
+    }).populate('department');
 
     // if there's no department found
     if (!departmentFound) {
       return res
         .status(404)
         .send({
-          message: `No department found with this name ${req.params.departmentName}`,
+          error: `No department found with this name ${req.user.department}`,
         });
     }
     // if this department has different HOD
@@ -210,6 +207,9 @@ exports.getStaffMembersPerCourse = async (req, res) => {
       });
     }
 
+    let courseFound = await Course.findOne({
+        name: req.params.course,
+      }).populate();
     // if no course found
     if (!courseFound) {
       return res
@@ -237,17 +237,17 @@ exports.getStaffMembersPerCourse = async (req, res) => {
 // view day off for all staff members of this department
 exports.viewDayOff = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
-      name: req.params.departmentName,
-    }).populate();
+      name: req.user.department,
+    }).populate('department');
 
     // if there's no department found
     if (!departmentFound) {
       return res
         .status(404)
         .send({
-          message: `No department found with this name ${req.params.departmentName}`,
+          error: `No department found with this name ${req.user.department}`,
         });
     }
     // if this department has different HOD
@@ -276,17 +276,17 @@ exports.viewDayOff = async (req, res) => {
 
 exports.viewDayOffStaff = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
-      name: req.params.departmentName,
-    }).populate();
+      name: req.user.department,
+    }).populate('department');
 
     // if there's no department found
     if (!departmentFound) {
       return res
         .status(404)
         .send({
-          message: `No department found with this name ${req.params.departmentName}`,
+          error: `No department found with this name ${req.user.department}`,
         });
     }
     // if this department has different HOD
@@ -320,16 +320,17 @@ exports.viewDayOffStaff = async (req, res) => {
 // view the course coverage of each course
 exports.viewCourseCoverage = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.params.idHOD }).populate();
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
-      name: req.params.departmentName,
-    }).populate();
+      name: req.user.department,
+    }).populate('department');
+
     // if there's no department found
     if (!departmentFound) {
       return res
         .status(404)
         .send({
-          message: `No department found with this name ${req.params.departmentName}`,
+          error: `No department found with this name ${req.user.department}`,
         });
     }
     // if this department has different HOD
