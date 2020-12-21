@@ -138,6 +138,98 @@ const courseInstructorController = {
     }
   },
 
+  // ==> Functionality 31 <== //
+  async staffMembers(req, res) {
+    try {
+      const instructor = await StaffMember.findOne({
+        gucId: req.user.gucId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
+        });
+
+      // Case: instructor does not have any courses
+      if (instructor.courses.length === 0)
+        return res.status(200).send({
+          error: errorMsgs.notAssignedTo('courses', 'instructor'),
+        });
+      let staff = [];
+      if (req.params.courseName === 'all') {
+        // Case: staff per department
+        staff = await StaffMember.find({ department: instructor.department })
+          .populate('officeLocation')
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.location' },
+          })
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.isAssigned' },
+          });
+      } else {
+        // Case: staff per course in department
+        const courseFound = await Course.findOne({
+          department: instructor.department,
+          name: req.params.courseName,
+        });
+
+        // Case: course not found
+        if (!courseFound) {
+          return res.status(404).send({
+            error: errorMsgs.notFound('course', req.params.courseName),
+          });
+        }
+
+        staff = await StaffMember.find({
+          department: instructor.department,
+          courses: courseFound,
+        })
+          .populate('officeLocation')
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.location' },
+          })
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.isAssigned' },
+          });
+      }
+      return res.status(200).send(
+        staff.length === 0
+          ? { data: errorMsgs.notAssignedTo('staff', 'course') }
+          : {
+              data: staff.map((member) => {
+                return {
+                  gucId: member.gucId,
+                  name: member.name,
+                  email: member.email,
+                  dayOff: member.dayOff,
+                  courses: member.courses.map(({ name }) => name),
+                  officeLocation: member.officeLocation.location,
+                  gender: member.gender,
+                };
+              }),
+            }
+      );
+    } catch (err) {
+      res.status(500).send({ err: `Internal Server Error: ${err}` });
+    }
+  },
+
   // ==> Functionality 32 <== //
   async assignSlot(req, res) {
     try {

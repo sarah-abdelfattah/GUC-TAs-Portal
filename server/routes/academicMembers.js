@@ -23,6 +23,12 @@ router.get(
   courseInstructorController.slotsAssignment
 );
 
+// Functionality: 31
+router.get(
+  `${courseInstructorBaseRoute}/staffMembers/:courseName`, auth.CIAuth,
+  courseInstructorController.staffMembers
+);
+
 // Functionality: 32
 router.post(
   `${courseInstructorBaseRoute}/slotsAssignment`, auth.CIAuth,
