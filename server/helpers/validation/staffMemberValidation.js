@@ -35,12 +35,15 @@ const logInSchema = Joi.object({
     gucId: Joi.string().regex(/['HR','AC']-[1-10000000000]/).required(),
 })
 
-
-
+const changePasswordSchema = Joi.object({
+    newPassword: Joi.string().min(6).alphanum().required(),
+    oldPassword: Joi.string().min(6).alphanum().required()
+})
 
 module.exports = {
     registerSchema,
     registerACSchema,
     updateSchema,
-    logInSchema
+    logInSchema,
+    changePasswordSchema
 }
