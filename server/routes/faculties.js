@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 const facultyController = require('../controllers/facultyController');
 
 //HR 
