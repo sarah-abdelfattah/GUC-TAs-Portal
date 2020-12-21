@@ -4,8 +4,9 @@ const auth = require('./auth');
 
 const slotController = require('../controllers/slotController');
 
-router.post('/cc/courseSlot',auth.TAAuth,slotController.addCourseSlot);
-router.delete('/cc/courseSlot',auth.TAAuth,slotController.removeCourseSlot);
-router.put('/cc/courseSlot',auth.TAAuth,slotController.updateCourseSlot);
+//CC only
+router.post('/courseSlot', auth.CCAuth, slotController.addCourseSlot);
+router.delete('/courseSlot', auth.CCAuth, slotController.removeCourseSlot);
+router.put('/courseSlot', auth.CCAuth, slotController.updateCourseSlot);
 
 module.exports = router;  

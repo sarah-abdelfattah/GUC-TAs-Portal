@@ -7,10 +7,10 @@ const staffMember = require('../models/StaffMember');
 exports.viewAttendance = async function (req, res) {
     try {
         const id = req.user.gucId;
-        const { month1, month2,all } = req.body;
+        const { month1, month2, all } = req.body;
 
         if (((!month1 || !month2) && !all)) {
-            res.send({ message: "You should choose an option" });
+            res.send({ error: "You should choose an option" });
             return;
         }
         if (all === 'all') {
@@ -21,11 +21,11 @@ exports.viewAttendance = async function (req, res) {
             }
             attendanceRecord = staff.attendanceRecords;
             if (!attendanceRecord) {
-                res.send({ msg: "There is no attendance records yet for this ID: " + id });
+                res.send({ error: "There is no attendance records yet for this ID: " + id });
                 return;
             }
-            res.json(attendanceRecord);
-        } else if (all === 'month'){
+            res.send({ data: attendanceRecord });
+        } else {
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
                 res.send(attendanceRecord);
@@ -34,9 +34,8 @@ exports.viewAttendance = async function (req, res) {
         }
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
-
 }
 
 //Function 9: View if they have missing days.
@@ -50,7 +49,7 @@ exports.viewMissingDays = async function (req, res) {
             res.send("Number of missing days: " + mDays);
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -79,11 +78,11 @@ exports.addMissingSignInOut = async function (req, res) {
     try {
         const { id, signIn, signOut, date, day, number } = req.body;
         if ((!signIn && !signOut) || !date || !day || !id || !number) {
-            res.send({ message: "The sign in/out, date, and day should be specified" });
+            res.send({ error: "The sign in/out, date, and day should be specified" });
             return;
         }
 
-        if(id === req.user.gucId){
+        if (id === req.user.gucId) {
             res.send("You are not able to add a missing signIn/Out for yourself");
             return;
         }
@@ -98,9 +97,9 @@ exports.addMissingSignInOut = async function (req, res) {
         month = parseInt(date.substring(5, 7));
         todayDay = parseInt(date.substring(8, 10));
         //Check if the date inserted is in the future
-        if (year > today.getFullYear() || (year === today.getFullYear() && month > (today.getMonth()+1)) ||
-            (year === today.getFullYear() && month === (today.getMonth()+1) && todayDay > today.getDate())) {
-            res.send({ message: `You cannot add a signIn/Out on a future date ${date}` });
+        if (year > today.getFullYear() || (year === today.getFullYear() && month > (today.getMonth() + 1)) ||
+            (year === today.getFullYear() && month === (today.getMonth() + 1) && todayDay > today.getDate())) {
+            res.send({ error: `You cannot add a signIn/Out on a future date ${date}` });
             return;
         }
         attendanceRecord = staff.attendanceRecords;
@@ -121,7 +120,7 @@ exports.addMissingSignInOut = async function (req, res) {
             signOutSec = parseInt(signOut.substring(6, 8));
             if (signInhrs > signOuthrs || (signInhrs === signOuthrs && signInMin > signOutMin) ||
                 ((signInhrs === signOuthrs && signInMin === signOutMin && signInSec > signOutSec))) {
-                res.send({ message: `You cannot add a signIn time: ${signIn} that is after the signOut time: ${signOut}` });
+                res.send({ error: `You cannot add a signIn time: ${signIn} that is after the signOut time: ${signOut}` });
                 return;
             }
             if (indexesOfDateRecords.length === 1 && !attendanceRecord[indexesOfDateRecords[0]].startTime && !attendanceRecord[indexesOfDateRecords[0]].endTime) {
@@ -165,7 +164,7 @@ exports.addMissingSignInOut = async function (req, res) {
                 signOutSec = parseInt(signOut.substring(6, 8));
                 if (signInhrs > signOuthrs || (signInhrs === signOuthrs && signInMin > signOutMin) ||
                     ((signInhrs === signOuthrs && signInMin === signOutMin && signInSec > signOutSec))) {
-                    res.send({ message: `You cannot add a signOut time: ${signOut} that is before the signIn time: ${sTime}` });
+                    res.send({ error: `You cannot add a signOut time: ${signOut} that is before the signIn time: ${sTime}` });
                     return;
                 }
                 attendanceRecord[indexesOfDateRecords[number - 1]] = {
@@ -203,7 +202,7 @@ exports.addMissingSignInOut = async function (req, res) {
                 signOutSec = parseInt(eTime.substring(6, 8));
                 if (signInhrs > signOuthrs || (signInhrs === signOuthrs && signInMin > signOutMin) ||
                     ((signInhrs === signOuthrs && signInMin === signOutMin && signInSec > signOutSec))) {
-                    res.send({ message: `You cannot add a signIn time: ${signIn} that is after the signOut time: ${eTime}` });
+                    res.send({ error: `You cannot add a signIn time: ${signIn} that is after the signOut time: ${eTime}` });
                     return;
                 }
                 attendanceRecord[indexesOfDateRecords[number - 1]] = {
@@ -219,23 +218,23 @@ exports.addMissingSignInOut = async function (req, res) {
         }
         updatedStaff = await staffMember.findOneAndUpdate({ gucId: id }, { attendanceRecords: attendanceRecord });
         if (!updatedStaff) {
-            res.send({ msg: `There is no staff member with the ID ${id}` });
+            res.send({ error: `There is no staff member with the ID ${id}` });
             return;
         }
         attendanceRecordUpdated = await updatedStaff.save();
-        res.send("The missing sign in/out ia added successfully");
+        res.send({ data: "The missing sign in/out is added successfully" });
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
 }
 
 //Function 18: View any staff member attendance record.
 exports.viewAttendanceHR = async function (req, res) {
     try {
-        const { id, month1, month2,all } = req.body;
+        const { id, month1, month2, all } = req.body;
         if (((!month1 || !month2) && !all) || !id) {
-            res.send({ message: "You should choose an option" });
+            res.send({ error: "You should choose an option" });
             return;
         }
         if (all === 'all') {
@@ -246,20 +245,20 @@ exports.viewAttendanceHR = async function (req, res) {
             }
             attendanceRecord = staff.attendanceRecords;
             if (!attendanceRecord) {
-                res.send({ msg: "There is no attendance records yet for this ID: " + id });
+                res.send({ error: "There is no attendance records yet for this ID: " + id });
                 return;
             }
-            res.json(attendanceRecord);
-        } else if(all === 'month'){
+            return res.send({ data: attendanceRecord });
+        } else {
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
-                res.send(attendanceRecord);
+                return res.send(attendanceRecord);
             else
-                res.json(attendanceRecord);
+                return res.json(attendanceRecord);
         }
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -268,7 +267,7 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
     try {
         attendanceRecords = await staffMember.find();
         if (!attendanceRecords) {
-            res.send({ msg: "There no staff in the system yet" });
+            res.send({ error: "There no staff in the system yet" });
             return;
         }
         staffIDs = [];
@@ -370,14 +369,14 @@ exports.findMissingDays = async function (id) {
         previousYear = currDate.getFullYear();
     }
     dayOffNum = "0";
-    switch(dayOff){
-        case "Monday": dayOffNum = "1";break;
-        case "Tuesday": dayOffNum = "2";break;
-        case "Wednesday": dayOffNum = "3";break;
-        case "Thursday": dayOffNum = "4";break;
-        case "Friday": dayOffNum = "5";break;
-        case "Saturday": dayOffNum = "6";break;
-        default: dayOffNum = "0";break;
+    switch (dayOff) {
+        case "Monday": dayOffNum = "1"; break;
+        case "Tuesday": dayOffNum = "2"; break;
+        case "Wednesday": dayOffNum = "3"; break;
+        case "Thursday": dayOffNum = "4"; break;
+        case "Friday": dayOffNum = "5"; break;
+        case "Saturday": dayOffNum = "6"; break;
+        default: dayOffNum = "0"; break;
     }
     //Filtering the days from 11 of the current month to 10 of the upcoming month and the status of that day is absent
     //TODO: I need to use the emun if accepted (some leave)
@@ -454,14 +453,14 @@ exports.findMissingMinutes = async function (id) {
             cumulativeMin += minSpent;
         }
         dayOffNum = "0";
-        switch(dayOff){
-            case "Monday": dayOffNum = "1";break;
-            case "Tuesday": dayOffNum = "2";break;
-            case "Wednesday": dayOffNum = "3";break;
-            case "Thursday": dayOffNum = "4";break;
-            case "Friday": dayOffNum = "5";break;
-            case "Saturday": dayOffNum = "6";break;
-            default: dayOffNum = "0";break;
+        switch (dayOff) {
+            case "Monday": dayOffNum = "1"; break;
+            case "Tuesday": dayOffNum = "2"; break;
+            case "Wednesday": dayOffNum = "3"; break;
+            case "Thursday": dayOffNum = "4"; break;
+            case "Friday": dayOffNum = "5"; break;
+            case "Saturday": dayOffNum = "6"; break;
+            default: dayOffNum = "0"; break;
         }
         //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
         if (record.day !== dayOffNum && record.day !== "5") {

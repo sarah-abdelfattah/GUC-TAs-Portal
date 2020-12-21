@@ -265,7 +265,7 @@ exports.deleteStaff = async function (req, res) {
 
 exports.signIn = async function (req, res) {
     try {
-        const gucId = req.body.gucId;
+        const gucId = req.user.gucId;
 
         if (!gucId) return res.send({ error: 'Please enter GUC-ID' });
 
@@ -298,14 +298,13 @@ exports.signIn = async function (req, res) {
             const result = await attendanceRecord.find(
                 ({ date }) => date === newAttendance.date
             );
-            if (result) return res.send({ error: 'Staff already signed in today' });
-            else {
-                attendanceRecord.push(newAttendance);
-                staff.attendanceRecords = attendanceRecord;
 
-                const updatedStaff = await staff.save();
-                return res.send({ data: updatedStaff });
-            }
+            attendanceRecord.push(newAttendance);
+            staff.attendanceRecords = attendanceRecord;
+
+            const updatedStaff = await staff.save();
+            return res.send({ data: updatedStaff.attendanceRecords });
+
         }
     } catch (err) {
         console.log('~ err', err);
@@ -315,7 +314,7 @@ exports.signIn = async function (req, res) {
 
 exports.signOut = async function (req, res) {
     try {
-        const gucId = req.body.gucId;
+        const gucId = req.user.gucId;
 
         if (!gucId)
             return res.send({ error: "Please enter the GUC-ID" });
@@ -330,24 +329,26 @@ exports.signOut = async function (req, res) {
             let found = false;
 
             const attendanceRecord = staff.attendanceRecords;
-            for (var i in attendanceRecord) {
-                if (attendanceRecord[i].date === currentDate) {
-                    found = true;
-
-                    if (attendanceRecord[i].endTime)
-                        return res.send({ error: "Sorry staff already signed out before" });
-
-                    attendanceRecord[i].endTime = currentTime;
-                    break;
+            if (attendanceRecord[attendanceRecord.length - 1].date === currentDate) {
+                if (attendanceRecord[attendanceRecord.length - 1].startTime && !attendanceRecord[attendanceRecord.length - 1].endTime) {
+                    attendanceRecord[attendanceRecord.length - 1].endTime = currentTime;
+                    staff.attendanceRecords = attendanceRecord;
+                    const updatedStaff = await staff.save();
+                    return res.send({ data: updatedStaff.attendanceRecords });
                 }
             }
-            if (!found)
-                return res.send({ error: "Sorry staff did not sign in today" });
 
+            const newRec = {
+                day: today.getDay(),
+                date: currentDate,
+                status: 'Present',
+                endTime: currentTime
+            }
+            attendanceRecord.push(newRec);
             staff.attendanceRecords = attendanceRecord;
 
             const updatedStaff = await staff.save();
-            return res.send({ data: updatedStaff });
+            return res.send({ data: updatedStaff.attendanceRecords });
         }
     } catch (err) {
         console.log('~ err', err);
@@ -455,28 +456,28 @@ exports.getProfile = async function (req, res) {
 exports.updateSalary = async function (req, res) {
     try {
         //no need to check if it is the same person or not (answered on piazza "I know it does not make ay scence")
-        const { id, newSalary} = req.body; 
+        const { id, newSalary } = req.body;
         if (!id || !newSalary) {
-            res.send({ message: "The id/salary/status should be specified" });
+            res.send({ error: "The id/salary should be specified" });
             return;
         }
         updatedStaff = await StaffMember.findOneAndUpdate({ gucId: id }, { salary: newSalary });
         if (!updatedStaff) {
-            res.send({ message: `The ID: ${id} is not a staff member` });
+            res.send({ error: `The ID: ${id} is not a staff member` });
             return;
         }
         attendanceRecordUpdated = await updatedStaff.save();
-        res.send(`Salary is updated sucessfully to ${newSalary}`);
+        res.send({ data: `Salary is updated successfully to ${newSalary}` });
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
 }
 
 //Function 39: View their schedule. Schedule should show teaching activities and replacements if present. 
 exports.viewMySchedule = async (req, res) => {
     try {
-        const id  = req.user.gucId;
+        const id = req.user.gucId;
         const staff = await StaffMember.findOne({ gucId: id });
         if (!staff) {
             res.send({ msg: `There is no staff member with ID ${id}` })
@@ -499,7 +500,7 @@ exports.viewMySchedule = async (req, res) => {
         }
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ message: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 

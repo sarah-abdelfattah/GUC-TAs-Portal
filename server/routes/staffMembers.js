@@ -8,6 +8,11 @@ const staffMemberController = require('../controllers/staffMemberController');
 router.post("/staff", auth.HRAuth, staffMemberController.registerStaff);
 router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
 router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
+router.put("/updateSalary", auth.HRAuth, staffMemberController.updateSalary);
+
+//academic member
+router.get('/viewMySchedule', auth.AcademicMemberAuth, staffMemberController.viewMySchedule);
+
 
 //all users
 router.post("/logOut", staffMemberController.logout);
@@ -18,8 +23,5 @@ router.post("/changePassword", staffMemberController.changePassword);
 
 router.put("/profile", staffMemberController.updateProfile);
 router.get("/profile", staffMemberController.getProfile);
-
-router.put("/hr/updateSalary", auth.HRAuth,staffMemberController.updateSalary);
-router.get('/ac/viewMySchedule',auth.AcademicMemberAuth,staffMemberController.viewMySchedule);
 
 module.exports = router;  
