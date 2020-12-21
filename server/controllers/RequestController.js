@@ -570,90 +570,51 @@ catch (err) {
 
 
 // }
-exports.viewOriginalSchedule = async function (objId){
-    const staff = await StaffMember.findOne({_id:objId});
-    if(!staff){
-        return `There is no staff member with ID ${objId}`;
-    }
-    const teachingCoursesObjIDs = staff.courses;
-    teachingCourses = [];
-    mySlots = [];
-    for(i =0;i<teachingCoursesObjIDs.length;i++){
-        const teachingCourse = await courses.findById(teachingCoursesObjIDs[i].course);
-        if(!teachingCourse){
-            return "You do not have the access to view any courses";
-        }
-        teachingCourses.push(teachingCourse);
-    }
-    //The original schedule
-    for(j=0;j<teachingCourses.length;j++){
-        courseSlots = teachingCourses[j].slots;
-        for(i=0;i<courseSlots.length;i++){
-            if(courseSlots[i].isAssigned && courseSlots[i].isAssigned.equals(objId)){
-                locationRoom = await Location.findById(courseSlots[i].location);
-                slotAdded = {
-                    day: courseSlots[i].day,
-                    time: courseSlots[i].time,
-                    location: locationRoom.location,
-                    course: teachingCourses[j].name
-                }
-                mySlots.push(slotAdded);
-            }
-        }
-    }
-    return mySlots;
-}
-exports.viewMySchedule = async (req, res) => {
-    try {
-        const id = req.user.gucId;
-        const staff = await StaffMember.findOne({ gucId: id });
-        if (!staff) {
-            res.send({ msg: `There is no staff member with ID ${id}` })
-            return;
-        }
-        if (staff.type !== 'Academic Member') {
-            res.send({ msg: 'You are not authorized to go this page' });
-            return;
-        }
-        originalSlots = await this.viewOriginalSchedule(staff._id);
-        repSlots = await viewReplacementSlots(staff._id);
-        if (typeof (originalSlots) !== 'string' && typeof (repSlots) !== 'string') {
-            res.json(originalSlots.concat(repSlots));
-        } else if (typeof (originalSlots) !== 'string') {
-            res.json(originalSlots);
-        } else if (typeof (repSlots) !== 'string') {
-            res.json(repSlots);
-        } else {
-            res.send(originalSlots + "\n" + repSlots);
-        }
-    } catch (err) {
-        console.log('~ err', err);
-        res.status(500).send({ error: `Internal Server Error: ${err}` });
-    }
-}
+
+      
 exports.AcceptOrRejectRep=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
   var NewRequest=await Request.findOne({_id:Requestid}).populate();
-  var id=req.uder.gucId;
+  var id=req.user.gucId;
+  var objId=req.user._id;
   var staff=await StaffMember.findOne({gucId:id}).populate();
   var accepted=false;
   const AcceptOrReject=req.body.AcceptOrReject
   if(AcceptOrReject=="accepted"){
     var date=NewRequest.replacemntDate;
     const teachingCoursesObjIDs = staff.courses;
-    var teachingCourses = [];
-    var mySlots = [];
-    for(i =0;i<teachingCoursesObjIDs.length;i++){
-        const teachingCourse = await courses.findById(teachingCoursesObjIDs[i].course);
-        if(!teachingCourse){
+    var flag=false;
+    teachingCourses = [];
+    
+    for (i = 0; i < teachingCoursesObjIDs.length; i++) {
+        const teachingCourse = await courses.findById(teachingCoursesObjIDs[i]);
+        if (!teachingCourse) {
             return "You do not have the access to view any courses";
         }
         teachingCourses.push(teachingCourse);
     }
+    //The original schedule
+    for (j = 0; j < teachingCourses.length; j++) {
+        courseSlots = teachingCourses[j].slots;
+        for (i = 0; i < courseSlots.length; i++) {
+            if (courseSlots[i].isAssigned && courseSlots[i].isAssigned.equals(objId)) {
+            
+            if(courseSlots[i].time.getDay()==date.getDay()&&courseSlots[i].time.getHours()==date.getHours()&&courseSlots[i].time.getMinutes()==date.getMinutes()){
+
+             flag=true /// a3ml reject
+            }
+            }
+        }
+    }
+    if(flag){
+      return res.send({error : 'you cannot accept this request, you donnot have this free slot in your Schedule'})
+    }else{
+      accepted=true;
+    }
 //if he have a free slots in this date
 // if yes update the accepted=true
-  } 
+   } 
     
  
   if(accepted){
@@ -689,8 +650,8 @@ await newNotificatin.save();
   await NewRequest.save();
    }
 
-
-}
+ return res.send({data:NewRequest});
+ } 
 catch (err) {
         console.log(err)
         return res.send({ err: err })
@@ -740,6 +701,7 @@ await newNotificatin.save();
    // updates
   NewRequest.status='rejected'
   await NewRequest.save();
+  return res.send({data:NewRequest});
    }
 
 }
@@ -784,8 +746,9 @@ await newNotificatin.save();
    // updates
   NewRequest.status='rejected'
   await NewRequest.save();
+  
    }
-
+  return res.send({data:NewRequest});
 }
 catch (err) {
         console.log(err)
@@ -951,7 +914,7 @@ await newNotificatin.save();
   NewRequest.status='rejected'
   await NewRequest.save();
    }
-
+ return res.send({data:NewRequest});
 }
 catch (err) {
         console.log(err)
