@@ -576,12 +576,40 @@ exports.AcceptOrRejectRep=async function (req, res) {
   var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
     
-
-
+ 
   if(accepted){
-      //code aya
+    var id=req.uder.gucId;
+    var rec=await StaffMember.findOne({gucId:id}).populate();
+    var senderId=NewRequest.sender._id;
+    var sender=await StaffMember.findOne({_id:senderId}).populate();
+   
+    //update the schedule of the Reciever
 
+    //notification
+
+  const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your"+NewRequest.subject+"was Accepted"
+  
+});
+await newNotificatin.save();
+await NewRequest.save();
+await sender.save();
+ 
   }
+    else{
+       
+  const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your"+NewRequest.subject+"was Rejected"
+  
+});
+await newNotificatin.save();
+   // updates
+  NewRequest.status='rejected'
+  await NewRequest.save();
+   }
+
 
 }
 catch (err) {
@@ -589,15 +617,14 @@ catch (err) {
         return res.send({ err: err })
     }
   }
-  //a3ml notification
-  //push f array attendance
+   
   exports.AcceptOrRejectChangeDay=async function (req, res) {
   try{  
   const Requestid=req.params._id;
   
   var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
-
+ 
 
    
 
@@ -606,7 +633,7 @@ catch (err) {
    // updates
     
   NewRequest.status='accepted'
-  senderId=NewRequest.sender._id;
+  var senderId=NewRequest.sender._id;
   var sender=await StaffMember.findOne({_id:senderId}).populate();
   sender.dayOff=NewRequest.newDayOff;
   await sender.save();
@@ -625,7 +652,13 @@ return res.send({data:NewRequest});
     
    }
    else{
-
+     const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your"+NewRequest.subject+"was Rejected"
+  
+});
+await newNotificatin.save();
+   // updates
   NewRequest.status='rejected'
   await NewRequest.save();
    }
@@ -646,34 +679,32 @@ catch (err) {
 
 
    if(accepted){
-      
+    // updates
+  NewRequest.status='accepted'
+  var senderId=NewRequest.sender._id;
+  var sender=await StaffMember.findOne({_id:senderId}).populate();
+ // update the schedule of the sender hereee
+
+  await sender.save();
+  await NewRequest.save();
   const newNotificatin = new Notification({
-  reciever: Request.sender,
-  message:"  your Change DayOFF Request was Accepted"
+  reciever: sender,
+  message:"  your  Slot Request at"+ NewRequest.date +" was Accepted"
+  
+});
+await newNotificatin.save(); 
+
+   }
+   else{
+     const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your"+NewRequest.subject+"was Rejected"
   
 });
 await newNotificatin.save();
-
-const attendanceRecord = staff.attendanceRecords;
-
-  const newAttendance = {
-                day: currentTime.getDay(),
-                date:
-                    currentTime.getFullYear() +
-                    '-' +
-                    (currentTime.getMonth() + 1) +
-                    '-' +
-                    currentTime.getDate(),
-                startTime:
-                    currentTime.getHours() +
-                    ':' +
-                    currentTime.getMinutes() +
-                    ':' +
-                    currentTime.getSeconds(),
-                status: 'Present',
-            };
-  attendanceRecord.push(newAttendance);
-   
+   // updates
+  NewRequest.status='rejected'
+  await NewRequest.save();
    }
 
 }
@@ -691,35 +722,157 @@ exports.AcceptOrRejectLeave=async function (req, res) {
 
 
    if(accepted){
+     // updates
+  NewRequest.status='accepted'
+  var senderId=NewRequest.sender._id;
+  var sender=await StaffMember.findOne({_id:senderId}).populate();
+//update leave balance of the sender
+
+
+  
      
   const newNotificatin = new Notification({
-  reciever: Request.sender,
-  message:"  your Change DayOFF Request was Accepted"
+  reciever:sender,
+  message:"  your"+NewRequest.subject+"was Accepted"
   
 });
 await newNotificatin.save();
+if(NewRequest.leaveType=="Sick"){
+  const attendanceRecord = staff.attendanceRecords;
 
+  const newAttendance = {
+                day: NewRequest.SickDayDate.getDay(),
+                date:
+                    NewRequest.SickDayDate.getFullYear() +
+                    '-' +
+                    ( NewRequest.SickDayDate.getMonth() + 1) +
+                    '-' +
+                    NewRequest.SickDayDate.getDate(),
+                // startTime:
+                //     currentTime.getHours() +
+                //     ':' +
+                //     currentTime.getMinutes() +
+                //     ':' +
+                //     currentTime.getSeconds(),
+                status: 'Absent',
+                absentsatisfied:true,
+                absentStatus:"Sick Leave"
+            };
+  attendanceRecord.push(newAttendance);
+}
+if(NewRequest.leaveType=="Compensation"){
+  const attendanceRecord = staff.attendanceRecords;
+
+  const newAttendance = {
+                day: NewRequest.LeaveDate.getDay(),
+                date:
+                    NewRequest.LeaveDate.getFullYear() +
+                    '-' +
+                    ( NewRequest.LeaveDate.getMonth() + 1) +
+                    '-' +
+                    NewRequest.LeaveDate.getDate(),
+                // startTime:
+                //     currentTime.getHours() +
+                //     ':' +
+                //     currentTime.getMinutes() +
+                //     ':' +
+                //     currentTime.getSeconds(),
+                status: 'Absent',
+                absentsatisfied:true,
+                absentStatus:"Compensation Leave" 
+
+            };
+  attendanceRecord.push(newAttendance);
+}
+if(NewRequest.leaveType=="Annual"){
+  const attendanceRecord = staff.attendanceRecords;
+
+  const newAttendance = {
+                day: NewRequest.AnnualLeaveDate.getDay(),
+                date:
+                    NewRequest.AnnualLeaveDate.getFullYear() +
+                    '-' +
+                    ( NewRequest.AnnualLeaveDate.getMonth() + 1) +
+                    '-' +
+                    NewRequest.AnnualLeaveDate.getDate(),
+                // startTime:
+                //     currentTime.getHours() +
+                //     ':' +
+                //     currentTime.getMinutes() +
+                //     ':' +
+                //     currentTime.getSeconds(),
+                status: 'Absent',
+                absentsatisfied:true,
+                absentStatus:"Annual Leave"
+
+            };
+  attendanceRecord.push(newAttendance);
+}
+if(NewRequest.leaveType=="Maternity"){
+  const attendanceRecord = staff.attendanceRecords;
+
+  const newAttendance = {
+                day: NewRequest.startDate.getDay(),
+                date:
+                    NewRequest.startDate.getFullYear() +
+                    '-' +
+                    ( NewRequest.startDate.getMonth() + 1) +
+                    '-' +
+                    NewRequest.startDate.getDate(),
+                // startTime:
+                //     currentTime.getHours() +
+                //     ':' +
+                //     currentTime.getMinutes() +
+                //     ':' +
+                //     currentTime.getSeconds(),
+                status: 'Absent',
+                absentsatisfied:true,
+                absentStatus:"Maternity Leave"
+
+            };
+  attendanceRecord.push(newAttendance);
+}
+if(NewRequest.leaveType=="Accidental"){
 const attendanceRecord = staff.attendanceRecords;
 
   const newAttendance = {
-                day: currentTime.getDay(),
+                day: NewRequest.AccidentDate.getDay(),
                 date:
-                    currentTime.getFullYear() +
+                    NewRequest.AccidentDate.getFullYear() +
                     '-' +
-                    (currentTime.getMonth() + 1) +
+                    ( NewRequest.AccidentDate.getMonth() + 1) +
                     '-' +
-                    currentTime.getDate(),
-                startTime:
-                    currentTime.getHours() +
-                    ':' +
-                    currentTime.getMinutes() +
-                    ':' +
-                    currentTime.getSeconds(),
-                status: 'Present',
+                    NewRequest.AccidentDate.getDate(),
+                // startTime:
+                //     currentTime.getHours() +
+                //     ':' +
+                //     currentTime.getMinutes() +
+                //     ':' +
+                //     currentTime.getSeconds(),
+                status: 'Absent',
+                absentsatisfied:true,
+                absentStatus:"Accidental Leave"
+
             };
   attendanceRecord.push(newAttendance);
-   
+}
+
+
+  await sender.save();
+  await NewRequest.save();
    }
+    else{
+  const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your"+NewRequest.subject+"was Rejected"
+  
+});
+await newNotificatin.save();
+   // updates
+  NewRequest.status='rejected'
+  await NewRequest.save();
+   }
+
 }
 catch (err) {
         console.log(err)

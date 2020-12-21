@@ -30,7 +30,8 @@ const AttendanceRecordSchema = new Schema({
     ],
   },
   absentsatisfied:{
-    type: Boolean
+    type: Boolean,
+    default:false
   },
  absentStatus:{
    type: String,
