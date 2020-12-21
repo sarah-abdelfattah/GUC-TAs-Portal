@@ -654,7 +654,9 @@ exports.viewTeachingAssignments = async (req, res) => {
         const teachingAssigned = await StaffMember.find({
             department: departmentFound._id,
             name: req.params.courseName,
-        }).populate('courses');
+        }).populate('courses.slots');
+
+        console.log(teachingAssigned) // see if populate will return course_schema or not?
 
         if(!teachingAssigned) {
             return res.send({
@@ -663,10 +665,14 @@ exports.viewTeachingAssignments = async (req, res) => {
         }
 
         return res.status(200).send({
-            data: teachingAssigned
+            data: teachingAssigned.map((staff)=>{
+                return {
+                    name: staff.name,
+                    gucId: staff.gucId,
+                    courses: staff.courses,
+                }    
+            })
         });
-
-        
     } catch (err) {
         res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
