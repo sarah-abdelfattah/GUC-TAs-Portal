@@ -1,12 +1,12 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Location = require('../models/Location');
 
-const locationValidation = require('../helpers/validation/locationValidation');
+const validation = require('../helpers/validation');
 
 
 exports.getRoom = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.getRoomSchema.validateAsync({ params: req.params.num })
+        let JOI_Result = await validation.getRoomSchema.validateAsync({ params: req.params.num })
 
         if (req.params.num === "all") {
             const result = await Location.find();
@@ -31,7 +31,7 @@ exports.getRoom = async function (req, res) {
 
 exports.createRoom = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.createRoomSchema.validateAsync(req.body)
+        let JOI_Result = await validation.roomSchema.validateAsync(req.body)
 
         const { type, location, capacity } = req.body;
 
@@ -57,7 +57,7 @@ exports.createRoom = async function (req, res) {
 
 exports.updateRoom = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateRoomSchema.validateAsync(user)
+        let JOI_Result = await validation.roomSchema.validateAsync(user)
         const type = req.body.type;
         const location = req.body.location;
         const newLocation = req.body.newLocation;
@@ -97,7 +97,7 @@ exports.updateRoom = async function (req, res) {
 
 exports.deleteRoom = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateRoomSchema.validateAsync(user)
+        let JOI_Result = await validation.roomSchema.validateAsync(user)
         const location = req.body.location;
 
         if (!location)

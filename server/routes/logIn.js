@@ -9,7 +9,7 @@ const tokenKey = require('../config/keys').secretOrKey;
 const Token = require('../models/Token');
 const StaffMember = require('../models/StaffMember');
 
-const staffMemberValidation = require('../helpers/validation/staffMemberValidation');
+const validation = require('../helpers/validation');
 
 
 const readline = require('readline').createInterface({
@@ -19,7 +19,7 @@ const readline = require('readline').createInterface({
 
 router.post("", async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.logInSchema.validateAsync(req.body)
+        let JOI_Result = await validation.logInSchema.validateAsync(req.body)
 
         const { gucId, password } = req.body;
 

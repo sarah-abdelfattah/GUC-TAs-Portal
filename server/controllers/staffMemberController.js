@@ -8,7 +8,7 @@ const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 
-const staffMemberValidation = require('../helpers/validation/staffMemberValidation');
+const validation = require('../helpers/validation');
 
 
 async function locationHelper(officeLocation) {
@@ -56,7 +56,7 @@ async function departmentHelper(relatedFaculty, depName) {
 }
 
 async function updateInfoHelper(user) {
-    let JOI_Result = await staffMemberValidation.updateSchema.validateAsync(user)
+    let JOI_Result = await validation.updateSchema.validateAsync(user)
 
     const gucId = user.gucId;
     const dayOff = user.dayOff;
@@ -92,10 +92,10 @@ async function updateInfoHelper(user) {
 
 exports.registerStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.registerSchema.validateAsync(req.body)
+        let JOI_Result = await validation.registerSchema.validateAsync(req.body)
 
         if (req.body.type === 'Academic Member')
-            JOI_Result = await staffMemberValidation.registerACSchema.validateAsync(req.body)
+            JOI_Result = await validation.registerACSchema.validateAsync(req.body)
 
         const {
             name,
@@ -224,7 +224,7 @@ exports.registerStaff = async function (req, res) {
 
 exports.updateStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateSchema.validateAsync(req.body)
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
         const name = req.body.name;
@@ -273,7 +273,7 @@ exports.updateStaff = async function (req, res) {
 
 exports.deleteStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateSchema.validateAsync(req.body)
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
 
@@ -400,7 +400,7 @@ exports.signOut = async function (req, res) {
 
 exports.changePassword = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.changePasswordSchema.validateAsync(req.body)
+        let JOI_Result = await validation.changePasswordSchema.validateAsync(req.body)
 
         const user = req.user;
         const newPassword = req.body.newPassword;
