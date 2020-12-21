@@ -379,12 +379,42 @@ exports.findMissingDays = async function (id) {
         default: dayOffNum = "0"; break;
     }
     //Filtering the days from 11 of the current month to 10 of the upcoming month and the status of that day is absent
-    //TODO: I need to use the emun if accepted (some leave)
-    filteredRecords = attendanceRecord.filter((record) =>
+    monthRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
-        && record.status === "Absent" && record.day !== "5" && record.day !== dayOffNum && !record.absentsatisfied);
-    return filteredRecords.length;
+        && record.day !== "5" && record.day !== dayOffNum);
+        missingDays = 0;
+        initialDay = 11;
+        initialMonth = monthLastDays;
+        initialYear = previousYear;
+        initDate = new Date();
+        initDate.setFullYear(initialYear);
+        initDate.setMonth(initialMonth-1);
+        initDate.setDate(initialDay);
+        initialWeekDay = initDate.getDay();
+    while((initialDay<=todayDate && todayDate>=11 && initDate>=11) || (todayDate<11 && ((initialDay<=todayDate && initDate<11) || 
+            (initDate>=11 && initialMonth==monthLastDays && initialYear === previousYear)))){
+        dayRecords = monthRecords.some((record)=>{
+            return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
+            && parseInt(record.date.substring(8, 10)) === initialDay
+        });
+
+        if(!dayRecords && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+
+        if(((initialMonth === 1 || initialMonth === 3 ||initialMonth === 5 ||initialMonth === 7 ||initialMonth === 8 ||initialMonth === 10 ||initialMonth === 12) && initialDay===31)
+            || ((initialMonth === 4 || initialMonth === 6 ||initialMonth === 9 || initialMonth === 11) && initialDay===30) || 
+            (initialMonth === 2 && ((initialDay === 28 && initialYear%4!==0) || (initialDay === 29 && initialYear%4===0)) )){
+                initialDay = 1;
+                initialMonth = monthFirstDays;
+                initialYear = nextYear;
+        }else{
+            initialDay++;
+        }
+        initialWeekDay = (initialWeekDay === 6)?0:initialWeekDay+1;
+    }
+
+
+    return missingDays;
 }
 
 /**
