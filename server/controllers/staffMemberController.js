@@ -7,6 +7,8 @@ const StaffMember = require('../models/StaffMember');
 const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
+const Course = require('../models/Course');
+const Request = require('../models/Request');
 
 
 async function locationHelper(officeLocation) {
@@ -513,7 +515,7 @@ exports.viewOriginalSchedule = async function (objId) {
     teachingCourses = [];
     mySlots = [];
     for (i = 0; i < teachingCoursesObjIDs.length; i++) {
-        const teachingCourse = await courses.findById(teachingCoursesObjIDs[i]);
+        const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
         if (!teachingCourse) {
             return "You do not have the access to view any courses";
         }
@@ -525,9 +527,10 @@ exports.viewOriginalSchedule = async function (objId) {
         for (i = 0; i < courseSlots.length; i++) {
             if (courseSlots[i].isAssigned && courseSlots[i].isAssigned.equals(objId)) {
                 locationRoom = await Location.findById(courseSlots[i].location);
+
                 slotAdded = {
                     day: courseSlots[i].day,
-                    time: courseSlots[i].time,
+                    time: courseSlots[i].time.getHours() + ":" + courseSlots[i].time.getMinutes(),
                     location: locationRoom.location,
                     course: teachingCourses[j].name
                 }
@@ -539,9 +542,7 @@ exports.viewOriginalSchedule = async function (objId) {
 }
 
 async function viewReplacementSlots(staffObjId) {
-    console.log(staffObjId);
     replacementReq = await Request.find({ type: 'Replacement Request', status: 'accepted', reciever: staffObjId }).lean();
-    console.log(replacementReq);
     if (!replacementReq) {
         return 'There is no replacement requests that you accepted before';
     }
@@ -549,17 +550,13 @@ async function viewReplacementSlots(staffObjId) {
     todayYear = today.getFullYear();
     todayMonth = today.getMonth() + 1;
     todayDay = today.getDate();
-    console.log(todayYear);
-    console.log(todayMonth);
-    console.log(todayDay);
+
     repSlots = [];
     for (i = 0; i < replacementReq.length; i++) {
         repYear = replacementReq[i].replacemntDate.getFullYear();
         repMonth = replacementReq[i].replacemntDate.getMonth() + 1;
         repDay = replacementReq[i].replacemntDate.getDate();
-        console.log(repYear);
-        console.log(repMonth);
-        console.log(repDay);
+
         //Check that the replacement date is not overdue
         if (repYear > todayYear || (repYear === todayYear && repMonth > todayMonth) || (repYear === todayYear && repMonth === todayMonth && repDay >= todayDay)) {
             repWeekDayNum = replacementReq[i].replacemntDate.getDay();
@@ -573,6 +570,8 @@ async function viewReplacementSlots(staffObjId) {
                 case 6: repWeekDay = 'Saturday'; break;
                 default: repWeekDay = 'Sunday'; break;
             }
+            // console.log(replacementReq[i].replacemntDate.getHours + ":" + replacementReq[i].replacemntDate.getMinutes);
+
             repSlotAdded = {
                 day: repWeekDay,
                 time: replacementReq[i].replacemntDate,
