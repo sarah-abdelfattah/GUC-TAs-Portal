@@ -580,7 +580,11 @@ exports.AcceptOrRejectRep=async function (req, res) {
   var objId=req.user._id;
   var staff=await StaffMember.findOne({gucId:id}).populate();
   var accepted=false;
+
   const AcceptOrReject=req.body.AcceptOrReject
+  if(!AcceptOrReject){
+    return res.send({error:"please enter AcceptOrReject "})
+  }
   if(AcceptOrReject=="accepted"){
     var date=NewRequest.replacemntDate;
     const teachingCoursesObjIDs = staff.courses;
@@ -588,7 +592,7 @@ exports.AcceptOrRejectRep=async function (req, res) {
     teachingCourses = [];
     
     for (i = 0; i < teachingCoursesObjIDs.length; i++) {
-        const teachingCourse = await courses.findById(teachingCoursesObjIDs[i]);
+        const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
         if (!teachingCourse) {
             return "You do not have the access to view any courses";
         }
@@ -610,10 +614,10 @@ exports.AcceptOrRejectRep=async function (req, res) {
     if(flag){
       return res.send({error : 'you cannot accept this request, you donnot have this free slot in your Schedule'})
     }else{
+       
       accepted=true;
     }
-//if he have a free slots in this date
-// if yes update the accepted=true
+ 
    } 
     
  
@@ -621,8 +625,9 @@ exports.AcceptOrRejectRep=async function (req, res) {
    
   
     var senderId=NewRequest.sender._id;
+    
     var sender=await StaffMember.findOne({_id:senderId}).populate();
-   
+    NewRequest.status='accepted';
     //update the schedule of the Reciever
 
     //notification
@@ -675,6 +680,7 @@ catch (err) {
   NewRequest.status='accepted'
   var senderId=NewRequest.sender._id;
   var sender=await StaffMember.findOne({_id:senderId}).populate();
+
   sender.dayOff=NewRequest.newDayOff;
   await sender.save();
   await NewRequest.save();
@@ -923,7 +929,28 @@ catch (err) {
   }
 exports.CancelRequest=async function (req, res) {
   try{ 
+  var  senderId=req.user.gucId;
+  var sender= await StaffMember.findOne({gucId:senderId});
 
+  var id=req.params._id;
+  var searchQuery = await Request.findOne({_id:id}).populate() ;
+  if(!searchQuery){
+    return res.send({error:"there is no such a request"})
+  }
+  //  console.log(searchQuery.sender+"ayaaa");
+  //   console.log(sender);
+  // if(!(sender._id==searchQuery.sender)){
+  //    return res.send({error:" Soryy you cannot "})
+  // //el mafrood el case deh mosta7eel t7sl kda kda
+
+  // }
+  if(!(searchQuery.status=='pending')){
+    return res.send({error:" Soryy you cannot cancel this request"})
+  }
+  await Request.deleteOne({_id:id})
+  return res.send({ data: 'Request deleted successfully' });
+
+ 
 }
 catch (err) {
         console.log(err)
@@ -1022,12 +1049,12 @@ var searchQuery = await Notification.find({reciever:rec}).populate()  //or somet
         return res.send({ err: err })
     } 
 }
-exports.viewmyReequests = async function (req, res) {
+exports.viewmyRequests = async function (req, res) {
   try{ 
-  var  senderId=req.user.gucId;
-  var sender= await StaffMember.findOne({gucId:senderId}).populate();
+  var  senderId=req.user.gucId; 
+  var sender= await StaffMember.findOne({gucId:senderId }).populate();
 ////if(!req.params){
-
+  console.log(sender);
 var searchQuery = await Request.find({sender:sender}).populate()  //or something  
 //var Arr=[];
   // for(i=0;i<searchQuery.length;i++){ 

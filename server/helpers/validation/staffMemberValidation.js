@@ -32,7 +32,7 @@ const updateSchema = Joi.object({
 
 const logInSchema = Joi.object({
     password: Joi.string().min(6).alphanum().required(),
-    gucId: Joi.string().regex(/['HR','AC']-[1-10000000000]/).required(),
+    gucId: Joi.string()
 })
 
 

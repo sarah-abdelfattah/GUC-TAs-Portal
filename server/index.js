@@ -20,7 +20,7 @@ const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
 const requests = require('./routes/requests');
 
-// Create the app
+// Create the app 
 const app = express();
 
 // Use it with post
