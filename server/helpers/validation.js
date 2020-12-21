@@ -64,6 +64,7 @@ const facultySchema = Joi.object({
     newName: Joi.string(),
 })
 
+//department
 const departmentSchema = Joi.object({
     facultyCode: Joi.string().required(),
     depName: Joi.string(),
@@ -79,6 +80,20 @@ const departmentAssignmentSchema = Joi.object({
     oldCourseName: Joi.string(),
 })
 
+//course
+const courseSchema = Joi.object({
+    facultyCode: Joi.string().required(),
+    departmentName: Joi.string().required(),
+    courseName: Joi.string().required(),
+    newDepartment: Joi.string(),
+    newName: Joi.string(),
+})
+
+//AC
+const ACSchema = Joi.object({
+    courseName: Joi.string().required(),
+})
+
 
 module.exports = {
     registerSchema,
@@ -86,11 +101,10 @@ module.exports = {
     updateSchema,
     logInSchema,
     changePasswordSchema,
-
     roomSchema,
-
     facultySchema,
-
     departmentSchema,
-    departmentAssignmentSchema
+    departmentAssignmentSchema,
+    courseSchema,
+    ACSchema
 }

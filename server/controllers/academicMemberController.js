@@ -5,9 +5,8 @@ const StaffMember = require('./../models/StaffMember');
 
 // TODO: Import all the models after db connection
 const Course = require('./../models/Course');
-const Department = require('./../models/Department');
-const Location = require('./../models/Location');
-const Faculty = require('./../models/Faculty');
+
+const validation = require('../helpers/validation');
 
 // General Error  errors
 const errorMsgs = {
@@ -255,6 +254,10 @@ const courseInstructorController = {
         },
       });
     } catch (err) {
+      if (err.isJoi) {
+        console.log(' JOI validation error: ', err);
+        return res.send({ JOI_validation_error: err });
+      }
       res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
