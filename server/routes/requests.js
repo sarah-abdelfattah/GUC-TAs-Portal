@@ -14,6 +14,11 @@ router.get("/viewRecievedReplacementRequest",auth.AcademicMemberAuth,RequestCont
 router.get("/viewSlotRequest",auth.CCAuth,RequestController.viewSlotRequest ); 
 router.get("/viewRecievedRequest/:type",auth.HODAuth,RequestController.viewRecievedRequest ); 
 router.get("/viewNotification",auth.AcademicMemberAuth,RequestController.viewNotification  ); 
+router.put("/AcceptOrRejectRep/_id",auth.AcademicMemberAuth,RequestController.AcceptOrRejectRep ); 
+router.put("/AcceptOrRejectChangeDay/_id",auth.HODAuth,RequestController.AcceptOrRejectChangeDay ); 
+router.put("/AcceptOrRejectSlot/_id",auth.CCAuth,RequestController.AcceptOrRejectSlot ); 
+router.put("/AcceptOrRejectLeave/_id",auth.HODAuth,RequestController.AcceptOrRejectLeave ); 
+
 //view notification
 // router.get("/viewMyRequest/:type ",RequestController.viewSendedRequests) ;
 // router.delete("/viewMyRequest/:status ",RequestController.viewSendedRequests) ;

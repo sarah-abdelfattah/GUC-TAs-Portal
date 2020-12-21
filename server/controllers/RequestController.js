@@ -569,6 +569,86 @@ catch (err) {
 
 
 // }
+exports.AcceptOrRejectRep=async function (req, res) {
+  try{ 
+  const Requestid=req.params._id;
+  const Request=await Request.findOne({_id:Requestid}).populate();
+  var accepted=false;
+
+
+
+   if(accepted){
+      //code aya
+   }
+}
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+  }
+  exports.AcceptOrRejectChangeDay=async function (req, res) {
+  try{  
+  const Requestid=req.params._id;
+  const Request=await Request.findOne({_id:Requestid}).populate();
+  var accepted=false;
+
+
+
+   if(accepted){
+      //code aya
+   }
+
+}
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+  }
+
+    exports.AcceptOrRejectSlot=async function (req, res) {
+  try{ 
+  const Requestid=req.params._id;
+  const Request=await Request.findOne({_id:Requestid}).populate();
+  var accepted=false;
+
+
+
+   if(accepted){
+      //code aya
+   }
+
+}
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+  }
+exports.AcceptOrRejectLeave=async function (req, res) {
+  try{ 
+  const Requestid=req.params._id;
+  const Request=await Request.findOne({_id:Requestid}).populate();
+  var accepted=false;
+
+
+
+   if(accepted){
+      //code aya
+   }
+}
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+  }
+exports.CancelRequest=async function (req, res) {
+  try{ 
+
+}
+catch (err) {
+        console.log(err)
+        return res.send({ err: err })
+    }
+  }
 exports.viewmyReequestsByStatus = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
