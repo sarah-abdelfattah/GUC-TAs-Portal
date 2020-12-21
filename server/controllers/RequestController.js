@@ -9,6 +9,7 @@ const StaffMember = require('../models/StaffMember');
 const Course=require('../models/Course');
 const Department=require('../models/Department');
 const Notification=require('../models/Notification');
+const { request } = require('express');
 //const { find } = require('../models/Request');
 //const { appendFileSync } = require('fs');
 
@@ -572,30 +573,61 @@ catch (err) {
 exports.AcceptOrRejectRep=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  const Request=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
+    
 
 
-
-   if(accepted){
+  if(accepted){
       //code aya
-   }
+
+  }
+
 }
 catch (err) {
         console.log(err)
         return res.send({ err: err })
     }
   }
+  //a3ml notification
+  //push f array attendance
   exports.AcceptOrRejectChangeDay=async function (req, res) {
   try{  
   const Requestid=req.params._id;
-  const Request=await Request.findOne({_id:Requestid}).populate();
+  
+  var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
 
 
+   
 
-   if(accepted){
-      //code aya
+
+  if(accepted){
+   // updates
+    
+  NewRequest.status='accepted'
+  senderId=NewRequest.sender._id;
+  var sender=await StaffMember.findOne({_id:senderId}).populate();
+  sender.dayOff=NewRequest.newDayOff;
+  await sender.save();
+  await NewRequest.save();
+ 
+
+//notification
+  const newNotificatin = new Notification({
+  reciever: sender,
+  message:"  your Change DayOFF Request was Accepted"
+  
+});
+await newNotificatin.save();
+
+return res.send({data:NewRequest});
+    
+   }
+   else{
+
+  NewRequest.status='rejected'
+  await NewRequest.save();
    }
 
 }
@@ -605,16 +637,43 @@ catch (err) {
     }
   }
 
-    exports.AcceptOrRejectSlot=async function (req, res) {
+  exports.AcceptOrRejectSlot=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  const Request=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
 
 
 
    if(accepted){
-      //code aya
+      
+  const newNotificatin = new Notification({
+  reciever: Request.sender,
+  message:"  your Change DayOFF Request was Accepted"
+  
+});
+await newNotificatin.save();
+
+const attendanceRecord = staff.attendanceRecords;
+
+  const newAttendance = {
+                day: currentTime.getDay(),
+                date:
+                    currentTime.getFullYear() +
+                    '-' +
+                    (currentTime.getMonth() + 1) +
+                    '-' +
+                    currentTime.getDate(),
+                startTime:
+                    currentTime.getHours() +
+                    ':' +
+                    currentTime.getMinutes() +
+                    ':' +
+                    currentTime.getSeconds(),
+                status: 'Present',
+            };
+  attendanceRecord.push(newAttendance);
+   
    }
 
 }
@@ -626,13 +685,40 @@ catch (err) {
 exports.AcceptOrRejectLeave=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  const Request=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid}).populate();
   var accepted=false;
 
 
 
    if(accepted){
-      //code aya
+     
+  const newNotificatin = new Notification({
+  reciever: Request.sender,
+  message:"  your Change DayOFF Request was Accepted"
+  
+});
+await newNotificatin.save();
+
+const attendanceRecord = staff.attendanceRecords;
+
+  const newAttendance = {
+                day: currentTime.getDay(),
+                date:
+                    currentTime.getFullYear() +
+                    '-' +
+                    (currentTime.getMonth() + 1) +
+                    '-' +
+                    currentTime.getDate(),
+                startTime:
+                    currentTime.getHours() +
+                    ':' +
+                    currentTime.getMinutes() +
+                    ':' +
+                    currentTime.getSeconds(),
+                status: 'Present',
+            };
+  attendanceRecord.push(newAttendance);
+   
    }
 }
 catch (err) {
