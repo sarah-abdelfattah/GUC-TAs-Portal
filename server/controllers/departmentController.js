@@ -653,23 +653,44 @@ exports.viewTeachingAssignments = async (req, res) => {
 
         const teachingAssigned = await StaffMember.find({
             department: departmentFound._id,
-            name: req.params.courseName,
-        }).populate('courses.slots');
+        }).populate('courses');
 
-        console.log(teachingAssigned) // see if populate will return course_schema or not?
+        //console.log(teachingAssigned) // see if populate will return course_schema or not?
 
         if(!teachingAssigned) {
             return res.send({
-                error: `sorry, we couldn't find the course that you are looking for`,
+                error: `sorry, we couldn't find what you are looking for`,
             });
         }
 
+        const targetCourses = await Course.find({
+            department: departmentFound._id,
+        }).populate('slots');
+
+        if(!targetCourses) {
+            return res.send({
+                error: `sorry, we couldn't find the courses that you are looking for`,
+            });
+        }
+        
         return res.status(200).send({
             data: teachingAssigned.map((staff)=>{
                 return {
                     name: staff.name,
                     gucId: staff.gucId,
-                    courses: staff.courses,
+                    courses: staff.courses.map((course) =>{
+                        return{
+                         courses_assigned:
+                             targetCourses.map((targetCourse) =>{
+                                if((course.equals(targetCourse._id))){
+                                    return {
+                                        course_name: targetCourse.name,
+                                        course_slots: targetCourse.slots,
+                                    }
+                                }
+                            })
+                        }
+                    }),
                 }    
             })
         });
