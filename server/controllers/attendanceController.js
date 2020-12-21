@@ -234,7 +234,7 @@ exports.viewAttendanceHR = async function (req, res) {
     try {
         const { id, month1, month2, all } = req.body;
         if (((!month1 || !month2) && !all) || !id) {
-            res.send({ error: "You should choose an option" });
+            res.send({ error: "You should choose an option and add the id" });
             return;
         }
         if (all === 'all') {
@@ -280,7 +280,7 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
                 }
             }
         }
-        res.json(staffIDs);
+        return res.json({ data: staffIDs });
     } catch (err) {
         console.log('~ err', err);
         return res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -383,36 +383,35 @@ exports.findMissingDays = async function (id) {
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
         && record.day !== "5" && record.day !== dayOffNum);
-        missingDays = 0;
-        initialDay = 11;
-        initialMonth = monthLastDays;
-        initialYear = previousYear;
-        initDate = new Date();
-        initDate.setFullYear(initialYear);
-        initDate.setMonth(initialMonth-1);
-        initDate.setDate(initialDay);
-        initialWeekDay = initDate.getDay();
-    while((initialDay<=todayDate && todayDate>=11 && initDate>=11) || (todayDate<11 && ((initialDay<=todayDate && initDate<11) || 
-            (initDate>=11 && initialMonth==monthLastDays && initialYear === previousYear)))){
-        dayRecords = monthRecords.some((record)=>{
+    missingDays = 0;
+    initialDay = 11;
+    initialMonth = monthLastDays;
+    initialYear = previousYear;
+    initDate = new Date();
+    initDate.setFullYear(initialYear);
+    initDate.setMonth(initialMonth - 1);
+    initDate.setDate(initialDay);
+    initialWeekDay = initDate.getDay();
+    while ((initialDay <= todayDate && todayDate >= 11 && initDate >= 11) || (todayDate < 11 && ((initialDay <= todayDate && initDate < 11) ||
+        (initDate >= 11 && initialMonth == monthLastDays && initialYear === previousYear)))) {
+        dayRecords = monthRecords.some((record) => {
             return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
-            && parseInt(record.date.substring(8, 10)) === initialDay
+                && parseInt(record.date.substring(8, 10)) === initialDay
         });
 
-        if(!dayRecords && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+        if (!dayRecords && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
 
-        if(((initialMonth === 1 || initialMonth === 3 ||initialMonth === 5 ||initialMonth === 7 ||initialMonth === 8 ||initialMonth === 10 ||initialMonth === 12) && initialDay===31)
-            || ((initialMonth === 4 || initialMonth === 6 ||initialMonth === 9 || initialMonth === 11) && initialDay===30) || 
-            (initialMonth === 2 && ((initialDay === 28 && initialYear%4!==0) || (initialDay === 29 && initialYear%4===0)) )){
-                initialDay = 1;
-                initialMonth = monthFirstDays;
-                initialYear = nextYear;
-        }else{
+        if (((initialMonth === 1 || initialMonth === 3 || initialMonth === 5 || initialMonth === 7 || initialMonth === 8 || initialMonth === 10 || initialMonth === 12) && initialDay === 31)
+            || ((initialMonth === 4 || initialMonth === 6 || initialMonth === 9 || initialMonth === 11) && initialDay === 30) ||
+            (initialMonth === 2 && ((initialDay === 28 && initialYear % 4 !== 0) || (initialDay === 29 && initialYear % 4 === 0)))) {
+            initialDay = 1;
+            initialMonth = monthFirstDays;
+            initialYear = nextYear;
+        } else {
             initialDay++;
         }
-        initialWeekDay = (initialWeekDay === 6)?0:initialWeekDay+1;
+        initialWeekDay = (initialWeekDay === 6) ? 0 : initialWeekDay + 1;
     }
-
 
     return missingDays;
 }
@@ -444,10 +443,12 @@ exports.findMissingMinutes = async function (id) {
         monthLastDays = currDate.getMonth() + 1;
         previousYear = currDate.getFullYear();
     }
+
     filteredRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
         && record.status === "Present");
+
     cumulativeHours = 0.0;
     cumulativeMin = 0.0;
     datesExist = [] //To keep track of the dates in the attendance record (in case of there are duplicates 'multiple sign in/outs')
@@ -482,6 +483,7 @@ exports.findMissingMinutes = async function (id) {
             cumulativeHours += hrsSpent;
             cumulativeMin += minSpent;
         }
+
         dayOffNum = "0";
         switch (dayOff) {
             case "Monday": dayOffNum = "1"; break;
@@ -492,6 +494,7 @@ exports.findMissingMinutes = async function (id) {
             case "Saturday": dayOffNum = "6"; break;
             default: dayOffNum = "0"; break;
         }
+
         //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
         if (record.day !== dayOffNum && record.day !== "5") {
             if (datesExist.length === 0) {
@@ -499,6 +502,7 @@ exports.findMissingMinutes = async function (id) {
             }
             else {
                 dateFound = false;
+
                 for (i = 0; i < datesExist.length; i++) {
                     if (datesExist[i] === record.date) {
                         dateFound = true;
@@ -509,5 +513,6 @@ exports.findMissingMinutes = async function (id) {
             }
         }
     })
-    return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
+    // return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
+    return 0;
 }
