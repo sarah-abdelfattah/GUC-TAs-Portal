@@ -648,6 +648,92 @@ const courseInstructorController = {
       },
     });
   },
+
+  // ==> Functionality 35 <== //
+  async courseCoordinator(req, res) {
+    try {
+      // * Get Course Instructor
+      const instructor = await StaffMember.findOne({
+        gucId: req.user.gucId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
+        });
+
+      // Case: instructor does not have any courses
+      if (instructor.courses.length === 0)
+        return res.status(200).send({
+          error: errorMsgs.notAssignedTo('courses', 'instructor'),
+        });
+
+      // Case: instructor is not assigned to this courses
+      const insIsAssigned = instructor.courses.findIndex(({ name }) => name.toLowerCase() === req.body.courseName.toLowerCase()) !== -1;
+      if (!insIsAssigned) return res.status(403).send({ error: errorMsgs.notAuthorized('assign this Academic Member') });
+
+      // * Get AC
+      const targetAC = await StaffMember.findOne({
+        gucId: req.body.gucId,
+        type: 'Academic Member',
+        role: 'Teaching Assistant',
+        department: instructor.department,
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+
+      // Case: AC not found
+      if (!targetAC)
+        return res.status(404).send({
+          error: errorMsgs.notFound('Teaching Assistant', `id ${req.body.gucId}`),
+        });
+
+      let course = await Course.findOne({ name: req.body.courseName, department: instructor.department });
+
+      // Case: course not found
+      if (!course)
+        return res.status(404).send({
+          error: errorMsgs.notFound('course', `id ${req.body.courseName}`),
+        });
+
+      // Case: course is already assigned
+      if (course.courseCoordinator !== null)
+        return res.status(404).send({
+          error: errorMsgs.alreadyAssigned('course coordinator'),
+        });
+
+      // Case: success
+      course.courseCoordinator = targetAC;
+      await course.save();
+
+      return res.status(200).send({
+        data: {
+          courseName: course.name,
+          courseCoordinator: course.courseCoordinator.name,
+        },
+      });
+    } catch (err) {
+      res.status(500).send({ err: `Internal Server Error: ${err}` });
+    }
+  },
 };
 
 module.exports.courseInstructorController = courseInstructorController;

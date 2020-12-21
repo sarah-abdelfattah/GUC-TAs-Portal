@@ -47,4 +47,10 @@ router.delete(
   courseInstructorController.deleteSlot
 );
 
+// Functionality: 35
+router.post(
+  `${courseInstructorBaseRoute}/courseCoordinator`, auth.CIAuth,
+  courseInstructorController.courseCoordinator
+);
+
 module.exports = router;
