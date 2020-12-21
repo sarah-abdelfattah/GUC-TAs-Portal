@@ -24,8 +24,8 @@ exports.seedDB = async function () {
     }
 
     //adding starting HR 
-    const allStaff = await StaffMember.find();
-    if (allStaff.length == 0) {
+    const allStaff = await StaffMember.findOne({ gucId: 'HR-1' });
+    if (!allStaff) {
         const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
 
         const newStaff = {
@@ -81,6 +81,48 @@ exports.seedDB = async function () {
         await Course.create(newCourse);
         console.log("Seeded Course into DB")
     }
+
+    //------
+    const allFac2 = await Faculty.findOne({ code: 'FAC 2' });
+    if (!allFac2) {
+        const newFac = {
+            code: 'FAC 2',
+            name: 'seeded faculty2'
+        }
+
+        await Faculty.create(newFac);
+        console.log("Seeded Faculty 2into DB")
+    }
+
+    const allDep2 = await Department.findOne({ name: 'seeded department' });
+    if (!allDep2) {
+        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
+
+        const newDep = {
+            faculty: getFac,
+            name: 'seeded department'
+        }
+
+        await Department.create(newDep);
+        console.log("Seeded Department2 into DB")
+    }
+
+    const allCourses2 = await Course.findOne({ name: 'seeded Course2' });
+    if (!allCourses2) {
+        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
+        const getDep = await (await Department.findOne({ faculty: getFac, name: 'seeded department' })).populate('department');
+
+        const newCourse = {
+            department: getDep,
+            name: 'seeded Course2'
+        }
+
+        await Course.create(newCourse);
+        console.log("Seeded Course into DB")
+    }
+
+
+    ///------
 
     const CImem = await StaffMember.findOne({ gucId: 'AC-1' });
     if (!CImem) {
@@ -161,4 +203,56 @@ exports.seedDB = async function () {
         await StaffMember.create(newTA);
         console.log("Seeded newTA into DB")
     }
+  
+  
+   // const allCourses2 = await Course.findOne({ name: 'seeded course2' });
+    // if (!allCourses2) {
+    //     const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
+    //     const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
+
+    //     const newCourse = {
+    //         department: getDep,
+    //         name: 'seeded Course2',
+    //         slots: [
+    //             // {
+    //             //     day: "Saturday",
+    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
+    //             //     location: tempLoc
+    //             // }
+    //             // {
+    //             //     day: "Sunday",
+    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
+    //             //     location: tempLoc
+    //             // }
+    //             // {
+    //             //     day: "Monday",
+    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
+    //             //     location: tempLoc
+    //             // }
+    //             // {
+    //             //     day: "Tuesday",
+    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
+    //             //     location: tempLoc
+    //             // }
+    //         ]
+    //     }
+
+    //     await Course.create(newCourse);
+    //     console.log("Seeded Course2 into DB")
+    // }
+
+    // const allCourses3 = await Course.findOne({ name: 'seeded Course3' });
+    // if (!allCourses3) {
+    //     const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
+
+    //     const newCourse = {
+    //         department: getDep,
+    //         name: 'seeded Course3'
+    //     }
+
+    //     await Course.create(newCourse);
+    //     console.log("Seeded Course3 into DB")
+    // }
+
+
 }

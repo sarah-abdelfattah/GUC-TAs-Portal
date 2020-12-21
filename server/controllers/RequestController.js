@@ -514,7 +514,7 @@ if(!AccidentDate){
 }
 const subject=type+" ("+leaveType +") at " + req.body.AccidentDate;
 // add status and dender
-const Arr= await Request.find({type:"Leave Request",leavetype:"Accidental" ,sender:sender});
+const Arr= await Request.find({type:"Leave Request",leavetype:"Accidental" ,sender:sender , status:'accepted'});
 //var lucky = await Request.filter({type:"Leave Request" ,leaveType:"Accidental"  });
  
 

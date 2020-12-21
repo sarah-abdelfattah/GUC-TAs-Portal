@@ -24,4 +24,9 @@ router.get('/viewDayOff/:idStaff', departmentController.viewDayOffStaff);
 // to view the all courses coverage for a certain department
 router.get('/viewCourseCoverage', departmentController.viewCourseCoverage);
 
+// Assign/update/delete an instructor to a course
+router.post('/assignInstructor', departmentController.assignInstructor);
+router.put('/assignInstructor', departmentController.updateInstructor);
+router.delete('/assignInstructor', departmentController.deleteInstructor);
+
 module.exports = router;  
