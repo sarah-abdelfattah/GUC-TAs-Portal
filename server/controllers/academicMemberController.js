@@ -62,7 +62,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not teach any courses
@@ -105,7 +105,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -163,7 +163,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -284,7 +284,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -462,7 +462,7 @@ const courseInstructorController = {
     // Case: instructor not found
     if (!instructor)
       return res.status(404).send({
-        error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+        error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
       });
 
     // Case: instructor does not have any courses
