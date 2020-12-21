@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 const departmentController = require('../controllers/departmentController');
 
 router.post("/department", auth.HRAuth, departmentController.addDepartment);

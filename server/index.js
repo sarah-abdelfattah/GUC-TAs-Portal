@@ -29,8 +29,6 @@ app.use(cors());
 
 //Getting Mongo's connection URI
 const db = require('./config/keys').mongoURI;
-const { cpuUsage } = require("process");
-const { login } = require("./controllers/staffMemberController");
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -54,9 +52,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //seeding
-const dummy = require('./seeding');
 const Tokens = require("./models/Token");
-//dummy.seedDB();
+const dummy = require('./helpers/seeding');
+dummy.seedDB();
 
 
 //All routes should be tested for auth except login

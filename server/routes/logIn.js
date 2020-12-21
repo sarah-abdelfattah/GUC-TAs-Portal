@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -9,6 +9,9 @@ const tokenKey = require('../config/keys').secretOrKey;
 const Token = require('../models/Token');
 const StaffMember = require('../models/StaffMember');
 
+const staffMemberValidation = require('../helpers/validation/staffMemberValidation');
+
+
 const readline = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
@@ -16,6 +19,8 @@ const readline = require('readline').createInterface({
 
 router.post("", async function (req, res) {
     try {
+        let result = await staffMemberValidation.logInSchema.validateAsync(req.body)
+
         const { gucId, password } = req.body;
 
         if (!gucId || !password)
@@ -88,6 +93,10 @@ router.post("", async function (req, res) {
         else
             return res.status(400).send({ error: "Wrong Id or password" });
     } catch (err) {
+        if (err.isJoi) {
+            console.log('validation error: ', err);
+            return res.send({ validation_error: err });
+        }
         console.log(err)
         return res.send({ err: err })
     }
