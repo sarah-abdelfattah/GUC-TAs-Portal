@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/guc-met/milestone-1-team51#readme",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -26,6 +27,7 @@
     "express-jwt": "^6.0.0",
     "express-jwt-blacklist": "^1.1.0",
     "express-session": "^1.17.1",
+    "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
     "mongoose": "^5.11.7",
