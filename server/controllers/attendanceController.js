@@ -13,18 +13,6 @@ exports.viewAttendance = async function (req, res) {
             res.send({ error: "You should choose an option" });
             return;
         }
-        //Type Vaildation
-        if(typeof(month1) !== 'number' || typeof(month2) !== 'number'){
-            res.send({error: "You should enter a number in the month"});
-            return;
-        }else if(month1<1 || month1>12 || month2<1 || month2>12){
-            res.send({error: "You should enter a whole number in the month"});
-            return;
-        }
-        if(typeof(all) !== 'string'){
-            res.send({error: "You should enter a string in all"});
-            return;
-        }
 
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
@@ -98,33 +86,6 @@ exports.addMissingSignInOut = async function (req, res) {
 
         if (id === req.user.gucId) {
             res.send("You are not able to add a missing signIn/Out for yourself");
-            return;
-        }
-
-        //Validation
-        if(typeof(id)!=='string'){ //
-            res.send("You should write the ID as a string");
-            return;
-        }
-
-        // signInTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.signIn;
-        // signOutTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.signOut;
-        // console.log(signOutTimeFormat);
-        // console.log(signOutTimeFormat);
-        // if(!signInTimeFormat || !signOutTimeFormat){
-        //     res.send("You should write the signIn/Out time in the correct time format hh:mm:ss");
-        //     return;
-        // }
-
-        // dateFormat = /^([0-9][0-9][0-9][0-9])-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2]?[0-9]|3[0-1])?$/.date;
-        // if(!dateFormat){
-        //     res.send("You should write the signIn/Out date in the correct date format yyyy-mm-dd");
-        //     return;
-        // }
-
-        console.log(typeof(day)=== 'number');
-        if(typeof(day) !== 'number' || (typeof(day) === 'number' && (day>6 || day<0))){
-            res.send("You should write the day of sign in/out as a whole number from 0-6 where 0 is Sunday and 6 is Saturday");
             return;
         }
 
@@ -276,25 +237,6 @@ exports.viewAttendanceHR = async function (req, res) {
         const { id, month1, month2, all } = req.body;
         if (((!month1 || !month2) && !all) || !id) {
             res.send({ error: "You should choose an option and add the id" });
-            return;
-        }
-
-        //Type Vaildation
-        if(typeof(id)!=='string'){ //
-            res.send("You should write the ID as a string");
-            return;
-        }
-
-        if(typeof(month1) !== 'number' || typeof(month2) !== 'number'){
-            res.send({error: "You should enter a number in the month"});
-            return;
-        }else if(month1<1 || month1>12 || month2<1 || month2>12){
-            res.send({error: "You should enter a whole number in the month"});
-            return;
-        }
-
-        if(typeof(all) !== 'string'){
-            res.send({error: "You should enter a string"});
             return;
         }
 

@@ -14,31 +14,6 @@ exports.addCourseSlot = async (req, res) => {
             return;
         }
 
-        // timeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])?$/.time;
-        // if(!timeFormat){
-        //     res.send("You should write the slot time in the correct time format hh:mm:ss");
-        //     return;
-        // }
-        days = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"]
-        dayFound = days.some((dayF)=>{
-            return dayF === day;
-        })
-        if(typeof(day) !== 'string' || !dayFound){
-            res.send("You should write the week day of slot as correctly ");
-            return;
-        }
-
-        locationFormat = /[ABCDGMN][1-7].[0-4][0-9][1-9]/.location;
-        if(!locationFormat){
-            res.send("You should write the room location in the correct format: 'BuildingNumber.RoomNumber'");
-            return;
-        }
-
-        if(typeof(course) !== 'string'){
-            res.send("You should write the course name as a string");
-            return;
-        }
-
         const staff = await staffMember.findOne({ gucId: id });
         if (!staff) {
             res.send({ error: "There is no staff with this ID: " + id });
@@ -115,32 +90,6 @@ exports.removeCourseSlot = async (req, res) => {
         const { course, day, time, location } = req.body;
         if (!course || !day || !time || !location) {
             res.send({ error: "You should specify all the data" });
-            return;
-        }
-
-        // timeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])?$/.time;
-        // if(!timeFormat){
-        //     res.send("You should write the slot time in the correct time format hh:mm:ss");
-        //     return;
-        // }
-
-        days = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"]
-        dayFound = days.some((dayF)=>{
-            return dayF === day;
-        })
-        if(typeof(day) !== 'string' || !dayFound){
-            res.send("You should write the week day of slot as correctly ");
-            return;
-        }
-
-        locationFormat = /[ABCDGMN][1-7].[0-4][0-9][1-9]/.location;
-        if(!locationFormat){
-            res.send("You should write the room location in the correct format: 'BuildingNumber.RoomNumber'");
-            return;
-        }
-
-        if(typeof(course) !== 'string'){
-            res.send("You should write the course name as a string");
             return;
         }
 
@@ -229,38 +178,6 @@ exports.updateCourseSlot = async (req, res) => {
         if (!course || !dayOld || !timeOld || !locationOld || !dayNew || !timeNew || !locationNew) {
             res.send({ message: "You should specify all the data" });
         }
-
-        // oldTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9]))?$/.timeOld;
-        // newTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9]))?$/.timeNew;
-        // if(!oldTimeFormat || !newTimeFormat){
-        //     res.send("You should write the slot time in the correct time format hh:mm:ss");
-        //     return;
-        // }
-
-        days = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"]
-        oldDayFound = days.some((dayF)=>{
-            return dayF === dayOld;
-        })
-        newDayFound = days.some((dayF)=>{
-            return dayF === dayNew;
-        })
-        if(typeof(dayOld) !== 'string' || !oldDayFound || typeof(dayNew) !== 'string' || !newDayFound){
-            res.send("You should write the week day of slot as correctly ");
-            return;
-        }
-
-        oldLocationFormat = /[ABCDGMN][1-7].[0-4][0-9][1-9]/.locationOld;
-        newLocationFormat = /[ABCDGMN][1-7].[0-4][0-9][1-9]/.locationNew;
-        if(!oldLocationFormat || !newLocationFormat){
-            res.send("You should write the room location in the correct format: 'BuildingNumber.RoomNumber'");
-            return;
-        }
-
-        if(typeof(course) !== 'string'){
-            res.send("You should write the course name as a string");
-            return;
-        }
-
 
         const staff = await staffMember.findOne({ gucId: id });
         if (!staff) {
