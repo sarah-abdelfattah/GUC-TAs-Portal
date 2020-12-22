@@ -114,6 +114,7 @@ const viewStaffAttendance = Joi.object({
     all: Joi.string().valid('all','month').required()
 })
 
+//Add-Delete-Update Slot by CC
 const validateCourse = Joi.object({
     course: Joi.string().required()
 })
