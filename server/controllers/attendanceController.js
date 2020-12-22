@@ -1,6 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 // required models
 const staffMember = require('../models/StaffMember');
+const validation = require('../helpers/validation');
 
 
 //Function 8: View all their attendance records, or they can specify exactly which month to view.
@@ -13,7 +14,7 @@ exports.viewAttendance = async function (req, res) {
             res.send({ error: "You should choose an option" });
             return;
         }
-
+        const validateAttendance = await validation.viewAllAttendance.validateAsync({all});
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -27,6 +28,7 @@ exports.viewAttendance = async function (req, res) {
             }
             res.send({ data: attendanceRecord });
         } else {
+            const validateMonth = await validation.viewMonthAttendance.validateAsync({month1,month2});
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
                 res.send(attendanceRecord);
@@ -83,6 +85,8 @@ exports.addMissingSignInOut = async function (req, res) {
             res.send({ error: "The sign in/out, date, and day should be specified" });
             return;
         }
+
+        const validateMissingSignInOut = await validation.addMissingSign.validateAsync(req.body);
 
         if (id === req.user.gucId) {
             res.send("You are not able to add a missing signIn/Out for yourself");
@@ -239,6 +243,7 @@ exports.viewAttendanceHR = async function (req, res) {
             res.send({ error: "You should choose an option and add the id" });
             return;
         }
+        const validationStaff = await validation.viewStaffAttendance.validateAsync({id,all});
 
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
@@ -253,6 +258,7 @@ exports.viewAttendanceHR = async function (req, res) {
             }
             return res.send({ data: attendanceRecord });
         } else {
+            const validationMonth = await validation.viewMonthAttendance.validateAsync({month1,month2});
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
                 return res.send(attendanceRecord);
@@ -279,7 +285,12 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
             if (typeof (missingDays) !== 'string' && typeof (missingHours) !== 'string') {
                 if (missingDays > 0 || missingHours < 0) {
-                    staffIDs.push(attendanceRecords[i].gucId);
+                    staffIDs.push(
+                        {
+                            GUCID: attendanceRecords[i].gucId,
+                            MissingDays:missingDays,
+                            MissingHours:missingHours
+                        });
                 }
             }
         }
@@ -472,45 +483,45 @@ exports.findMissingMinutes = async function (id) {
     cumulativeMin = 0.0;
     datesExist = [] //To keep track of the dates in the attendance record (in case of there are duplicates 'multiple sign in/outs')
     filteredRecords.forEach((record) => {
-            startTimeHrs = parseInt(record.startTime.substring(0, 2)); //The hours of the sign in time
-            endTimeHrs = parseInt(record.endTime.substring(0, 2));     //The hours of the sign out time
-            startTimeMin = parseInt(record.startTime.substring(3, 5)); //The mins of the signed in time
-            endTimeMin = parseInt(record.endTime.substring(3, 5));     //The mins of the sign out time
-            //The calculated spent hours is from 07:00 till 19:00
-            if (startTimeHrs < 7) { //If the signedIn hour is before 7, we set it to 7 to ignore the eariler hours
-                startTimeHrs = 7;
-                startTimeMin = 0;
-            }
-            if (endTimeHrs > 19 || (endTimeHrs === 19 && endTimeMin > 0)) { //If the signedOut hour is after 19, we set it to 19 to ignore the later hours
-                endTimeHrs = 19;
-                endTimeMin = 0;
-            }
-            //If the signedIn was after 19 or the signedOut was before 7, there is no hours spent is calculated (set to 0)
-            //If the signed in time is after the signed out time, it will be neglected
-            if (startTimeHrs >= 19 || endTimeHrs < 7 || startTimeHrs > endTimeHrs || (startTimeHrs === endTimeHrs && startTimeMin > endTimeMin)) {
-                minSpent = 0;
-                hrsSpent = 0;
-            } else {
-                minSpent = parseInt(endTimeMin) - parseInt(startTimeMin);
-                hrsSpent = parseInt(endTimeHrs) - parseInt(startTimeHrs);
-            }
-            if (minSpent < 0) {
-                hrsSpent--;
-                minSpent = 60 - Math.abs(minSpent);
-            }
-            cumulativeHours += hrsSpent;
-            cumulativeMin += minSpent;
+        startTimeHrs = parseInt(record.startTime.substring(0, 2)); //The hours of the sign in time
+        endTimeHrs = parseInt(record.endTime.substring(0, 2));     //The hours of the sign out time
+        startTimeMin = parseInt(record.startTime.substring(3, 5)); //The mins of the signed in time
+        endTimeMin = parseInt(record.endTime.substring(3, 5));     //The mins of the sign out time
+        //The calculated spent hours is from 07:00 till 19:00
+        if (startTimeHrs < 7) { //If the signedIn hour is before 7, we set it to 7 to ignore the eariler hours
+            startTimeHrs = 7;
+            startTimeMin = 0;
+        }
+        if (endTimeHrs > 19 || (endTimeHrs === 19 && endTimeMin > 0)) { //If the signedOut hour is after 19, we set it to 19 to ignore the later hours
+            endTimeHrs = 19;
+            endTimeMin = 0;
+        }
+        //If the signedIn was after 19 or the signedOut was before 7, there is no hours spent is calculated (set to 0)
+        //If the signed in time is after the signed out time, it will be neglected
+        if (startTimeHrs >= 19 || endTimeHrs < 7 || startTimeHrs > endTimeHrs || (startTimeHrs === endTimeHrs && startTimeMin > endTimeMin)) {
+            minSpent = 0;
+            hrsSpent = 0;
+        } else {
+            minSpent = parseInt(endTimeMin) - parseInt(startTimeMin);
+            hrsSpent = parseInt(endTimeHrs) - parseInt(startTimeHrs);
+        }
+        if (minSpent < 0) {
+            hrsSpent--;
+            minSpent = 60 - Math.abs(minSpent);
+        }
+        cumulativeHours += hrsSpent;
+        cumulativeMin += minSpent;
 
-            //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
-                if (datesExist.length === 0) {
-                    datesExist.push(record.date);
-                }
-                else {
-                    dateFound = datesExist.some((date)=>{
-                        return date === record.date;
-                    })
-                    if (!dateFound) datesExist.push(record.date);
-                }
+        //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
+            if (datesExist.length === 0) {
+                datesExist.push(record.date);
+            }
+            else {
+                dateFound = datesExist.some((date)=>{
+                    return date === record.date;
+                })
+                if (!dateFound) datesExist.push(record.date);
+            }
     })
     return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
 }
