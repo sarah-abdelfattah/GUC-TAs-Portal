@@ -107,6 +107,24 @@ app.post('/logOut', async function (req, res) {
     }
 });
 
+//simulation of the month
+/*
+this is a simulation how adding annual balance each month
+the server should be running 
+showing total number of months since this user register 
+and calculating corresponding balance relative to the number and attendance 
+
+if we saved the date the user registered 
+only we will be needing to call "updateAnnualBalance" function every month 
+*/
+
+let totalMonths = 0;
+var intervalID = window.setInterval(updateMonth, 5000);
+
+function updateMonth() {
+    totalMonths += 1;
+    console.log("Total numbers of months so far: ", totalMonths);
+}
 
 //running port
 const port = process.env.PORT || 3000;
