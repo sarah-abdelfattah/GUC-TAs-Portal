@@ -21,7 +21,7 @@ const registerACSchema = Joi.object({
 })
 
 const updateSchema = Joi.object({
-    gucId: Joi.string().regex(/['HR','AC']-*/).required(),
+    gucId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
     name: Joi.string(),
     dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
     role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
@@ -32,11 +32,8 @@ const updateSchema = Joi.object({
 })
 
 const logInSchema = Joi.object({
-    //TODO: regex if id
-
     password: Joi.string().min(6).alphanum().required(),
-    gucId: Joi.string().required(),
-    // gucId: Joi.string().regex(/['HR'-'AC']-[1-10000000000]/).required(),
+    gucId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
 })
 
 const changePasswordSchema = Joi.object({
@@ -73,8 +70,7 @@ const departmentSchema = Joi.object({
 })
 
 const departmentAssignmentSchema = Joi.object({
-    //TODO: regex if id
-    instructorId: Joi.string().required(),
+    instructorId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
     courseName: Joi.string().required(),
     newCourseName: Joi.string(),
     oldCourseName: Joi.string(),
