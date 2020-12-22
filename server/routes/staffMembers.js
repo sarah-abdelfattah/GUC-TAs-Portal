@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 
 const staffMemberController = require('../controllers/staffMemberController');
 
@@ -15,7 +15,6 @@ router.get('/viewMySchedule', auth.AcademicMemberAuth, staffMemberController.vie
 
 
 //all users
-router.post("/logOut", staffMemberController.logout);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 

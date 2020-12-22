@@ -1,9 +1,8 @@
-const StaffMember = require('./models/StaffMember');
-const Location = require('./models/Location');
-const Faculty = require('./models/Faculty');
-const Department = require('./models/Department');
-const Course = require('./models/Course');
-const Request = require('./models/Request');
+const StaffMember = require('../models/StaffMember');
+const Location = require('../models/Location');
+const Faculty = require('../models/Faculty');
+const Department = require('../models/Department');
+const Course = require('../models/Course');
 
 
 const bcrypt = require('bcryptjs');
