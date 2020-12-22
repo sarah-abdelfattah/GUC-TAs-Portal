@@ -15,10 +15,10 @@ const SlotSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
     default: null,
-    validate: [
-      (v) => v === null || v.type === 'Academic Member',
-      'The slot can be assigned only to an academic member',
-    ],
+    // validate: [
+    //   (v) => v === null || v.type === 'Academic Member',
+    //   'The slot can be assigned only to an academic member',
+    // ],
   },
 });
 

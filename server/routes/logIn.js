@@ -10,7 +10,7 @@ const tokenKey = require('../config/keys').secretOrKey;
 const Token = require('../models/Token');
 const StaffMember = require('../models/StaffMember');
 
-const staffMemberValidation = require('../helpers/validation/staffMemberValidation');
+const validation = require('../helpers/validation');
 
 
 const readline = require('readline').createInterface({
@@ -20,7 +20,7 @@ const readline = require('readline').createInterface({
 
 router.post("", async function (req, res) {
     try {
-        let result = await staffMemberValidation.logInSchema.validateAsync(req.body)
+        let JOI_Result = await validation.logInSchema.validateAsync(req.body)
 
         const { gucId, password } = req.body;
 
@@ -95,8 +95,8 @@ router.post("", async function (req, res) {
             return res.status(400).send({ error: "Wrong Id or password" });
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log(err)
         return res.send({ err: err })

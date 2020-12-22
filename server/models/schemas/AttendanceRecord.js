@@ -5,6 +5,7 @@ const AttendanceRecordSchema = new Schema({
   day: {
     type: String,
     required: true,
+    enum: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
   },
   date: {
     type: String,

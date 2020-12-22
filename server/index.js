@@ -54,7 +54,7 @@ app.use(bodyParser.json());
 //seeding
 const Tokens = require("./models/Token");
 const dummy = require('./helpers/seeding');
-dummy.seedDB();
+// dummy.seedDB();
 
 
 //All routes should be tested for auth except login
@@ -108,44 +108,24 @@ app.post('/logOut', async function (req, res) {
     }
 });
 
+//simulation of the month
+/*
+this is a simulation how adding annual balance each month
+the server should be running 
+showing total number of months since this user register 
+and calculating corresponding balance relative to the number and attendance 
 
-// const locX = new Location({
-//   type: 'Office',
-//   location: 'C7.301',
-//   capacity: 4,
-// });
-// locX.save();
+if we saved the date the user registered 
+only we will be needing to call "updateAnnualBalance" function every month 
+*/
 
-// const staffX = new StaffMember({
-//   gucId: '1233',
-//   name: 'Ahmed Ashraf',
-//   gender: 'male',
-//   email: 'ahmed@mail.com',
-//   password: '123445',
-//   dayOff: 'Saturday',
-//   salary: 99999,
-//   type: 'Academic Member',
-//   leaveBalance: 99,
-//   officeLocation: locX,
-//   role: 'Teaching Assistant',
-// });
-// staffX.save();
+let totalMonths = 0;
+var intervalID = window.setInterval(updateMonth, 5000);
 
-// StaffMember.find({ gucId: '1233' })
-//   .populate('officeLocation')
-//   .then((res) => {
-//     console.log(res[0]);
-//   });
-
-// Handling 404
-// app.use((req, res) => {
-//     res.status(404).send({ err: 'We can not find what you are looking for' });
-// });
-
-// Handling 404
-// app.use((req, res) => {
-//     res.status(404).send({ err: 'We can not find what you are looking for' });
-// });
+function updateMonth() {
+    totalMonths += 1;
+    console.log("Total numbers of months so far: ", totalMonths);
+}
 
 //running port
 const port = process.env.PORT || 5000;

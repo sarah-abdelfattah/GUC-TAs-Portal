@@ -8,7 +8,7 @@ const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 
-const staffMemberValidation = require('../helpers/validation/staffMemberValidation');
+const validation = require('../helpers/validation');
 
 
 async function locationHelper(officeLocation) {
@@ -56,6 +56,8 @@ async function departmentHelper(relatedFaculty, depName) {
 }
 
 async function updateInfoHelper(user) {
+    let JOI_Result = await validation.updateSchema.validateAsync(user)
+
     const gucId = user.gucId;
     const dayOff = user.dayOff;
     const role = user.role;
@@ -90,10 +92,10 @@ async function updateInfoHelper(user) {
 
 exports.registerStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.registerSchema.validateAsync(req.body)
+        let JOI_Result = await validation.registerSchema.validateAsync(req.body)
 
         if (req.body.type === 'Academic Member')
-            JOI_Result = await staffMemberValidation.registerACSchema.validateAsync(req.body)
+            JOI_Result = await validation.registerACSchema.validateAsync(req.body)
 
         const {
             name,
@@ -212,8 +214,8 @@ exports.registerStaff = async function (req, res) {
         return res.send({ data: newStaffMember });
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -222,7 +224,7 @@ exports.registerStaff = async function (req, res) {
 
 exports.updateStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateSchema.validateAsync(req.body)
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
         const name = req.body.name;
@@ -261,8 +263,8 @@ exports.updateStaff = async function (req, res) {
         return res.send(result);
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -271,7 +273,7 @@ exports.updateStaff = async function (req, res) {
 
 exports.deleteStaff = async function (req, res) {
     try {
-        let JOI_Result = await staffMemberValidation.updateSchema.validateAsync(req.body)
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
 
@@ -287,8 +289,8 @@ exports.deleteStaff = async function (req, res) {
         }
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -341,8 +343,8 @@ exports.signIn = async function (req, res) {
         }
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -387,42 +389,49 @@ exports.signOut = async function (req, res) {
         }
     } catch (err) {
         if (err.isJoi) {
-            console.log('validation error: ', err);
-            return res.send({ validation_error: err });
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
     }
 };
 
-exports.logout = async function (req, res) {
-    console.log("🚀 ~ file: staffMemberController.js ~ line 377 ~ req", req.headers);
-    return res.status(200).send({ auth: false, token: null });
-}
 
 exports.changePassword = async function (req, res) {
-    const user = req.user;
-    const newPassword = req.body.newPassword;
-    const oldPassword = req.body.oldPassword;
+    try {
+        let JOI_Result = await validation.changePasswordSchema.validateAsync(req.body)
 
-    if (!newPassword)
-        return res.send({ error: 'Please enter the new password' });
-    if (!oldPassword)
-        return res.send({ error: 'Please enter the old password' });
+        const user = req.user;
+        const newPassword = req.body.newPassword;
+        const oldPassword = req.body.oldPassword;
 
-    const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
-    if (!userToEdit)
-        return res.send({ err: 'No user' });
+        if (!newPassword)
+            return res.send({ error: 'Please enter the new password' });
+        if (!oldPassword)
+            return res.send({ error: 'Please enter the old password' });
 
-    //Checking if oldPassword matches the user password
-    const check = await bcrypt.compare(oldPassword, userToEdit.password);
-    if (check) {
-        // const salt = await bcrypt.genSalt(12);
-        userToEdit.password = await bcrypt.hash(newPassword, 12);
-        const updatedStaff = await userToEdit.save();
-        return res.send({ data: "Password changed successfully" });
-    } else {
-        return res.send({ error: 'wrong password' });
+        const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
+        if (!userToEdit)
+            return res.send({ err: 'No user' });
+
+        //Checking if oldPassword matches the user password
+        const check = await bcrypt.compare(oldPassword, userToEdit.password);
+        if (check) {
+            // const salt = await bcrypt.genSalt(12);
+            userToEdit.password = await bcrypt.hash(newPassword, 12);
+            const updatedStaff = await userToEdit.save();
+            return res.send({ data: "Password changed successfully" });
+        } else {
+            return res.send({ error: 'wrong password' });
+        }
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
+        console.log('~ err', err);
+        return res.send({ err: err });
     }
 }
 
@@ -439,7 +448,6 @@ exports.updateProfile = async function (req, res) {
         console.log(err)
         return res.send({ err: err })
     }
-
 }
 
 exports.getProfile = async function (req, res) {
