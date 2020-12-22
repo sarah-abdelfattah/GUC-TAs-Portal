@@ -500,7 +500,6 @@ exports.seedDB = async function () {
                 cs3EngCourse
             ],
         },
-
         // 2 attendance records 
         // 1 before 7 AM and 1 after 7 PM --> no extra hours
         {
