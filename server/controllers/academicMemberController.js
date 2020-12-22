@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 const StaffMember = require('./../models/StaffMember');
 
 // TODO: Import all the models after db connection
-const Course = require('./../models/Course');
+
+const validation = require('../helpers/validation');
 const Department = require('./../models/Department');
 const Location = require('./../models/Location');
 const Faculty = require('./../models/Faculty');
+const Course = require('./../models/Course');
+
 const { populate } = require('./../models/StaffMember');
 
 // General Error  errors
@@ -349,6 +352,10 @@ const courseInstructorController = {
         },
       });
     } catch (err) {
+      if (err.isJoi) {
+        console.log(' JOI validation error: ', err);
+        return res.send({ JOI_validation_error: err });
+      }
       res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },

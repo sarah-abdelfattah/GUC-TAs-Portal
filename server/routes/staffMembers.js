@@ -10,7 +10,6 @@ router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
 router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
 
 //all users
-router.post("/logOut", staffMemberController.logout);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 
