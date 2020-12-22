@@ -13,6 +13,19 @@ exports.viewAttendance = async function (req, res) {
             res.send({ error: "You should choose an option" });
             return;
         }
+        //Type Vaildation
+        if(typeof(month1) !== 'number' || typeof(month2) !== 'number'){
+            res.send({error: "You should enter a number in the month"});
+            return;
+        }else if(month1<1 || month1>12 || month2<1 || month2>12){
+            res.send({error: "You should enter a whole number in the month"});
+            return;
+        }
+        if(typeof(all) !== 'string'){
+            res.send({error: "You should enter a string in all"});
+            return;
+        }
+
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -77,13 +90,41 @@ exports.viewMissingHours = async function (req, res) {
 exports.addMissingSignInOut = async function (req, res) {
     try {
         const { id, signIn, signOut, date, day, number } = req.body;
-        if ((!signIn && !signOut) || !date || !day || !id || !number) {
+
+        if ((!signIn && !signOut) || !date || (!day && day!==0) || !id || !number) {
             res.send({ error: "The sign in/out, date, and day should be specified" });
             return;
         }
 
         if (id === req.user.gucId) {
             res.send("You are not able to add a missing signIn/Out for yourself");
+            return;
+        }
+
+        //Validation
+        if(typeof(id)!=='string'){ //
+            res.send("You should write the ID as a string");
+            return;
+        }
+
+        // signInTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.signIn;
+        // signOutTimeFormat = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.signOut;
+        // console.log(signOutTimeFormat);
+        // console.log(signOutTimeFormat);
+        // if(!signInTimeFormat || !signOutTimeFormat){
+        //     res.send("You should write the signIn/Out time in the correct time format hh:mm:ss");
+        //     return;
+        // }
+
+        // dateFormat = /^([0-9][0-9][0-9][0-9])-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2]?[0-9]|3[0-1])?$/.date;
+        // if(!dateFormat){
+        //     res.send("You should write the signIn/Out date in the correct date format yyyy-mm-dd");
+        //     return;
+        // }
+
+        console.log(typeof(day)=== 'number');
+        if(typeof(day) !== 'number' || (typeof(day) === 'number' && (day>6 || day<0))){
+            res.send("You should write the day of sign in/out as a whole number from 0-6 where 0 is Sunday and 6 is Saturday");
             return;
         }
 
@@ -237,6 +278,26 @@ exports.viewAttendanceHR = async function (req, res) {
             res.send({ error: "You should choose an option and add the id" });
             return;
         }
+
+        //Type Vaildation
+        if(typeof(id)!=='string'){ //
+            res.send("You should write the ID as a string");
+            return;
+        }
+
+        if(typeof(month1) !== 'number' || typeof(month2) !== 'number'){
+            res.send({error: "You should enter a number in the month"});
+            return;
+        }else if(month1<1 || month1>12 || month2<1 || month2>12){
+            res.send({error: "You should enter a whole number in the month"});
+            return;
+        }
+
+        if(typeof(all) !== 'string'){
+            res.send({error: "You should enter a string"});
+            return;
+        }
+
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -301,6 +362,12 @@ async function viewAttendance(id, month1, month2) {
     if (!staff) {
         return "There is no staff with this ID: " + id;
     }
+
+    if(typeof(id)!=='string'){ 
+        res.send("You should write the ID as a string");
+        return;
+    }
+
     attendanceRecord = staff.attendanceRecords;
     if (!attendanceRecord) {
         return "There is no attendance records yet for this ID: " + id;
@@ -396,10 +463,9 @@ exports.findMissingDays = async function (id) {
         (initDate >= 11 && initialMonth == monthLastDays && initialYear === previousYear)))) {
         dayRecords = monthRecords.some((record) => {
             return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
-                && parseInt(record.date.substring(8, 10)) === initialDay
+                && parseInt(record.date.substring(8, 10)) === initialDay && record.startTime && record.endTime
         });
-
-        if (!dayRecords && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+        if (!dayRecords  && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
 
         if (((initialMonth === 1 || initialMonth === 3 || initialMonth === 5 || initialMonth === 7 || initialMonth === 8 || initialMonth === 10 || initialMonth === 12) && initialDay === 31)
             || ((initialMonth === 4 || initialMonth === 6 || initialMonth === 9 || initialMonth === 11) && initialDay === 30) ||
@@ -444,16 +510,26 @@ exports.findMissingMinutes = async function (id) {
         previousYear = currDate.getFullYear();
     }
 
+    dayOffNum = "0";
+    switch (dayOff) {
+        case "Monday": dayOffNum = "1"; break;
+        case "Tuesday": dayOffNum = "2"; break;
+        case "Wednesday": dayOffNum = "3"; break;
+        case "Thursday": dayOffNum = "4"; break;
+        case "Friday": dayOffNum = "5"; break;
+        case "Saturday": dayOffNum = "6"; break;
+        default: dayOffNum = "0"; break;
+    }
+
     filteredRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
-        && record.status === "Present");
+        && record.status === "Present" && record.startTime && record.endTime && record.day !== dayOffNum && record.day !== "5");
 
     cumulativeHours = 0.0;
     cumulativeMin = 0.0;
     datesExist = [] //To keep track of the dates in the attendance record (in case of there are duplicates 'multiple sign in/outs')
     filteredRecords.forEach((record) => {
-        if (record.startTime && record.endTime) {
             startTimeHrs = parseInt(record.startTime.substring(0, 2)); //The hours of the sign in time
             endTimeHrs = parseInt(record.endTime.substring(0, 2));     //The hours of the sign out time
             startTimeMin = parseInt(record.startTime.substring(3, 5)); //The mins of the signed in time
@@ -482,37 +558,17 @@ exports.findMissingMinutes = async function (id) {
             }
             cumulativeHours += hrsSpent;
             cumulativeMin += minSpent;
-        }
 
-        dayOffNum = "0";
-        switch (dayOff) {
-            case "Monday": dayOffNum = "1"; break;
-            case "Tuesday": dayOffNum = "2"; break;
-            case "Wednesday": dayOffNum = "3"; break;
-            case "Thursday": dayOffNum = "4"; break;
-            case "Friday": dayOffNum = "5"; break;
-            case "Saturday": dayOffNum = "6"; break;
-            default: dayOffNum = "0"; break;
-        }
-
-        //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
-        if (record.day !== dayOffNum && record.day !== "5") {
-            if (datesExist.length === 0) {
-                datesExist.push(record.date);
-            }
-            else {
-                dateFound = false;
-
-                for (i = 0; i < datesExist.length; i++) {
-                    if (datesExist[i] === record.date) {
-                        dateFound = true;
-                        break;
-                    }
+            //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
+                if (datesExist.length === 0) {
+                    datesExist.push(record.date);
                 }
-                if (!dateFound) datesExist.push(record.date);
-            }
-        }
+                else {
+                    dateFound = datesExist.some((date)=>{
+                        return date === record.date;
+                    })
+                    if (!dateFound) datesExist.push(record.date);
+                }
     })
-    // return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
-    return 0;
+    return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
 }
