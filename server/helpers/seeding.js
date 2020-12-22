@@ -1,8 +1,9 @@
-const StaffMember = require('./models/StaffMember');
-const Location = require('./models/Location');
-const Faculty = require('./models/Faculty');
-const Department = require('./models/Department');
-const Course = require('./models/Course');
+
+const StaffMember = require('../models/StaffMember');
+const Location = require('../models/Location');
+const Faculty = require('../models/Faculty');
+const Department = require('../models/Department');
+const Course = require('../models/Course');
 
 
 const bcrypt = require('bcryptjs');
@@ -203,9 +204,9 @@ exports.seedDB = async function () {
         await StaffMember.create(newTA);
         console.log("Seeded newTA into DB")
     }
-  
-  
-   // const allCourses2 = await Course.findOne({ name: 'seeded course2' });
+
+
+    // const allCourses2 = await Course.findOne({ name: 'seeded course2' });
     // if (!allCourses2) {
     //     const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
     //     const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
