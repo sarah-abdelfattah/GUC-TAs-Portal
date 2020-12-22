@@ -254,9 +254,9 @@ exports.seedDB = async function () {
     //     console.log("Seeded Course3 into DB")
     // }
 
-    const req = await Request.find();
-    if (req.length < 1) {
-        const staff1 = await StaffMember.findOne({ gucId: 'AC-1' })
-    }
+    // const req = await Request.find();
+    // if (req.length < 1) {
+    //     const staff1 = await StaffMember.findOne({ gucId: 'AC-1' })
+    // }
 
 }
