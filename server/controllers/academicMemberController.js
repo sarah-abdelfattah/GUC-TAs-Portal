@@ -8,6 +8,7 @@ const Course = require('./../models/Course');
 const Department = require('./../models/Department');
 const Location = require('./../models/Location');
 const Faculty = require('./../models/Faculty');
+const { populate } = require('./../models/StaffMember');
 
 // General Error  errors
 const errorMsgs = {
@@ -163,10 +164,11 @@ const courseInstructorController = {
         });
 
       // Case: instructor does not have any courses
-      if (instructor.courses.length === 0)
-        return res.status(200).send({
-          error: errorMsgs.notAssignedTo('courses', 'instructor'),
-        });
+      // if (instructor.courses.length === 0)
+      //   return res.status(200).send({
+      //     error: errorMsgs.notAssignedTo('courses', 'instructor'),
+      //   });
+
       let staff = [];
       if (req.params.courseName === 'all') {
         // Case: staff per department
@@ -212,18 +214,18 @@ const courseInstructorController = {
         staff.length === 0
           ? { data: errorMsgs.notAssignedTo('staff', 'course') }
           : {
-              data: staff.map((member) => {
-                return {
-                  gucId: member.gucId,
-                  name: member.name,
-                  email: member.email,
-                  dayOff: member.dayOff,
-                  courses: member.courses.map(({ name }) => name),
-                  officeLocation: member.officeLocation.location,
-                  gender: member.gender,
-                };
-              }),
-            }
+            data: staff.map((member) => {
+              return {
+                gucId: member.gucId,
+                name: member.name,
+                email: member.email,
+                dayOff: member.dayOff,
+                courses: member.courses.map(({ name }) => name),
+                officeLocation: member.officeLocation.location,
+                gender: member.gender,
+              };
+            }),
+          }
       );
     } catch (err) {
       res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -666,6 +668,7 @@ const courseInstructorController = {
           path: 'courses',
           populate: { path: 'slots.isAssigned' },
         });
+      console.log("🚀 ~ file: academicMemberController.js ~ line 663 ~ courseCoordinator ~ instructor", instructor);
 
       // Case: instructor not found
       if (!instructor)
