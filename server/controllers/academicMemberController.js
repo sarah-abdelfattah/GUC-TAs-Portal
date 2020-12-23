@@ -85,7 +85,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -138,7 +138,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -175,7 +175,10 @@ const courseInstructorController = {
       let staff = [];
       if (req.params.courseName === 'all') {
         // Case: staff per department
-        staff = await StaffMember.find({ department: instructor.department })
+        staff = await StaffMember.find({
+          faculty: instructor.faculty,
+          department: instructor.department,
+        })
           .populate('officeLocation')
           .populate({
             path: 'courses',
@@ -217,21 +220,21 @@ const courseInstructorController = {
         staff.length === 0
           ? { data: errorMsgs.notAssignedTo('staff', 'course') }
           : {
-            data: staff.map((member) => {
-              return {
-                gucId: member.gucId,
-                name: member.name,
-                email: member.email,
-                dayOff: member.dayOff,
-                courses: member.courses.map(({ name }) => name),
-                officeLocation: member.officeLocation.location,
-                gender: member.gender,
-              };
-            }),
-          }
+              data: staff.map((member) => {
+                return {
+                  gucId: member.gucId,
+                  name: member.name,
+                  email: member.email,
+                  dayOff: member.dayOff,
+                  courses: member.courses.map(({ name }) => name),
+                  officeLocation: member.officeLocation.location,
+                  gender: member.gender,
+                };
+              }),
+            }
       );
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -239,7 +242,7 @@ const courseInstructorController = {
   async assignSlot(req, res) {
     try {
       const missingFields = checkRequiredFields(req, ['courseName', 'slot.day', 'slot.time']);
-      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+      if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
       // * Get instructor
       const instructor = await StaffMember.findOne({
@@ -344,7 +347,7 @@ const courseInstructorController = {
           },
         }
       );
-      res.status(200).send({
+      return res.status(200).send({
         data: {
           course: course.name,
           assignedTo: targetAC.name,
@@ -356,7 +359,7 @@ const courseInstructorController = {
         console.log(' JOI validation error: ', err);
         return res.send({ JOI_validation_error: err });
       }
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -364,7 +367,7 @@ const courseInstructorController = {
   async updateSlot(req, res) {
     try {
       const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
-      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+      if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
       // * Get instructor
       const instructor = await StaffMember.findOne({
@@ -452,7 +455,7 @@ const courseInstructorController = {
 
       // Case: assign the currentSlot to target AC
       if (!req.body.newSlot) {
-        if (course.slots[currentSlotIndex].isAssigned === null) res.send(errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it'));
+        if (course.slots[currentSlotIndex].isAssigned === null) return res.send(errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it'));
 
         const currAC = course.slots[currentSlotIndex].isAssigned;
         course.slots[currentSlotIndex].isAssigned = targetAC;
@@ -480,7 +483,7 @@ const courseInstructorController = {
           await currAC.save();
         }
 
-        res.status(200).send({
+        return res.status(200).send({
           data: {
             course: course.name,
             oldAC: currAC.name,
@@ -492,7 +495,7 @@ const courseInstructorController = {
       // Case: assign the newSlot (targetSlot) to target TA
       else {
         const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time', 'newSlot.day', 'newSlot.time']);
-        if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+        if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
         const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
           const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
@@ -516,7 +519,7 @@ const courseInstructorController = {
             course.slots[targetSlotIndex].isAssigned = targetAC;
             await course.save();
 
-            res.status(200).send({
+            return res.status(200).send({
               data: {
                 course: course.name,
                 assignedTo: targetAC.name,
@@ -529,20 +532,20 @@ const courseInstructorController = {
           else return res.status(400).send({ error: errorMsgs.alreadyAssigned('new slot') });
         } else {
           const maleTa = course.slots[currentSlotIndex].isAssigned.gender === 'male';
-          res.status(400).send({
+          return res.status(400).send({
             error: `${errorMsgs.alreadyAssigned('current slot')} to another TA. Please enter ${maleTa ? 'his' : 'her'} ID to re-assign ${maleTa ? 'him' : 'her'}.`,
           });
         }
       }
     } catch (err) {
-      res.status(500).send({ error: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
   // ==> Functionality 34 <== //
   async deleteSlot(req, res) {
     const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
-    if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+    if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
     // * Get instructor
     const instructor = await StaffMember.findOne({
@@ -649,7 +652,7 @@ const courseInstructorController = {
       await targetAC.save();
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: {
         course: req.body.courseName,
         slot: req.body.slot,
@@ -675,7 +678,7 @@ const courseInstructorController = {
           path: 'courses',
           populate: { path: 'slots.isAssigned' },
         });
-      console.log("🚀 ~ file: academicMemberController.js ~ line 663 ~ courseCoordinator ~ instructor", instructor);
+      console.log('🚀 ~ file: academicMemberController.js ~ line 663 ~ courseCoordinator ~ instructor', instructor);
 
       // Case: instructor not found
       if (!instructor)
@@ -741,7 +744,7 @@ const courseInstructorController = {
         },
       });
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 };
