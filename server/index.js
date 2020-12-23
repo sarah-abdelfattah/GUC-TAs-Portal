@@ -118,13 +118,13 @@ if we saved the date the user registered
 only we will be needing to call "updateAnnualBalance" function every month 
 */
 
-let totalMonths = 0;
-var intervalID = window.setInterval(updateMonth, 5000);
+// let totalMonths = 0;
+// var intervalID = window.setInterval(updateMonth, 5000);
 
-function updateMonth() {
-    totalMonths += 1;
-    console.log("Total numbers of months so far: ", totalMonths);
-}
+// function updateMonth() {
+//     totalMonths += 1;
+//     console.log("Total numbers of months so far: ", totalMonths);
+// }
 
 //running port
 const port = process.env.PORT || 3000;
