@@ -9,6 +9,7 @@ const StaffMember = require('../models/StaffMember');
 const Course=require('../models/Course');
 const Department=require('../models/Department');
 const Notification=require('../models/Notification');
+const Location=require('../models/Location');
 const { request } = require('express');
 //const { find } = require('../models/Request');
 //const { appendFileSync } = require('fs');
@@ -38,19 +39,20 @@ exports.sendRequest = async function (req, res) {
     
     const location=req.body.location;
     const coursename=req.body.course;
-    const course=await Course.findOne({name:coursename})
+    //const course=await Course.findOne({name:coursename})
     const x=req.body.replacementDate;
  
     const date=new Date(Date.parse(x));
  
     
      // const departmentt=senderInfo. !replacementdate
-      if(!recieverId ||!location|| !course){
+      if(!recieverId ||!location|| !coursename ||!x){
            
             return res.send({ error: 'please enter all data' });
       }
   
   var rec= await StaffMember.findOne({gucId:recieverId}).populate() ;
+  
     
    var recieverDepartment=rec.department._id;
    var senderdepartment=sender.department._id;
@@ -63,8 +65,13 @@ exports.sendRequest = async function (req, res) {
     }
     var f4=false;
 
-    var foundCourse= await Course.findOne({name:coursename}).populate();
-  
+    var  foundCourse= await Course.findOne({name:coursename}).populate();
+    var loc= await Location.findOne({location:location});
+
+
+      if(!foundCourse || ! loc || !date){
+  return res.send({ error: 'please enter correct data' });
+    }
   for(i=0;i<rec.courses.length;i++){
       if(rec.courses[i]._id.equals(foundCourse._id)){
         
@@ -123,9 +130,13 @@ if(type=='Change DayOff') {
   const rec=await StaffMember.findOne({_id:recid})
   
   const newDayOff=req.body.newDayOff;
-  const currentDayOff=req.body.currentDayOff;
-  if(!newDayOff || !currentDayOff){
+  const currentDayOff=sender.dayOff;
+  if(!newDayOff){
   return res.send({ error: 'please enter all data' });
+}
+if(newDayOff!='Saturday'||newDayOff!='Monday'|| newDayOff!='Tuesday'||newDayOff!='Wednesday'||newDayOff!='Thursday'){
+
+   return res.send({ error: 'please enter correct Day' });
 }
 const subject=type+" Request from "+ currentDayOff +" to "+newDayOff;
 const newRequest= new Request({
@@ -148,13 +159,24 @@ await newRequest.save();
 return res.send({ data: newRequest  });
 
   }
+ 
   if(type=='Slot Request') {
-  const coursename=req.body.course;
-  const course=await Course.findOne({name:coursename});
+  const coursename=req.body.course; 
   const rec=course.courseCoordinator;
-  const x=req.body.date;
-  const date=new Date(Date.parse(x)); 
+  const x=req.body.date; 
   const locationType=req.body.locationType;
+if(!coursename || !x || !locationType ){
+     return res.send({ error: 'please enter all data' });
+  }
+
+
+  const course=await Course.findOne({name:coursename});
+  const date=new Date(Date.parse(x)); 
+   
+  if(locationType!='Tutorial Room'|| locationType!='Lecture Hall'||locationType!='Lab')
+  if(!course || !date){
+     return res.send({ error: 'please enter Correct location type' });
+  }
   if(!course || !date || !locationType){
     return res.send({ error: 'please enter all data' });
   }
@@ -194,10 +216,16 @@ if(type=='Leave Request') {
   const rec=await StaffMember.findOne({_id:recid})
  
   const leaveType=req.body.leaveType;
-  if(!leaveType || !rec){
+
+  if(!leaveType  ){
      
     return res.send({ error: 'please enter all data' });
   }
+   if( !rec){
+     
+    return res.send({ error: 'there is no HOD for this Department' });
+  }
+   
    
   if(leaveType=="Sick"){
   const  SickDayDate=new Date(Date.parse(req.body.SickDayDate)); 
@@ -207,7 +235,7 @@ if(!reason){
 }
   
    if(! SickDayDate ){
-    return res.send({ error: 'please enter all data' });
+    return res.send({ error: 'please enter correct date' });
    } 
 
    
@@ -273,7 +301,7 @@ if(leaveType=="Compensation"){
 
    //date
     if(!CompensationDate|| !LeaveDate || ! reason){
-      return res.send({ error: 'please enter all data' });
+      return res.send({ error: 'please enter all data in a correct way' });
     }
     var flag=false;
     
@@ -403,19 +431,22 @@ if(!reason){
    const AnnualLeaveDate=new Date(Date.parse(x));
     const replacment=req.body.rep;
     
-    if(!x){
-    return res.send({ error: 'please enter all data' });
+    if(!AnnualLeaveDate ){
+    return res.send({ error: 'please enter all data in a Right way ' });
     }
       
     for(i=0;i<replacment.length;i++){
       
     var object= replacment[i]; 
-   
-    const rec= await StaffMember.findOne({gucId:object.id}).populate();
-      if(!object.id||! object.date|| !object.courseName){
-      
+    if(!object.id||! object.date|| !object.courseName){ 
     return res.send({ error: 'please enter all data' });}
+
     const objectDate=new Date(Date.parse(object.date));
+    const rec= await StaffMember.findOne({gucId:object.id}).populate();
+    const course= await Course.findOne({name:courseName}).populate();
+    if(!objectDate || !rec || !course){
+    return res.send({ error: 'please enter correct replacement data' });}
+    }
     if(objectDate.getFullYear()!=AnnualLeaveDate.getFullYear() ||objectDate.getMonth()!=AnnualLeaveDate.getMonth()||objectDate.getDate()!=AnnualLeaveDate.getDate()  ){
       return res.send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
     }
@@ -428,7 +459,7 @@ if(!reason){
     }
 
 
-    }
+ 
     var flag=false;
   const x1=new Date(Date.now());
   if(AnnualLeaveDate.getFullYear()==x1.getFullYear()){
@@ -463,6 +494,7 @@ if(!flag){
 });
 await newRequest.save();
 return res.send({ data: newRequest  });
+
   }
 if(leaveType=="Maternity"){
 
@@ -476,7 +508,7 @@ if(!reason){
 const doc=req.body.document;
 const startDate=new Date(Date.parse(req.body.startDate));
 if(!doc || !startDate){
-return res.send({ error: 'Please enter all data' }); 
+return res.send({ error: 'Please enter all data in a correct way' }); 
 }
 
 
@@ -511,7 +543,7 @@ if(sender.leaveBalance==0){
 }
 const AccidentDate=new Date(Date.parse(req.body.AccidentDate));
 if(!AccidentDate){
-  return res.send({ error: 'Please enter all data' }); 
+  return res.send({ error: 'Please enter all data in a correct way' }); 
 }
 const subject=type+" ("+leaveType +") at " + req.body.AccidentDate;
 // add status and dender
@@ -535,10 +567,17 @@ if(numberOfDays>6){
         subject:subject
       
 });
- await newRequest.save();
+await newRequest.save();
 return res.send({ data: newRequest  });
   }
+  else{
 
+     return res.send({ error: "There is no such a leave request "});
+  }
+
+    }
+    else{
+    return res.send({ error: "There is no such a request "});
     }
 
   }
@@ -575,7 +614,11 @@ catch (err) {
 exports.AcceptOrRejectRep=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  var NewRequest=await Request.findOne({_id:Requestid}).populate();
+
+  var NewRequest=await Request.findOne({_id:Requestid,reciever:req.user}).populate();
+  if(!NewRequest){
+      return res.send({error:"there is no request with this id"})
+  }
   var id=req.user.gucId;
   var objId=req.user._id;
   var staff=await StaffMember.findOne({gucId:id}).populate();
@@ -619,6 +662,13 @@ exports.AcceptOrRejectRep=async function (req, res) {
     }
  
    } 
+   if(AcceptOrReject=="rejected"){
+   accepted=false
+   }
+   else{
+      return res.send({error : 'enter accepted or rejected please'})
+   }
+
     
  
   if(accepted){
@@ -667,9 +717,11 @@ catch (err) {
   try{  
   const Requestid=req.params._id;
   
-  var NewRequest=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid , reciever:req.user}).populate();
   var accepted=false;
- 
+   if(!NewRequest){
+      return res.send({error:"there is no request with this id"})
+  }
 
    
 
@@ -720,9 +772,11 @@ catch (err) {
   exports.AcceptOrRejectSlot=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  var NewRequest=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid , reciever:req.user}).populate();
   var accepted=false;
-
+    if(!NewRequest){
+      return res.send({error:"there is no request with this id"})
+  }
 
 
    if(accepted){
@@ -764,9 +818,11 @@ catch (err) {
 exports.AcceptOrRejectLeave=async function (req, res) {
   try{ 
   const Requestid=req.params._id;
-  var NewRequest=await Request.findOne({_id:Requestid}).populate();
+  var NewRequest=await Request.findOne({_id:Requestid, reciever:req.user}).populate();
   var accepted=false;
-
+    if(!NewRequest){
+      return res.send({error:"there is no request with this id"})
+  }
 
 
    if(accepted){
@@ -933,7 +989,7 @@ exports.CancelRequest=async function (req, res) {
   var sender= await StaffMember.findOne({gucId:senderId});
 
   var id=req.params._id;
-  var searchQuery = await Request.findOne({_id:id}).populate() ;
+  var searchQuery = await Request.findOne({_id:id , sender:sender}).populate() ;
   if(!searchQuery){
     return res.send({error:"there is no such a request"})
   }
@@ -961,6 +1017,10 @@ exports.viewmyReequestsByStatus = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
   var sender= await StaffMember.findOne({gucId:senderId}).populate();
+  if(req.params.status!='pending'|| req.params.status!='accepted'|| req.params.status!='rejected'){
+     return res.send({ data: 'there is no such a status' });
+
+  }
   var searchQuery = await Request.find({sender:sender,status:req.params.status}).populate() ;
    
   return res.send({data: searchQuery  }); 
@@ -977,6 +1037,11 @@ exports.viewmyReequestsByType = async function (req, res) {
   try{ 
   var  senderId=req.user.gucId;
   var sender= await StaffMember.findOne({gucId:senderId}).populate();
+  
+   if(req.params.type!='Replacement Request'|| req.params.type!='Slot Request'|| req.params.type!='Change DayOff'||req.params.type!='Leave Request'){
+     return res.send({ data: 'there is no such a type' });
+
+  }
   var searchQuery = await Request.find({sender:sender,type:req.params.type}).populate() ;
    
   return res.send({data: searchQuery  }); 
@@ -1011,6 +1076,10 @@ exports.viewRecievedRequest=  async function (req, res) {
   try{ 
     var  recId=req.user.gucId;
     var rec= await StaffMember.findOne({gucId:recId}).populate();
+    if(req.params.type!='Change DayOff'||req.params.type!='Leave Request'){
+     return res.send({ data: 'there is no such a type' });
+
+  }
     var searchQuery = await Request.find({reciever:rec , type:req.params.type}).populate()  ;
     return res.send({data: searchQuery }); 
 }
