@@ -1,262 +1,656 @@
+
 const StaffMember = require('../models/StaffMember');
 const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 
-
 const bcrypt = require('bcryptjs');
 
 
 //seeding the database
 exports.seedDB = async function () {
-    //adding starting loc
-    const allLoc = await Location.findOne({ location: 'A1.001' });
-    if (!allLoc) {
-        const newLoc = {
+
+    //locations 
+    //Office --> A
+    //Tutorial Room --> B
+    //Lab --> C
+    //TODO: Halls
+    const locations = [
+        {
             type: 'Office',
             location: 'A1.001',
             capacity: 10,
-        }
+        },
+        {
+            type: 'Office',
+            location: 'A1.002',
+            capacity: 10,
+        },
+        //limited office capacity
+        {
+            type: 'Office',
+            location: 'A1.003',
+            capacity: 2,
+        },
+        {
+            type: 'Tutorial Room',
+            location: 'B1.001',
+            capacity: 20,
+        },
+        {
+            type: 'Tutorial Room',
+            location: 'B1.002',
+            capacity: 20,
+        },
+        {
+            type: 'Tutorial Room',
+            location: 'B1.003',
+            capacity: 20,
+        },
+        {
+            type: 'Lab',
+            location: 'C1.001',
+            capacity: 15,
+        },
+        {
+            type: 'Lab',
+            location: 'C1.002',
+            capacity: 15,
+        },
+        {
+            type: 'Lab',
+            location: 'C1.003',
+            capacity: 15,
+        },
+    ]
 
-        await Location.create(newLoc);
-        console.log("Seeded location into DB")
-    }
+    await Location.insertMany(locations);
 
-    //adding starting HR 
-    const allStaff = await StaffMember.findOne({ gucId: 'HR-1' });
-    if (!allStaff) {
-        const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
+    //Faculties 
+    const faculties = [
+        {
+            code: 'ENG',
+            name: 'Engineering'
+        },
+        {
+            code: 'PHARM',
+            name: 'Pharmacy'
+        },
+        {
+            code: 'LAW',
+            name: 'Law'
+        },
+        {
+            code: 'ARCH',
+            name: 'Architecture'
+        },
+        {
+            code: 'MNGT',
+            name: 'Management'
+        },
+    ]
 
-        const newStaff = {
+    await Faculty.insertMany(faculties);
+
+    //departments
+    const facENG = await Faculty.findOne({ code: 'ENG' });
+    const facPHARM = await Faculty.findOne({ code: 'PHARM' });
+    const facMNGT = await Faculty.findOne({ code: 'facMNGT' });
+
+    const departments = [
+        //engineering
+        {
+            faculty: facENG,
+            name: 'MET'
+        },
+        {
+            faculty: facENG,
+            name: 'IET'
+        },
+        {
+            faculty: facENG,
+            name: 'Mechatronics'
+        },
+
+        //pharmacy 
+        {
+            faculty: facPHARM,
+            name: 'Pharmacy'
+        },
+        {
+            faculty: facPHARM,
+            name: 'Biotechnology'
+        },
+
+        //MNGT
+        {
+            faculty: facMNGT,
+            name: 'Management'
+        },
+        {
+            faculty: facMNGT,
+            name: 'Business'
+        },
+        {
+            faculty: facMNGT,
+            name: 'Business Informatics'
+        },
+    ]
+
+    await Department.insertMany(departments);
+
+    //courses
+    const depMET = await Department.findOne({ name: 'MET' });
+    const depBI = await Department.findOne({ name: 'Business Informatics' });
+
+    const courses = [
+        {
+            department: depMET,
+            name: 'Computer Science 1',
+            slots: [
+                {
+                    day: 'Saturday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Saturday',
+                    time: new Date('2020-12-12T10:00:00')
+                },
+                {
+                    day: 'Sunday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Monday',
+                    time: new Date('2020-12-12T08:15:00')
+                }
+            ]
+        },
+        {
+            department: depMET,
+            name: 'Computer Science 3',
+            slots: [
+                {
+                    day: 'Saturday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Sunday',
+                    time: new Date('2020-12-12T10:00:00')
+                },
+            ]
+        },
+        {
+            department: depMET,
+            name: 'Advanced Computer Lab',
+            slots: [
+                {
+                    day: 'Thursday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Wednesday',
+                    time: new Date('2020-12-12T10:00:00')
+                },
+                {
+                    day: 'Wednesday',
+                    time: new Date('2020-12-12T11:45:00')
+                },
+                {
+                    day: 'Tuesday',
+                    time: new Date('2020-12-12T13:45:00')
+                },
+            ]
+        },
+        {
+            department: depBI,
+            name: 'Computer Science 1',
+            slots: [
+                {
+                    day: 'Wednesday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Saturday',
+                    time: new Date('2020-12-12T10:00:00')
+                },
+                {
+                    day: 'Sunday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Monday',
+                    time: new Date('2020-12-12T08:15:00')
+                }
+            ]
+        },
+        {
+            department: depBI,
+            name: 'Computer Science 3',
+            slots: [
+                {
+                    day: 'Saturday',
+                    time: new Date('2020-12-12T08:15:00')
+                },
+                {
+                    day: 'Sunday',
+                    time: new Date('2020-12-12T10:00:00')
+                },
+            ]
+        },
+    ]
+
+    await Course.insertMany(courses);
+
+    //staff members 
+    const office1 = await Location.findOne({ location: 'A1.001', });
+    const office2 = await Location.findOne({ location: 'A1.002', });
+    const office3 = await Location.findOne({ location: 'A1.003', });
+
+    //hr
+    const hr = [
+        //no attendance records
+        // Office office3 should be full
+        {
             gucId: 'HR-1',
-            name: 'seeded HR',
+            name: 'Mohammed',
             gender: 'male',
-            email: 'seeded@guc.edu.eg',
+            email: 'mohammed@guc.edu.eg',
             password: await bcrypt.hash('123456', 12),
-            salary: 1000,
-            officeLocation: tempLoc,
+            salary: 10000,
+            officeLocation: office3,
             type: 'HR',
             attendanceRecords: [],
-            lastLogIn: undefined,
-        }
-
-        await StaffMember.create(newStaff);
-        console.log("Seeded Staff into DB")
-    }
-
-    const allFac = await Faculty.findOne({ code: 'FAC 1' });
-    if (!allFac) {
-        const newFac = {
-            code: 'FAC 1',
-            name: 'seeded faculty'
-        }
-
-        await Faculty.create(newFac);
-        console.log("Seeded Faculty into DB")
-    }
-
-    const allDep = await Department.findOne({ name: 'seeded department' });
-    if (!allDep) {
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-
-        const newDep = {
-            faculty: getFac,
-            name: 'seeded department'
-        }
-
-        await Department.create(newDep);
-        console.log("Seeded Department into DB")
-    }
-
-    const allCourses = await Course.findOne({ name: 'seeded Course' });
-    if (!allCourses) {
-        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-
-        const newCourse = {
-            department: getDep,
-            name: 'seeded Course'
-        }
-
-        await Course.create(newCourse);
-        console.log("Seeded Course into DB")
-    }
-
-    //------
-    const allFac2 = await Faculty.findOne({ code: 'FAC 2' });
-    if (!allFac2) {
-        const newFac = {
-            code: 'FAC 2',
-            name: 'seeded faculty2'
-        }
-
-        await Faculty.create(newFac);
-        console.log("Seeded Faculty 2into DB")
-    }
-
-    const allDep2 = await Department.findOne({ name: 'seeded department' });
-    if (!allDep2) {
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-
-        const newDep = {
-            faculty: getFac,
-            name: 'seeded department'
-        }
-
-        await Department.create(newDep);
-        console.log("Seeded Department2 into DB")
-    }
-
-    const allCourses2 = await Course.findOne({ name: 'seeded Course2' });
-    if (!allCourses2) {
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-        const getDep = await (await Department.findOne({ faculty: getFac, name: 'seeded department' })).populate('department');
-
-        const newCourse = {
-            department: getDep,
-            name: 'seeded Course2'
-        }
-
-        await Course.create(newCourse);
-        console.log("Seeded Course into DB")
-    }
-
-
-    ///------
-
-    const CImem = await StaffMember.findOne({ gucId: 'AC-1' });
-    if (!CImem) {
-        const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
-        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-
-        const newCI = {
-            gucId: 'AC-1',
-            name: 'seeded CI',
+        },
+        //1 attendance record 
+        // from 8:00 to 16:24 --> no missing/extra hours
+        {
+            gucId: 'HR-2',
+            name: 'Ahmed',
             gender: 'male',
-            email: 'ci@guc.edu.eg',
+            email: 'ahmed@guc.edu.eg',
             password: await bcrypt.hash('123456', 12),
-            salary: 1000,
-            officeLocation: tempLoc,
+            salary: 10000,
+            officeLocation: office3,
+            type: 'HR',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '16:24',
+                    status: 'Present'
+                }
+            ],
+        },
+        //1 attendance record 
+        // from 8:00 to 18:24 --> 2 extra hours
+        {
+            gucId: 'HR-3',
+            name: 'Youssef',
+            gender: 'male',
+            email: 'youssef@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office2,
+            type: 'HR',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '18:24',
+                    status: 'Present'
+                }
+            ],
+        },
+        // from 8:00 to 12:20 --> 4:04 missing hours
+        {
+            gucId: 'HR-4',
+            name: 'Adam',
+            gender: 'male',
+            email: 'adam@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office2,
+            type: 'HR',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '12:20',
+                    status: 'Present'
+                }
+            ],
+        },
+    ]
+
+    await StaffMember.insertMany(hr);
+
+    //Course instructors
+    const cs1EngCourse = await Course.findOne({ department: depMET._id, name: 'Computer Science 1' })
+    const cs3EngCourse = await Course.findOne({ department: depMET._id, name: 'Computer Science 3' })
+    const cs1BICourse = await Course.findOne({ department: depBI._id, name: 'Computer Science 1' })
+    const cs3BICourse = await Course.findOne({ department: depBI._id, name: 'Computer Science 3' })
+
+    const CI = [
+        //no attendance record
+        {
+            gucId: 'AC-1',
+            name: 'Mohammed',
+            gender: 'male',
+            email: 'mohammed.abdelfattah@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office3,
             type: 'Academic Member',
             role: 'Course Instructor',
+            dayOff: 'Monday',
             attendanceRecords: [],
-            lastLogIn: undefined,
-            faculty: getFac,
-            department: getDep,
-        }
+            faculty: facENG,
+            department: depMET,
+            courses: [
+                cs1EngCourse,
+                cs3EngCourse
+            ],
+        },
 
-        await StaffMember.create(newCI);
-        console.log("Seeded newCI into DB")
-    }
-
-    const TAmem = await StaffMember.findOne({ gucId: 'AC-2' });
-    if (!TAmem) {
-        const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
-        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-
-        const newTA = {
+        // 2 attendance records 
+        // 1 before 7 AM and 1 after 7 PM --> no extra hours
+        {
             gucId: 'AC-2',
-            name: 'seeded TA',
-            gender: 'male',
-            email: 'ta@guc.edu.eg',
+            name: 'Sarah',
+            gender: 'female',
+            email: 'sarah.abdelfattah@guc.edu.eg',
             password: await bcrypt.hash('123456', 12),
-            salary: 1000,
-            officeLocation: tempLoc,
+            salary: 10000,
+            officeLocation: office2,
             type: 'Academic Member',
-            role: 'Teaching Assistant',
-            attendanceRecords: [],
-            lastLogIn: undefined,
-            faculty: getFac,
-            department: getDep,
-        }
-
-        await StaffMember.create(newTA);
-        console.log("Seeded newTA into DB")
-    }
-
-    const TAmemWithCourse = await StaffMember.findOne({ gucId: 'AC-3' });
-    if (!TAmemWithCourse) {
-        const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
-        const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-        const getFac = await (await Faculty.findOne({ code: 'FAC 1' })).populate('faculty');
-        const getCourse = await (await Course.findOne({ name: 'seeded Course' })).populate('course');
-
-        const newTA = {
+            role: 'Course Instructor',
+            dayOff: 'Monday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-12',
+                    startTime: '6:00',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '20:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facENG,
+            department: depMET,
+            courses: [
+                cs1EngCourse,
+                cs3EngCourse
+            ],
+        },
+        // 2 attendance records 
+        // 1 less than 8:24 and 1 more than 8:24 --> no missing/extra hours
+        {
             gucId: 'AC-3',
-            name: 'seeded TA2',
-            gender: 'male',
-            email: 'ta2@guc.edu.eg',
+            name: 'Reem',
+            gender: 'female',
+            email: 'reem@guc.edu.eg',
             password: await bcrypt.hash('123456', 12),
-            salary: 1000,
-            officeLocation: tempLoc,
+            salary: 10000,
+            officeLocation: office2,
+            type: 'Academic Member',
+            role: 'Course Instructor',
+            dayOff: 'Monday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-12',
+                    startTime: '8:00',
+                    endTime: '15:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '17:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [
+                cs1BICourse,
+                cs3BICourse
+            ],
+        },
+        // 4 attendance records 
+        // one without sign out and two without sign in --> should be considered in missing days
+        //one missing hour
+        {
+            gucId: 'AC-4',
+            name: 'Aya',
+            gender: 'female',
+            email: 'aya@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office2,
+            type: 'Academic Member',
+            role: 'Course Instructor',
+            dayOff: 'Thursday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-12',
+                    startTime: '8:00',
+                    endTime: '15:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Monday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-14',
+                    endTime: '17:24',
+                    status: 'Present'
+                }, {
+                    day: 'Wednesday',
+                    date: '2020-12-15',
+                    endTime: '17:24',
+                    status: 'Present'
+                },
+
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [],
+        },
+    ]
+
+    await StaffMember.insertMany(CI);
+
+    //Teaching assistants
+    const TA = [
+        //no attendance record
+        {
+            gucId: 'AC-5',
+            name: 'Yahia',
+            gender: 'male',
+            email: 'yahia@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
             type: 'Academic Member',
             role: 'Teaching Assistant',
+            dayOff: 'Saturday',
             attendanceRecords: [],
-            lastLogIn: undefined,
-            faculty: getFac,
-            department: getDep,
-            courses: [getCourse],
-        }
+            faculty: facENG,
+            department: depMET,
+            courses: [
+                cs1EngCourse,
+                cs3EngCourse
+            ],
+        },
+        // 2 attendance records 
+        // 1 before 7 AM and 1 after 7 PM --> no extra hours
+        {
+            gucId: 'AC-6',
+            name: 'Leen',
+            gender: 'female',
+            email: 'leen@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Sunday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-12',
+                    startTime: '6:00',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '20:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facENG,
+            department: depMET,
+            courses: [
+                cs1EngCourse,
+                cs3EngCourse
+            ],
+        },
+        // 2 attendance records 
+        // 1 less than 8:24 and 1 more than 8:24 --> no missing/extra hours
+        {
+            gucId: 'AC-7',
+            name: 'Karim',
+            gender: 'male',
+            email: 'karim@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Monday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-12',
+                    startTime: '8:00',
+                    endTime: '15:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '17:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [
+                cs1BICourse,
+                cs3BICourse
+            ],
+        },
+        // 4 attendance records 
+        // one without sign out and two without sign in --> should be considered in missing days
+        //one missing hour
+        {
+            gucId: 'AC-8',
+            name: 'Abdullah',
+            gender: 'male',
+            email: 'abdullah@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Thursday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '15:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    status: 'Present'
+                },
+                {
+                    day: 'Tuesday',
+                    date: '2020-12-13',
+                    endTime: '17:24',
+                    status: 'Present'
+                }, {
+                    day: 'Wednesday',
+                    date: '2020-12-12',
+                    endTime: '17:24',
+                    status: 'Present'
+                },
 
-        await StaffMember.create(newTA);
-        console.log("Seeded newTA into DB")
-    }
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [],
+        },
+        //2 attendance records
+        // from 7:00 to 12:00 and from 12:01 to 16:24 --> 1 missing minute
+        {
+            gucId: 'AC-9',
+            name: 'Khalid',
+            gender: 'male',
+            email: 'khalid@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Wednesday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '12:00',
+                    status: 'Present'
+                },
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '12:01',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [],
+        },
+    ]
 
-
-    // const allCourses2 = await Course.findOne({ name: 'seeded course2' });
-    // if (!allCourses2) {
-    //     const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-    //     const tempLoc = await Location.findOne({ location: 'A1.001', }).populate('officeLocation');
-
-    //     const newCourse = {
-    //         department: getDep,
-    //         name: 'seeded Course2',
-    //         slots: [
-    //             // {
-    //             //     day: "Saturday",
-    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
-    //             //     location: tempLoc
-    //             // }
-    //             // {
-    //             //     day: "Sunday",
-    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
-    //             //     location: tempLoc
-    //             // }
-    //             // {
-    //             //     day: "Monday",
-    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
-    //             //     location: tempLoc
-    //             // }
-    //             // {
-    //             //     day: "Tuesday",
-    //             //     time: 1970 - 01 - 01T15: 45: 00.000 + 00: 00,
-    //             //     location: tempLoc
-    //             // }
-    //         ]
-    //     }
-
-    //     await Course.create(newCourse);
-    //     console.log("Seeded Course2 into DB")
-    // }
-
-    // const allCourses3 = await Course.findOne({ name: 'seeded Course3' });
-    // if (!allCourses3) {
-    //     const getDep = await (await Department.findOne({ name: 'seeded department' })).populate('department');
-
-    //     const newCourse = {
-    //         department: getDep,
-    //         name: 'seeded Course3'
-    //     }
-
-    //     await Course.create(newCourse);
-    //     console.log("Seeded Course3 into DB")
-    // }
-
-    // const req = await Request.find();
-    // if (req.length < 1) {
-    //     const staff1 = await StaffMember.findOne({ gucId: 'AC-1' })
-    // }
-
+    await StaffMember.insertMany(TA);
 }

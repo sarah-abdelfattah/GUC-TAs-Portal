@@ -18,7 +18,7 @@ const locations = require('./routes/locations');
 const academicMemberRoutes = require('./routes/academicMembers');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
-const requests=require('./routes/requests');
+const requests = require('./routes/requests');
 
 // Create the app
 const app = express();
@@ -54,7 +54,7 @@ app.use(bodyParser.json());
 //seeding
 const Tokens = require("./models/Token");
 const dummy = require('./helpers/seeding');
-dummy.seedDB();
+// dummy.seedDB();
 
 
 //All routes should be tested for auth except login
@@ -93,7 +93,7 @@ app.use('/locations', locations);
 app.use('/academicMember', academicMemberRoutes);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
-app.use('/requests',requests);
+app.use('/requests', requests);
 
 app.post('/logOut', async function (req, res) {
     const tokenFound = await Token.findOne({ tokenId: req.header('auth-token') })

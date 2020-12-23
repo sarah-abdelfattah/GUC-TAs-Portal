@@ -14,7 +14,7 @@ exports.viewAttendance = async function (req, res) {
             res.send({ error: "You should choose an option" });
             return;
         }
-        const validateAttendance = await validation.viewAllAttendance.validateAsync({all});
+        const validateAttendance = await validation.viewAllAttendance.validateAsync({ all });
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -28,7 +28,7 @@ exports.viewAttendance = async function (req, res) {
             }
             res.send({ data: attendanceRecord });
         } else {
-            const validateMonth = await validation.viewMonthAttendance.validateAsync({month1,month2});
+            const validateMonth = await validation.viewMonthAttendance.validateAsync({ month1, month2 });
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
                 res.send(attendanceRecord);
@@ -81,7 +81,7 @@ exports.addMissingSignInOut = async function (req, res) {
     try {
         const { id, signIn, signOut, date, day, number } = req.body;
 
-        if ((!signIn && !signOut) || !date || (!day && day!==0) || !id || !number) {
+        if ((!signIn && !signOut) || !date || (!day && day !== 0) || !id || !number) {
             res.send({ error: "The sign in/out, date, and day should be specified" });
             return;
         }
@@ -243,7 +243,7 @@ exports.viewAttendanceHR = async function (req, res) {
             res.send({ error: "You should choose an option and add the id" });
             return;
         }
-        const validationStaff = await validation.viewStaffAttendance.validateAsync({id,all});
+        const validationStaff = await validation.viewStaffAttendance.validateAsync({ id, all });
 
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
@@ -258,7 +258,7 @@ exports.viewAttendanceHR = async function (req, res) {
             }
             return res.send({ data: attendanceRecord });
         } else {
-            const validationMonth = await validation.viewMonthAttendance.validateAsync({month1,month2});
+            const validationMonth = await validation.viewMonthAttendance.validateAsync({ month1, month2 });
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
                 return res.send(attendanceRecord);
@@ -282,14 +282,19 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
         staffIDs = [];
         for (i = 0; i < attendanceRecords.length; i++) {
             missingDays = await module.exports.findMissingDays(attendanceRecords[i].gucId);
-            missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
-            if (typeof (missingDays) !== 'string' && typeof (missingHours) !== 'string') {
+            minutesSpent = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
+            if (typeof (missingDays) !== 'string') {
+                const hoursSpentPrinted = Math.floor(Math.abs(minutesSpent) / 60);
+                const minutesSpentPrinted = Math.abs(minutesSpent) % 60;
+                const sign = minutesSpent < 0 ? "-" : "";
+                const sentRes = sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
+
                 if (missingDays > 0 || missingHours < 0) {
                     staffIDs.push(
                         {
                             GUCID: attendanceRecords[i].gucId,
-                            MissingDays:missingDays,
-                            MissingHours:missingHours
+                            MissingDays: missingDays,
+                            MissingHours: sentRes
                         });
                 }
             }
@@ -316,7 +321,7 @@ async function viewAttendance(id, month1, month2) {
         return "There is no staff with this ID: " + id;
     }
 
-    if(typeof(id)!=='string'){ 
+    if (typeof (id) !== 'string') {
         res.send("You should write the ID as a string");
         return;
     }
@@ -418,7 +423,7 @@ exports.findMissingDays = async function (id) {
             return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
                 && parseInt(record.date.substring(8, 10)) === initialDay && record.startTime && record.endTime
         });
-        if (!dayRecords  && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+        if (!dayRecords && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
 
         if (((initialMonth === 1 || initialMonth === 3 || initialMonth === 5 || initialMonth === 7 || initialMonth === 8 || initialMonth === 10 || initialMonth === 12) && initialDay === 31)
             || ((initialMonth === 4 || initialMonth === 6 || initialMonth === 9 || initialMonth === 11) && initialDay === 30) ||
@@ -513,15 +518,15 @@ exports.findMissingMinutes = async function (id) {
         cumulativeMin += minSpent;
 
         //To count the days that he should come (to be able to calculate the total minimum spent minutes) without the days off
-            if (datesExist.length === 0) {
-                datesExist.push(record.date);
-            }
-            else {
-                dateFound = datesExist.some((date)=>{
-                    return date === record.date;
-                })
-                if (!dateFound) datesExist.push(record.date);
-            }
+        if (datesExist.length === 0) {
+            datesExist.push(record.date);
+        }
+        else {
+            dateFound = datesExist.some((date) => {
+                return date === record.date;
+            })
+            if (!dateFound) datesExist.push(record.date);
+        }
     })
     return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
 }
