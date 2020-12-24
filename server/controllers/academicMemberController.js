@@ -337,7 +337,7 @@ const courseInstructorController = {
         });
 
       // Case: current slot is already assigned to anothre TA
-      if (course.slots[targetSlotIndex].isAssigned !== null && `${course.slots[targetSlotIndex].isAssigned._id}` !== `${targetAC._id}`) {
+      if (course.slots[targetSlotIndex].isAssigned !== null) {
         return res.status(200).send({
           error: errorMsgs.alreadyAssigned('original slot'),
         });
@@ -356,7 +356,7 @@ const courseInstructorController = {
 
       const currentSlotIndex = acSlots.findIndex(({ day, time }) => {
         const slotTime = time;
-        const currentTime = req.body.newSlot.time.split(' ');
+        const currentTime = req.body.slot.time.split(' ');
         currentTime[0] += ':00';
         return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
       });
