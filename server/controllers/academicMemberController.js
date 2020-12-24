@@ -314,15 +314,6 @@ const courseInstructorController = {
           error: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
         });
 
-      // Case: target slot is already assigned
-      if (course.slots[targetSlotIndex].isAssigned !== null) {
-        console.log(course.slots[targetSlotIndex]);
-        console.log(course.slots[targetSlotIndex].isAssigned);
-        return res.status(200).send({
-          error: errorMsgs.alreadyAssigned('inserted slot'),
-        });
-      }
-
       // * Get AC
       const targetAC = await StaffMember.findOne({
         gucId: req.body.gucId,
@@ -345,6 +336,13 @@ const courseInstructorController = {
           error: errorMsgs.notFound('academic member', `id ${req.body.gucId}`),
         });
 
+      // Case: current slot is already assigned to anothre TA
+      if (course.slots[targetSlotIndex].isAssigned !== null && `${course.slots[targetSlotIndex].isAssigned._id}` !== `${targetAC._id}`) {
+        return res.status(200).send({
+          error: errorMsgs.alreadyAssigned('original slot'),
+        });
+      }
+
       // Case instructor has a slot in that time
       const acSlots = [];
       targetAC.courses.map(({ slots }) => {
@@ -358,17 +356,17 @@ const courseInstructorController = {
 
       const currentSlotIndex = acSlots.findIndex(({ day, time }) => {
         const slotTime = time;
-        const currentTime = req.body.slot.time.split(' ');
+        const currentTime = req.body.newSlot.time.split(' ');
         currentTime[0] += ':00';
-        console.log(`${slotTime} === ${currentTime}`);
         return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
       });
 
-      if (currentSlotIndex !== -1) return res.status(400).send('There is a conflit in timing');
+      if (currentSlotIndex !== -1) return res.status(400).send({ error: 'There is a conflit in timing', slotIndex: currentSlotIndex });
 
       // * Case: everything passed
       // Assign the course slot to this TA
       course.slots[targetSlotIndex].isAssigned = targetAC;
+      course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
       await course.save();
 
       // Push the course to the AC's courses
