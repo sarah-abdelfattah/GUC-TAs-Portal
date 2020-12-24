@@ -5,8 +5,12 @@ const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 
+const validation = require('../helpers/validation');
+
 exports.addDepartment = async function (req, res) {
   try {
+    let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
+
     const { facultyCode, depName, HOD } = req.body;
 
     //all data entered
@@ -56,6 +60,10 @@ exports.addDepartment = async function (req, res) {
     const depCreated = await Department.create(newDep);
     return res.send({ data: depCreated });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     console.log('~ err', err);
     return res.send({ err: err });
   }
@@ -63,6 +71,8 @@ exports.addDepartment = async function (req, res) {
 
 exports.updateDepartment = async function (req, res) {
   try {
+    let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
+
     const { facultyCode, depName, HOD, newFacultyCode } = req.body;
 
     //all data entered
@@ -109,6 +119,10 @@ exports.updateDepartment = async function (req, res) {
     const updatedDep = await depFound.save();
     return res.send({ data: updatedDep });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     console.log('~ err', err);
     return res.send({ err: err });
   }
@@ -116,17 +130,19 @@ exports.updateDepartment = async function (req, res) {
 
 exports.deleteDepartment = async function (req, res) {
   try {
-    const faculty = req.body.faculty;
-    const department = req.body.department;
+    let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
-    if (!faculty || !department)
+    const facultyCode = req.body.faculty;
+    const depName = req.body.department;
+
+    if (!facultyCode || !depName)
       return res.send({ error: "Please enter all details" });
 
-    const facultyFound = await Faculty.findOne({ code: faculty, });
+    const facultyFound = await Faculty.findOne({ code: facultyCode, });
     if (!facultyFound)
       return res.send({ error: "Sorry no faculty with this name" });
 
-    let depFound = await Department.findOne({ faculty: facultyFound._id, name: department });
+    let depFound = await Department.findOne({ faculty: facultyFound._id, name: depName });
     if (!depFound)
       return res.send({ error: "Sorry no department with this name" });
 
@@ -137,9 +153,13 @@ exports.deleteDepartment = async function (req, res) {
       await courses[i].save();
     }
 
-    depFound = await Department.findOneAndDelete({ faculty: facultyFound._id, name: department });
+    depFound = await Department.findOneAndDelete({ faculty: facultyFound._id, name: depName });
     return res.send({ data: "Department deleted successfully" });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     console.log('~ err', err);
     return res.send({ err: err });
   }
@@ -150,7 +170,6 @@ exports.deleteDepartment = async function (req, res) {
 // to get the staff members of a certain department
 exports.getAllStaffMembers = async (req, res) => {
   try {
-
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
       _id: req.user.department,
@@ -181,6 +200,10 @@ exports.getAllStaffMembers = async (req, res) => {
       data: staffMembers,
     });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
 };
@@ -231,6 +254,10 @@ exports.getStaffMembersPerCourse = async (req, res) => {
       data: staffMembers,
     });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     return res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 };
@@ -272,6 +299,10 @@ exports.viewDayOff = async (req, res) => {
       }),
     });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
 };
@@ -315,6 +346,10 @@ exports.viewDayOffStaff = async (req, res) => {
       data: { gucId: staffMember.gucId, name: staffMember.name, dayOff: staffMember.dayOff },
     });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
 };
@@ -360,12 +395,19 @@ exports.viewCourseCoverage = async (req, res) => {
       }),
     });
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
 };
+
 //////////
 exports.assignInstructor = async (req, res) => {
   try {
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync(req.body)
+
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
 
@@ -463,18 +505,24 @@ exports.assignInstructor = async (req, res) => {
     });
 
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
 }
 
 exports.updateInstructor = async function (req, res) {
   try {
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync(req.body)
+
     let instructorId = req.body.gucId;
     let newCourseName = req.body.newName;
-    let oldCourseName = req.body.oldName;
+    let courseName = req.body.oldName;
 
-    if (!instructorId || !newCourseName || !oldCourseName)
-      return res.send({ error: "Please enter all the details" });
+    if (!instructorId || !newCourseName || !courseName)
+      return res.send({ error: "Please enter new course name" });
 
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
@@ -517,7 +565,7 @@ exports.updateInstructor = async function (req, res) {
 
     const oldCourse = await Course.findOne({
       department: departmentFound._id,
-      name: oldCourseName,
+      name: courseName,
     });
 
     if (!newCourse || !oldCourse) {
@@ -543,12 +591,18 @@ exports.updateInstructor = async function (req, res) {
     });
 
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 }
 
 exports.deleteInstructor = async function (req, res) {
   try {
+    let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
+
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
 
@@ -624,6 +678,10 @@ exports.deleteInstructor = async function (req, res) {
     });
 
   } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err });
+    }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 }

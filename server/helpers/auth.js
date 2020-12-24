@@ -26,7 +26,7 @@ exports.TAAuth = async function (req, res, next) {
 }
 
 exports.CIAuth = async function (req, res, next) {
-    if (req.user.type === 'Course Instructor') {
+    if (req.user.role === 'Course Instructor') {
         next();
     } else {
         return res.sendStatus(401)
