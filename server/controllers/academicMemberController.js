@@ -672,6 +672,7 @@ const courseInstructorController = {
     // * ALl passed
     // Remove the slot assignment
     course.slots[targetSlotIndex].isAssigned = null;
+    course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
     await course.save();
 
     // If the TA is not assigned to any slots, remove the course from targetAC's array
