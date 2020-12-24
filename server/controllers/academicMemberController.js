@@ -542,12 +542,12 @@ const courseInstructorController = {
           });
 
         // If currentSlot is assigned to this TA, check that the new slot is available. Remove from oldSlot. Assign to the newSlot
-
         if (course.slots[currentSlotIndex].isAssigned !== null && `${course.slots[currentSlotIndex].isAssigned._id}` === `${targetAC._id}`) {
           // Case: want to assign the TA to a new slot and remove the old assignment
           if (course.slots[targetSlotIndex].isAssigned === null) {
             course.slots[currentSlotIndex].isAssigned = null;
             course.slots[targetSlotIndex].isAssigned = targetAC;
+            course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
             await course.save();
 
             return res.status(200).send({
