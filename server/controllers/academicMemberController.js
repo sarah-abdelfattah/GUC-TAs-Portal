@@ -315,23 +315,56 @@ const courseInstructorController = {
         });
 
       // Case: target slot is already assigned
-      if (course.slots[targetSlotIndex].isAssigned !== null)
+      if (course.slots[targetSlotIndex].isAssigned !== null) {
+        console.log(course.slots[targetSlotIndex]);
+        console.log(course.slots[targetSlotIndex].isAssigned);
         return res.status(200).send({
           error: errorMsgs.alreadyAssigned('inserted slot'),
         });
+      }
 
       // * Get AC
       const targetAC = await StaffMember.findOne({
         gucId: req.body.gucId,
         type: 'Academic Member',
         department: instructor.department,
-      });
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
 
       // Case: AC not found
       if (!targetAC)
         return res.status(404).send({
           error: errorMsgs.notFound('academic member', `id ${req.body.gucId}`),
         });
+
+      // Case instructor has a slot in that time
+      const acSlots = [];
+      targetAC.courses.map(({ slots }) => {
+        const mySlots = slots.filter(({ isAssigned }) => isAssigned !== null && `${isAssigned._id}` === `${targetAC._id}`);
+        return mySlots.map(({ day, time }) => {
+          const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Will have an array with this ['11:45:00', 'AM']
+          acSlots.push({ day: day, time: slotTime });
+          return { day: day, time: slotTime };
+        });
+      });
+
+      const currentSlotIndex = acSlots.findIndex(({ day, time }) => {
+        const slotTime = time;
+        const currentTime = req.body.slot.time.split(' ');
+        currentTime[0] += ':00';
+        console.log(`${slotTime} === ${currentTime}`);
+        return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
+      });
+
+      if (currentSlotIndex !== -1) return res.status(400).send('There is a conflit in timing');
 
       // * Case: everything passed
       // Assign the course slot to this TA
