@@ -4,7 +4,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 // const { handleError } = require("../utils/handleError");
 // required models
 // const Replacment= require('../models/schemas/replacment');
-// const Request=require('../models/Request');
+const Request=require('../models/Request');
 const StaffMember = require('../models/StaffMember');
 const Course = require('../models/Course');
 const Notification = require('../models/Notification')
@@ -585,6 +585,11 @@ exports.slotLinkingReqResponse = async (req, res) => {
     }
     const updatedRequests = await Request.findOneAndUpdate({ _id: slotRequests[reqNumber - 1]._id }, { status: slotRequests[reqNumber - 1].status });
     const savedReq = await updatedRequests.save();
+    const newNotification = new Notification({
+      reciever: slotRequests[reqNumber - 1].sender,
+      message:`Your ${slotRequests[reqNumber - 1].subject} was ${status}`
+    });
+    await newNotification.save()
     res.send(`The slot-linking request is ${slotRequests[reqNumber - 1].status} successfully`);
   } catch (err) {
     console.log('~ err', err);

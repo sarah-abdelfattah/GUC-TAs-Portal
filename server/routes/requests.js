@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const RequestController=require('../controllers/RequestController');
+const auth = require('../helpers/auth')
 //const { auth } = require("../../utils/authentication");
 //router.get("/viewMyRequest",RequestController.viewmyReequests); 
 // //with staus
@@ -15,7 +16,7 @@ const RequestController=require('../controllers/RequestController');
 //TODO add replacment
 router.post("/sendrequest", RequestController.sendRequest);
 
-router.put('/cc/acceptRejectSlotLinking',RequestController.slotLinkingReqResponse);
+router.put('/acceptRejectSlotLinking',auth.CCAuth,RequestController.slotLinkingReqResponse);
 
 
 module.exports = router;
