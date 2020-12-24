@@ -283,18 +283,16 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
         for (i = 0; i < attendanceRecords.length; i++) {
             missingDays = await module.exports.findMissingDays(attendanceRecords[i].gucId);
             missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
-            if (typeof (missingDays) !== 'string' && typeof (missingHours) !== 'string') {
-                const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
-                const minutesSpentPrinted = Math.abs(missingHours) % 60;
-                const sign = missingHours < 0 ? "-" : "";
-                const sentRes = "Missing/extra hours: " + sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
-                staffIDs.push(
-                    {
-                        GUCID: attendanceRecords[i].gucId,
-                        MissingDays:missingDays,
-                        MissingHours:sentRes
-                    });
-            }
+            const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
+            const minutesSpentPrinted = Math.abs(missingHours) % 60;
+            const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
+            const sentRes = "Missing hours: " + sign;
+            staffIDs.push(
+                {
+                    GUCID: attendanceRecords[i].gucId,
+                    MissingDays:missingDays,
+                    MissingHours:sentRes
+                });
         }
         return res.json({ data: staffIDs });
     } catch (err) {
