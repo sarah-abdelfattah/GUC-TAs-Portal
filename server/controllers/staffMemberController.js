@@ -311,6 +311,10 @@ exports.signIn = async function (req, res) {
             return res.send({ error: 'Staff not registered in the system' });
         else {
             const currentTime = new Date();
+            if (currentTime.getDay() === 5)
+                return res.send({ error: 'Sorry you cannot sign in on Friday' });
+
+
             const newAttendance = {
                 day: currentTime.getDay(),
                 date:
@@ -363,6 +367,9 @@ exports.signOut = async function (req, res) {
             return res.send({ error: "Staff not registered in the system" });
         else {
             const today = new Date();
+            if (today.getDay() === 5)
+                return res.send({ error: 'Sorry you cannot sign out on Friday' });
+
             const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
             const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             let found = false;

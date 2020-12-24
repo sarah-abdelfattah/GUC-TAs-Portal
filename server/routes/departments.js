@@ -10,23 +10,26 @@ router.delete("/department", auth.HRAuth, departmentController.deleteDepartment)
 // HOD
 
 // get all staff members of this department
-router.get('/getAllStaffMembers', departmentController.getAllStaffMembers);
+router.get('/getAllStaffMembers', auth.HODAuth, departmentController.getAllStaffMembers);
 
 // to get all the staff members of this department for a specific course
-router.get('/getAllStaffMembers/:course', departmentController.getStaffMembersPerCourse);
+router.get('/getAllStaffMembers/:course', auth.HODAuth, departmentController.getStaffMembersPerCourse);
 
 // to view the dayOff of all staff members for this department
-router.get('/viewDayOff', departmentController.viewDayOff);
+router.get('/viewDayOff', auth.HODAuth, departmentController.viewDayOff);
 
 // to view the dayOff of a certain staff member in this department
-router.get('/viewDayOff/:idStaff', departmentController.viewDayOffStaff);
+router.get('/viewDayOff/:idStaff', auth.HODAuth, departmentController.viewDayOffStaff);
 
 // to view the all courses coverage for a certain department
-router.get('/viewCourseCoverage', departmentController.viewCourseCoverage);
+router.get('/viewCourseCoverage', auth.HODAuth, departmentController.viewCourseCoverage);
 
 // Assign/update/delete an instructor to a course
-router.post('/assignInstructor', departmentController.assignInstructor);
-router.put('/assignInstructor', departmentController.updateInstructor);
-router.delete('/assignInstructor', departmentController.deleteInstructor);
+router.post('/assignInstructor', auth.HODAuth, departmentController.assignInstructor);
+router.put('/assignInstructor', auth.HODAuth, departmentController.updateInstructor);
+router.delete('/assignInstructor', auth.HODAuth, departmentController.deleteInstructor);
+
+// view View teaching assignments (which staff members teach which slots) of course offered by his department.
+router.get('/viewTeachingAssignments/:course', auth.HODAuth, departmentController.viewTeachingAssignments);
 
 module.exports = router;  
