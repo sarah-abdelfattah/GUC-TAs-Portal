@@ -284,14 +284,16 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             missingDays = await module.exports.findMissingDays(attendanceRecords[i].gucId);
             missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
             if (typeof (missingDays) !== 'string' && typeof (missingHours) !== 'string') {
-                if (missingDays > 0 || missingHours < 0) {
-                    staffIDs.push(
-                        {
-                            GUCID: attendanceRecords[i].gucId,
-                            MissingDays:missingDays,
-                            MissingHours:missingHours
-                        });
-                }
+                const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
+                const minutesSpentPrinted = Math.abs(missingHours) % 60;
+                const sign = missingHours < 0 ? "-" : "";
+                const sentRes = "Missing/extra hours: " + sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
+                staffIDs.push(
+                    {
+                        GUCID: attendanceRecords[i].gucId,
+                        MissingDays:missingDays,
+                        MissingHours:sentRes
+                    });
             }
         }
         return res.json({ data: staffIDs });
@@ -414,11 +416,15 @@ exports.findMissingDays = async function (id) {
     initialWeekDay = initDate.getDay();
     while ((initialDay <= todayDate && todayDate >= 11 && initDate >= 11) || (todayDate < 11 && ((initialDay <= todayDate && initDate < 11) ||
         (initDate >= 11 && initialMonth == monthLastDays && initialYear === previousYear)))) {
-        dayRecords = monthRecords.some((record) => {
+        dayRecords = monthRecords.filter((record) => {
             return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
-                && parseInt(record.date.substring(8, 10)) === initialDay && record.startTime && record.endTime
+                && parseInt(record.date.substring(8, 10)) === initialDay && (record.startTime && record.endTime 
+                && !(parseInt(record.startTime.substring(0,2))>=19 || parseInt(record.endTime.substring(0,2))<7 ||
+                (parseInt(record.endTime.substring(0,2))==7 && parseInt(record.endTime.substring(3,5))==0)) )
         });
-        if (!dayRecords  && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+
+
+        if (dayRecords.length === 0  && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
 
         if (((initialMonth === 1 || initialMonth === 3 || initialMonth === 5 || initialMonth === 7 || initialMonth === 8 || initialMonth === 10 || initialMonth === 12) && initialDay === 31)
             || ((initialMonth === 4 || initialMonth === 6 || initialMonth === 9 || initialMonth === 11) && initialDay === 30) ||
@@ -477,7 +483,8 @@ exports.findMissingMinutes = async function (id) {
     filteredRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
-        && record.status === "Present" && record.startTime && record.endTime && record.day !== dayOffNum && record.day !== "5");
+        && record.status === "Present" && (record.startTime && record.endTime && !(parseInt(record.startTime.substring(0,2))>=19 || parseInt(record.endTime.substring(0,2))<7 ||
+        (parseInt(record.endTime.substring(0,2))==7 && parseInt(record.endTime.substring(3,5))==0))) && record.day !== dayOffNum && record.day !== "5");
 
     cumulativeHours = 0.0;
     cumulativeMin = 0.0;
@@ -496,15 +503,8 @@ exports.findMissingMinutes = async function (id) {
             endTimeHrs = 19;
             endTimeMin = 0;
         }
-        //If the signedIn was after 19 or the signedOut was before 7, there is no hours spent is calculated (set to 0)
-        //If the signed in time is after the signed out time, it will be neglected
-        if (startTimeHrs >= 19 || endTimeHrs < 7 || startTimeHrs > endTimeHrs || (startTimeHrs === endTimeHrs && startTimeMin > endTimeMin)) {
-            minSpent = 0;
-            hrsSpent = 0;
-        } else {
-            minSpent = parseInt(endTimeMin) - parseInt(startTimeMin);
-            hrsSpent = parseInt(endTimeHrs) - parseInt(startTimeHrs);
-        }
+        minSpent = parseInt(endTimeMin) - parseInt(startTimeMin);
+        hrsSpent = parseInt(endTimeHrs) - parseInt(startTimeHrs);
         if (minSpent < 0) {
             hrsSpent--;
             minSpent = 60 - Math.abs(minSpent);
