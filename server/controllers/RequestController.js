@@ -438,18 +438,12 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Maternity') {
-        if (sender.gender != 'female') {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
-        }
-        var reason = req.body.reason;
-        if (!reason) {
-          reason = '';
-        }
+        if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
+        var reason = req.body.reason || '';
         const doc = req.body.document;
         const startDate = new Date(Date.parse(req.body.startDate));
-        if (!doc || !startDate) {
-          return res.send({ error: 'Please enter all data in a correct way' });
-        }
+        if (!doc || !startDate) return res.send({ error: 'Please enter all the missing fields' });
+        if (`${startDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.startDate;
 
