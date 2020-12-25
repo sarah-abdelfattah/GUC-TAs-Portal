@@ -215,14 +215,14 @@ exports.sendRequest = async function (req, res) {
         const x2 = new Date(Date.now());
         if (SickDayDate.getFullYear() == x2.getFullYear()) {
           if (SickDayDate.getMonth() == x2.getMonth()) {
-            if (x2.getDate() - SickDayDate.getDate() <= 3) {
+            if (x2.getDate() - SickDayDate.getDate() <= 3 && x2.getDate() - SickDayDate.getDate() >= 0) {
               flag = true; //I can accept annual leave
             }
           }
           if (x2.getMonth() - SickDayDate.getMonth() == 1) {
             var daysInCurrentMonth = new Date(SickDayDate.getFullYear(), SickDayDate.getMonth(), 0).getDate();
 
-            if (daysInCurrentMonth - SickDayDate.getDate() + x2.getDate <= 3) {
+            if (daysInCurrentMonth - SickDayDate.getDate() + x2.getDate <= 3 && daysInCurrentMonth - SickDayDate.getDate() + x2.getDate >= 0) {
               flag = true;
             }
           }
@@ -230,7 +230,7 @@ exports.sendRequest = async function (req, res) {
         if (x2.getFullYear() > SickDayDate.getUTCFullYear()) {
           if (SickDayDate.getMonth() == 11 && x2.getMonth() == 0) {
             var daysInCurrentMonth = new Date(SickDayDate.getFullYear(), SickDayDate.getMonth(), 0).getDate();
-            if (daysInCurrentMonth - SickDayDate.getDate() + x2.getDate <= 3) {
+            if (daysInCurrentMonth - SickDayDate.getDate() + x2.getDate <= 3 && daysInCurrentMonth - SickDayDate.getDate() + x2.getDate >= 0) {
               flag = true;
             }
           } else flag = true;
@@ -333,6 +333,7 @@ exports.sendRequest = async function (req, res) {
             Day = 'Sunday';
             break;
         }
+
         if (Day != sender.dayOff) return res.status(400).send({ error: 'Please enter a valid compensation date' });
 
         // search in his requests that there is no compensation request on the same day
@@ -383,7 +384,7 @@ exports.sendRequest = async function (req, res) {
             return res.status(400).send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
           foundReplacementRequest = await Request.findOne(
             //a7ot status tany
-            { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate }
+            { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate, coursename: object.courseName }
           );
           if (!foundReplacementRequest) {
             return res.status(400).send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
@@ -426,7 +427,7 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Maternity') {
-        if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
+        if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry this type of request is only for females' });
         var reason = req.body.reason || '';
         const doc = req.body.document;
         const startDate = new Date(Date.parse(req.body.startDate));
@@ -844,7 +845,7 @@ exports.viewmyReequestsByStatus = async function (req, res) {
   try {
     var senderId = req.user.gucId;
     var sender = await StaffMember.findOne({ gucId: senderId }).populate();
-    if (req.params.status != 'pending' || req.params.status != 'accepted' || req.params.status != 'rejected') {
+    if (req.params.status != 'pending' && req.params.status != 'accepted' && req.params.status != 'rejected') {
       return res.send({ data: 'there is no such a status' });
     }
     var searchQuery = await Request.find({ sender: sender, status: req.params.status }).populate();
@@ -860,7 +861,7 @@ exports.viewmyReequestsByType = async function (req, res) {
     var senderId = req.user.gucId;
     var sender = await StaffMember.findOne({ gucId: senderId }).populate();
 
-    if (req.params.type != 'Replacement Request' || req.params.type != 'Slot Request' || req.params.type != 'Change DayOff' || req.params.type != 'Leave Request') {
+    if (req.params.type != 'Replacement Request' && req.params.type != 'Slot Request' && req.params.type != 'Change DayOff' && req.params.type != 'Leave Request') {
       return res.send({ data: 'there is no such a type' });
     }
     var searchQuery = await Request.find({ sender: sender, type: req.params.type }).populate();
@@ -889,7 +890,7 @@ exports.viewRecievedRequest = async function (req, res) {
   try {
     var recId = req.user.gucId;
     var rec = await StaffMember.findOne({ gucId: recId }).populate();
-    if (req.params.type != 'Change DayOff' || req.params.type != 'Leave Request') {
+    if (req.params.type != 'Change DayOff' && req.params.type != 'Leave Request') {
       return res.send({ data: 'there is no such a type' });
     }
     var searchQuery = await Request.find({ reciever: rec, type: req.params.type }).populate();
