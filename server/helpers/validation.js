@@ -90,10 +90,28 @@ const courseSchema = Joi.object({
 })
 
 //AC
-const ACSchema = Joi.object({
+const ACSchema = {
+  withSlot: Joi.object({
     courseName: Joi.string().required(),
-})
-
+    gucId: Joi.string()
+      .required()
+      .regex(/^(HR|AC)-\d{1,}/),
+    slot: Joi.object({
+      day: Joi.string().required(),
+      time: Joi.string().required(),
+    }).required(),
+    newSlot: Joi.object({
+      day: Joi.string().required(),
+      time: Joi.string().required(),
+    }),
+  }),
+  withoutSlot: Joi.object({
+    courseName: Joi.string().required(),
+    gucId: Joi.string()
+      .required()
+      .regex(/^(HR|AC)-\d{1,}/),
+  }),
+};
 
 module.exports = {
     registerSchema,
