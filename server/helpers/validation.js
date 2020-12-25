@@ -2,15 +2,16 @@ const Joi = require('@hapi/joi');
 
 //staff member
 const registerSchema = Joi.object({
-    // password: Joi.string().min(6).alphanum().required(),
-
     name: Joi.string().required(),
     gender: Joi.string().valid('female', 'male').required(),
     email: Joi.string().email().lowercase().required(),
     salary: Joi.number().integer().required(),
-    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/).required(),
+    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/).required(),
     type: Joi.string().valid('HR', 'Academic Member').required(),
-
+    role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
+    dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
+    faculty: Joi.string(),
+    department: Joi.string()
 })
 
 const registerACSchema = Joi.object({
@@ -21,22 +22,18 @@ const registerACSchema = Joi.object({
 })
 
 const updateSchema = Joi.object({
-    gucId: Joi.string().regex(/['HR','AC']-*/).required(),
+    gucId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
     name: Joi.string(),
-    dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
     role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
     faculty: Joi.string(),
     department: Joi.string(),
-    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/),
+    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/),
     leaveBalance: Joi.number().integer(),
 })
 
 const logInSchema = Joi.object({
-    //TODO: regex if id
-
     password: Joi.string().min(6).alphanum().required(),
-    gucId: Joi.string().required(),
-    // gucId: Joi.string().regex(/['HR'-'AC']-[1-10000000000]/).required(),
+    gucId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
 })
 
 const changePasswordSchema = Joi.object({
@@ -46,8 +43,14 @@ const changePasswordSchema = Joi.object({
 
 
 //location
-const getRoomSchema = Joi.object({
-    params: Joi.string().regex(/['all'-[ABCDGMN][1-7].[0-4][0-9][1-9]]/).required(),
+// const getRoomSchema = Joi.object({
+//     params: Joi.string().regex(/['all'-[ABCDGMN][1-7].[0-4][0-9][1-9]]/).required(),
+// })
+
+const createRoomSchema = Joi.object({
+    type: Joi.string().valid('Tutorial Room', 'Lecture Hall', 'Lab', 'Office').required(),
+    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/).required(),
+    capacity: Joi.number().integer().required(),
 })
 
 const roomSchema = Joi.object({
@@ -119,6 +122,7 @@ module.exports = {
     updateSchema,
     logInSchema,
     changePasswordSchema,
+    createRoomSchema,
     roomSchema,
     facultySchema,
     departmentSchema,

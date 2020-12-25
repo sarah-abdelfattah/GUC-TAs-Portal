@@ -59,7 +59,6 @@ async function updateInfoHelper(user) {
     let JOI_Result = await validation.updateSchema.validateAsync(user)
 
     const gucId = user.gucId;
-    const dayOff = user.dayOff;
     const role = user.role;
     const officeLocation = user.officeLocation;
     const gender = user.gender;
@@ -80,7 +79,6 @@ async function updateInfoHelper(user) {
         }
 
         if (newStaff.type === 'Academic Member') {
-            if (dayOff) newStaff.dayOff = dayOff;
             if (role) newStaff.role = role;
         }
 
@@ -111,15 +109,6 @@ exports.registerStaff = async function (req, res) {
         }
             = req.body;
 
-
-        //check data needed is entered
-        // if (!name || !gender || !email || !salary || !officeLocation || !type)
-        //     return res.send({ error: 'please enter all data' });
-
-        // if (type === 'Academic Member') {
-        //     if (!role || !dayOff || !faculty || !department)
-        //         return res.send({ error: 'please enter all data' });
-        // }
 
         //check email is found and if he was deleted
         const foundMail = await StaffMember.findOne({ email: email });
@@ -227,11 +216,7 @@ exports.updateStaff = async function (req, res) {
         let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
-        const name = req.body.name;
-        const dayOff = req.body.dayOff;
-        const role = req.body.role;
         const leaveBalance = req.body.leaveBalance;
-        const officeLocation = req.body.officeLocation;
         const faculty = req.body.faculty;
         const department = req.body.department;
 
@@ -271,6 +256,34 @@ exports.updateStaff = async function (req, res) {
     }
 };
 
+exports.updateStaffDayOff = async function (req, res) {
+    try {
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
+
+        const gucId = req.body.gucId;
+        const dayOff = req.body.dayOff;
+
+        if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
+        if (!newStaff)
+            return res.send({ error: 'No staff with this id' });
+        if (newStaff.type === 'HR')
+            return res.send({ error: 'Sorry days off for HR is Saturday' });
+
+        //TODO: update day off based on the request result
+
+
+
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
+        console.log('~ err', err);
+        return res.send({ err: err });
+    }
+};
+
 exports.deleteStaff = async function (req, res) {
     try {
         let JOI_Result = await validation.updateSchema.validateAsync(req.body)
@@ -297,6 +310,7 @@ exports.deleteStaff = async function (req, res) {
     }
 };
 
+//TODO: check the updated one with reem's branch .. user not body at least, and sign in process .. multiple ones per day
 exports.signIn = async function (req, res) {
     try {
         const gucId = req.body.gucId;
