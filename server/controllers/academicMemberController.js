@@ -4,9 +4,14 @@ const mongoose = require('mongoose');
 const StaffMember = require('./../models/StaffMember');
 
 // TODO: Import all the models after db connection
-const Course = require('./../models/Course');
 
 const validation = require('../helpers/validation');
+const Department = require('./../models/Department');
+const Location = require('./../models/Location');
+const Faculty = require('./../models/Faculty');
+const Course = require('./../models/Course');
+
+const { populate } = require('./../models/StaffMember');
 
 // General Error  errors
 const errorMsgs = {
@@ -61,7 +66,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not teach any courses
@@ -80,7 +85,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -104,7 +109,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -133,7 +138,103 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+    }
+  },
+
+  // ==> Functionality 31 <== //
+  async staffMembers(req, res) {
+    try {
+      const instructor = await StaffMember.findOne({
+        gucId: req.user.gucId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
+        });
+
+      // Case: instructor does not have any courses
+      // if (instructor.courses.length === 0)
+      //   return res.status(200).send({
+      //     error: errorMsgs.notAssignedTo('courses', 'instructor'),
+      //   });
+
+      let staff = [];
+      if (req.params.courseName === 'all') {
+        // Case: staff per department
+        staff = await StaffMember.find({
+          faculty: instructor.faculty,
+          department: instructor.department,
+        })
+          .populate('officeLocation')
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.location' },
+          })
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.isAssigned' },
+          });
+      } else {
+        // Case: staff per course in department
+        const courseFound = await Course.findOne({
+          department: instructor.department,
+          name: req.params.courseName,
+        });
+
+        // Case: course not found
+        if (!courseFound) {
+          return res.status(404).send({
+            error: errorMsgs.notFound('course', req.params.courseName),
+          });
+        }
+
+        staff = await StaffMember.find({
+          department: instructor.department,
+          courses: courseFound,
+        })
+          .populate('officeLocation')
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.location' },
+          })
+          .populate({
+            path: 'courses',
+            populate: { path: 'slots.isAssigned' },
+          });
+      }
+      return res.status(200).send(
+        staff.length === 0
+          ? { data: errorMsgs.notAssignedTo('staff', 'course') }
+          : {
+            data: staff.map((member) => {
+              return {
+                gucId: member.gucId,
+                name: member.name,
+                email: member.email,
+                dayOff: member.dayOff,
+                courses: member.courses.map(({ name }) => name),
+                officeLocation: member.officeLocation.location,
+                gender: member.gender,
+              };
+            }),
+          }
+      );
+    } catch (err) {
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -141,7 +242,7 @@ const courseInstructorController = {
   async assignSlot(req, res) {
     try {
       const missingFields = checkRequiredFields(req, ['courseName', 'slot.day', 'slot.time']);
-      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+      if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
       // * Get instructor
       const instructor = await StaffMember.findOne({
@@ -162,7 +263,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -213,18 +314,21 @@ const courseInstructorController = {
           error: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
         });
 
-      // Case: target slot is already assigned
-      if (course.slots[targetSlotIndex].isAssigned !== null)
-        return res.status(200).send({
-          error: errorMsgs.alreadyAssigned('inserted slot'),
-        });
-
       // * Get AC
       const targetAC = await StaffMember.findOne({
         gucId: req.body.gucId,
         type: 'Academic Member',
         department: instructor.department,
-      });
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
 
       // Case: AC not found
       if (!targetAC)
@@ -232,9 +336,37 @@ const courseInstructorController = {
           error: errorMsgs.notFound('academic member', `id ${req.body.gucId}`),
         });
 
+      // Case: current slot is already assigned to anothre TA
+      if (course.slots[targetSlotIndex].isAssigned !== null) {
+        return res.status(200).send({
+          error: errorMsgs.alreadyAssigned('original slot'),
+        });
+      }
+
+      // Case instructor has a slot in that time
+      const acSlots = [];
+      targetAC.courses.map(({ slots }) => {
+        const mySlots = slots.filter(({ isAssigned }) => isAssigned !== null && `${isAssigned._id}` === `${targetAC._id}`);
+        return mySlots.map(({ day, time }) => {
+          const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Will have an array with this ['11:45:00', 'AM']
+          acSlots.push({ day: day, time: slotTime });
+          return { day: day, time: slotTime };
+        });
+      });
+
+      const currentSlotIndex = acSlots.findIndex(({ day, time }) => {
+        const slotTime = time;
+        const currentTime = req.body.slot.time.split(' ');
+        currentTime[0] += ':00';
+        return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
+      });
+
+      if (currentSlotIndex !== -1) return res.status(400).send({ error: 'There is a conflit in timing', slotIndex: currentSlotIndex });
+
       // * Case: everything passed
       // Assign the course slot to this TA
       course.slots[targetSlotIndex].isAssigned = targetAC;
+      course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
       await course.save();
 
       // Push the course to the AC's courses
@@ -246,7 +378,7 @@ const courseInstructorController = {
           },
         }
       );
-      res.status(200).send({
+      return res.status(200).send({
         data: {
           course: course.name,
           assignedTo: targetAC.name,
@@ -256,9 +388,9 @@ const courseInstructorController = {
     } catch (err) {
       if (err.isJoi) {
         console.log(' JOI validation error: ', err);
-        return res.send({ JOI_validation_error: err });
+        return res.send({ JOI_validation_error: err.details[0].message });
       }
-      res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
   },
 
@@ -266,7 +398,7 @@ const courseInstructorController = {
   async updateSlot(req, res) {
     try {
       const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
-      if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+      if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
       // * Get instructor
       const instructor = await StaffMember.findOne({
@@ -287,7 +419,7 @@ const courseInstructorController = {
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
-          error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
       // Case: instructor does not have any courses
@@ -354,7 +486,7 @@ const courseInstructorController = {
 
       // Case: assign the currentSlot to target AC
       if (!req.body.newSlot) {
-        if (course.slots[currentSlotIndex].isAssigned === null) res.send(errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it'));
+        if (course.slots[currentSlotIndex].isAssigned === null) return res.send(errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it'));
 
         const currAC = course.slots[currentSlotIndex].isAssigned;
         course.slots[currentSlotIndex].isAssigned = targetAC;
@@ -382,7 +514,7 @@ const courseInstructorController = {
           await currAC.save();
         }
 
-        res.status(200).send({
+        return res.status(200).send({
           data: {
             course: course.name,
             oldAC: currAC.name,
@@ -394,7 +526,7 @@ const courseInstructorController = {
       // Case: assign the newSlot (targetSlot) to target TA
       else {
         const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time', 'newSlot.day', 'newSlot.time']);
-        if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+        if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
         const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
           const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
@@ -410,15 +542,15 @@ const courseInstructorController = {
           });
 
         // If currentSlot is assigned to this TA, check that the new slot is available. Remove from oldSlot. Assign to the newSlot
-
         if (course.slots[currentSlotIndex].isAssigned !== null && `${course.slots[currentSlotIndex].isAssigned._id}` === `${targetAC._id}`) {
           // Case: want to assign the TA to a new slot and remove the old assignment
           if (course.slots[targetSlotIndex].isAssigned === null) {
             course.slots[currentSlotIndex].isAssigned = null;
             course.slots[targetSlotIndex].isAssigned = targetAC;
+            course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
             await course.save();
 
-            res.status(200).send({
+            return res.status(200).send({
               data: {
                 course: course.name,
                 assignedTo: targetAC.name,
@@ -431,20 +563,20 @@ const courseInstructorController = {
           else return res.status(400).send({ error: errorMsgs.alreadyAssigned('new slot') });
         } else {
           const maleTa = course.slots[currentSlotIndex].isAssigned.gender === 'male';
-          res.status(400).send({
+          return res.status(400).send({
             error: `${errorMsgs.alreadyAssigned('current slot')} to another TA. Please enter ${maleTa ? 'his' : 'her'} ID to re-assign ${maleTa ? 'him' : 'her'}.`,
           });
         }
       }
     } catch (err) {
-      res.status(500).send({ error: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
   // ==> Functionality 34 <== //
   async deleteSlot(req, res) {
     const missingFields = checkRequiredFields(req, ['courseName', 'gucId', 'slot.day', 'slot.time']);
-    if (missingFields.length > 0) res.status(400).send(`Please enter these fields: ${missingFields}`);
+    if (missingFields.length > 0) return res.status(400).send(`Please enter these fields: ${missingFields}`);
 
     // * Get instructor
     const instructor = await StaffMember.findOne({
@@ -465,7 +597,7 @@ const courseInstructorController = {
     // Case: instructor not found
     if (!instructor)
       return res.status(404).send({
-        error: errorMsgs.notFound('instructor', `id ${req.params.instructorId}`),
+        error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
       });
 
     // Case: instructor does not have any courses
@@ -540,6 +672,7 @@ const courseInstructorController = {
     // * ALl passed
     // Remove the slot assignment
     course.slots[targetSlotIndex].isAssigned = null;
+    course.coverage = (course.slots.filter((slot) => slot.isAssigned !== null).length / course.slots.length) * 100;
     await course.save();
 
     // If the TA is not assigned to any slots, remove the course from targetAC's array
@@ -551,13 +684,100 @@ const courseInstructorController = {
       await targetAC.save();
     }
 
-    res.status(200).send({
+    return res.status(200).send({
       data: {
         course: req.body.courseName,
         slot: req.body.slot,
         assignedTo: null,
       },
     });
+  },
+
+  // ==> Functionality 35 <== //
+  async courseCoordinator(req, res) {
+    try {
+      // * Get Course Instructor
+      const instructor = await StaffMember.findOne({
+        gucId: req.user.gucId,
+        type: 'Academic Member',
+        role: 'Course Instructor',
+      })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+      console.log('🚀 ~ file: academicMemberController.js ~ line 663 ~ courseCoordinator ~ instructor', instructor);
+
+      // Case: instructor not found
+      if (!instructor)
+        return res.status(404).send({
+          error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
+        });
+
+      // Case: instructor does not have any courses
+      if (instructor.courses.length === 0)
+        return res.status(200).send({
+          error: errorMsgs.notAssignedTo('courses', 'instructor'),
+        });
+
+      // Case: instructor is not assigned to this courses
+      const insIsAssigned = instructor.courses.findIndex(({ name }) => name.toLowerCase() === req.body.courseName.toLowerCase()) !== -1;
+      if (!insIsAssigned) return res.status(403).send({ error: errorMsgs.notAuthorized('assign this Academic Member') });
+
+      // * Get AC
+      const targetAC = await StaffMember.findOne({
+        gucId: req.body.gucId,
+        type: 'Academic Member',
+        role: 'Teaching Assistant',
+        department: instructor.department,
+      })
+        .populate('department')
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.location' },
+        })
+        .populate({
+          path: 'courses',
+          populate: { path: 'slots.isAssigned' },
+        });
+
+      // Case: AC not found
+      if (!targetAC)
+        return res.status(404).send({
+          error: errorMsgs.notFound('Teaching Assistant', `id ${req.body.gucId}`),
+        });
+
+      let course = await Course.findOne({ name: req.body.courseName, department: instructor.department });
+
+      // Case: course not found
+      if (!course)
+        return res.status(404).send({
+          error: errorMsgs.notFound('course', `id ${req.body.courseName}`),
+        });
+
+      // Case: course is already assigned
+      if (course.courseCoordinator !== null)
+        return res.status(404).send({
+          error: errorMsgs.alreadyAssigned('course coordinator'),
+        });
+
+      // Case: success
+      course.courseCoordinator = targetAC;
+      await course.save();
+
+      return res.status(200).send({
+        data: {
+          courseName: course.name,
+          courseCoordinator: course.courseCoordinator.name,
+        },
+      });
+    } catch (err) {
+      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+    }
   },
 };
 

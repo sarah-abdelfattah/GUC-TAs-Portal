@@ -21,12 +21,12 @@ exports.addCourse = async function (req, res) {
         if (!facultyFound)
             return res.send({ error: "No faculty with this name" });
 
-        //department found? 
+        //department found in faculty ? 
         const depFound = await Department.findOne({ faculty: facultyFound._id, name: departmentName }).populate('department');
         if (!depFound)
             return res.send({ error: "No department with this name" });
 
-        //course found ?
+        //course found in department?
         const courseFound = await Course.findOne({ department: depFound._id, name: courseName });
         if (courseFound)
             return res.send({ error: "There is another course with this name" });
@@ -42,7 +42,7 @@ exports.addCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -96,7 +96,7 @@ exports.updateCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -131,7 +131,7 @@ exports.deleteCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });

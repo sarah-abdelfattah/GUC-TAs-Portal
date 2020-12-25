@@ -62,7 +62,7 @@ exports.addDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     console.log('~ err', err);
     return res.send({ err: err });
@@ -121,7 +121,7 @@ exports.updateDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     console.log('~ err', err);
     return res.send({ err: err });
@@ -158,7 +158,7 @@ exports.deleteDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     console.log('~ err', err);
     return res.send({ err: err });
@@ -202,7 +202,7 @@ exports.getAllStaffMembers = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
@@ -256,7 +256,7 @@ exports.getStaffMembersPerCourse = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     return res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
@@ -301,7 +301,7 @@ exports.viewDayOff = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
@@ -348,7 +348,7 @@ exports.viewDayOffStaff = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     return res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
@@ -397,7 +397,7 @@ exports.viewCourseCoverage = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
@@ -507,7 +507,7 @@ exports.assignInstructor = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     res.status(500).send({ err: `Internal Server Error: ${err}` });
   }
@@ -593,7 +593,7 @@ exports.updateInstructor = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
@@ -680,8 +680,99 @@ exports.deleteInstructor = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err });
+      return res.send({ JOI_validation_error: err.details[0].message });
     }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 }
+
+
+exports.viewTeachingAssignments = async (req, res) => {
+  try {
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate(
+      "HOD"
+    );
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+    }).populate("department");
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res.status(404).send({
+        error: `No department found with this id ${req.user.department}`,
+      });
+    }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+
+    const teachingAssigned = await StaffMember.find({
+      department: departmentFound._id,
+    }).populate("courses");
+
+    if (!teachingAssigned) {
+      return res.send({
+        error: `sorry, we couldn't find what you are looking for`,
+      });
+    }
+
+    const targetCourses = await Course.find({
+      department: departmentFound._id,
+    }).populate("slots");
+
+    if (!targetCourses) {
+      return res.send({
+        error: `sorry, we couldn't find the courses that you are looking for`,
+      });
+    }
+
+    if (req.params.course === "all")
+      return res.status(200).send({
+        data: teachingAssigned.map((staff) => {
+          return {
+            name: staff.name,
+            gucId: staff.gucId,
+            courses: staff.courses.map((course) => {
+              return {
+                courses_assigned: targetCourses
+                  .filter((course) => course.slots !== null)
+                  .map((targetCourse) => {
+                    if (course.equals(targetCourse._id)) {
+                      return {
+                        course_name: targetCourse.name,
+                        course_slots: targetCourse.slots,
+                      };
+                    }
+                  }),
+              };
+            }),
+          };
+        }),
+      });
+    else {
+      const courseToFind = await Course.findOne({
+        name: req.params.course,
+      }).populate({ path: "slots.isAssigned" });
+      return res.status(200).send({
+        data: {
+          course: courseToFind.name,
+          slots: courseToFind.slots
+            .filter((slot) => slot.isAssigned !== null)
+            .map((slot) => {
+              return {
+                Assigned_to: {
+                  name: slot.isAssigned.name,
+                  gucId: slot.isAssigned.gucId,
+                },
+              };
+            }),
+        },
+      });
+    }
+  } catch (err) {
+    res.status(500).send({ err: `Internal Server Error: ${err}` });
+  }
+};

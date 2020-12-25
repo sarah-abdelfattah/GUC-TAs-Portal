@@ -61,7 +61,6 @@ async function updateInfoHelper(user) {
     let JOI_Result = await validation.updateSchema.validateAsync(user)
 
     const gucId = user.gucId;
-    const dayOff = user.dayOff;
     const role = user.role;
     const officeLocation = user.officeLocation;
     const gender = user.gender;
@@ -72,7 +71,7 @@ async function updateInfoHelper(user) {
 
     else {
         if (gender) {
-            newStaff.gender = gender
+            newStaff.gender = gender;
         }
 
         if (officeLocation) {
@@ -82,13 +81,12 @@ async function updateInfoHelper(user) {
         }
 
         if (newStaff.type === 'Academic Member') {
-            if (dayOff) newStaff.dayOff = dayOff;
             if (role) newStaff.role = role;
         }
 
 
         const updatedStaff = await newStaff.save();
-        return { data: updatedStaff }
+        return { data: "Profile Updated Successfully" }
     }
 }
 
@@ -113,15 +111,6 @@ exports.registerStaff = async function (req, res) {
         }
             = req.body;
 
-
-        //check data needed is entered
-        // if (!name || !gender || !email || !salary || !officeLocation || !type)
-        //     return res.send({ error: 'please enter all data' });
-
-        // if (type === 'Academic Member') {
-        //     if (!role || !dayOff || !faculty || !department)
-        //         return res.send({ error: 'please enter all data' });
-        // }
 
         //check email is found and if he was deleted
         const foundMail = await StaffMember.findOne({ email: email });
@@ -217,7 +206,7 @@ exports.registerStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -229,11 +218,7 @@ exports.updateStaff = async function (req, res) {
         let JOI_Result = await validation.updateSchema.validateAsync(req.body)
 
         const gucId = req.body.gucId;
-        const name = req.body.name;
-        const dayOff = req.body.dayOff;
-        const role = req.body.role;
         const leaveBalance = req.body.leaveBalance;
-        const officeLocation = req.body.officeLocation;
         const faculty = req.body.faculty;
         const department = req.body.department;
 
@@ -266,7 +251,35 @@ exports.updateStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
+        }
+        console.log('~ err', err);
+        return res.send({ err: err });
+    }
+};
+
+exports.updateStaffDayOff = async function (req, res) {
+    try {
+        let JOI_Result = await validation.updateSchema.validateAsync(req.body)
+
+        const gucId = req.body.gucId;
+        const dayOff = req.body.dayOff;
+
+        if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
+        const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
+        if (!newStaff)
+            return res.send({ error: 'No staff with this id' });
+        if (newStaff.type === 'HR')
+            return res.send({ error: 'Sorry days off for HR is Saturday' });
+
+        //TODO: update day off based on the request result
+
+
+
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -292,12 +305,14 @@ exports.deleteStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
     }
 };
+
+//TODO: check the updated one with reem's branch .. user not body at least, and sign in process .. multiple ones per day
 
 exports.signIn = async function (req, res) {
     try {
@@ -313,8 +328,13 @@ exports.signIn = async function (req, res) {
             return res.send({ error: 'Staff not registered in the system' });
         else {
             const currentTime = new Date();
+            if (currentTime.getDay() === 5)
+                return res.send({ error: 'Sorry you cannot sign in on Friday' });
+
+            let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
             const newAttendance = {
-                day: currentTime.getDay(),
+                day: days[currentTime.getDay()],
                 date:
                     currentTime.getFullYear() +
                     '-' +
@@ -339,13 +359,13 @@ exports.signIn = async function (req, res) {
             staff.attendanceRecords = attendanceRecord;
 
             const updatedStaff = await staff.save();
-            return res.send({ data: updatedStaff.attendanceRecords });
 
+            return res.send({ data: "Signed in Successfully" });
         }
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -364,6 +384,7 @@ exports.signOut = async function (req, res) {
             return res.send({ error: "Staff not registered in the system" });
         else {
             const today = new Date();
+
             const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
             const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             let found = false;
@@ -378,28 +399,35 @@ exports.signOut = async function (req, res) {
                 }
             }
 
+                         
+            let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            if (days[today.getDay()] === 'Friday') {
+                return res.send({ error: 'Sorry you cannot sign out on Friday' });
+            }
+
             const newRec = {
-                day: today.getDay(),
+                day: days[today.getDay()],
                 date: currentDate,
                 status: 'Present',
                 endTime: currentTime
             }
+
             attendanceRecord.push(newRec);
             staff.attendanceRecords = attendanceRecord;
 
             const updatedStaff = await staff.save();
-            return res.send({ data: updatedStaff.attendanceRecords });
+
+            return res.send({ data: "Signed out Successfully" });
         }
     } catch (err) {
         if (err.isJoi) {
-            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
             return res.send({ JOI_validation_error: err });
         }
         console.log('~ err', err);
         return res.send({ err: err });
     }
 };
-
 
 exports.changePassword = async function (req, res) {
     try {
@@ -431,7 +459,7 @@ exports.changePassword = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -448,6 +476,11 @@ exports.updateProfile = async function (req, res) {
 
         return res.send(result);
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
+        }
+
         console.log(err)
         return res.send({ err: err })
     }
@@ -460,12 +493,32 @@ exports.getProfile = async function (req, res) {
         if (!staff)
             return res.send({ err: 'No user' });
 
-        return res.send({ data: staff });
+        let newStaff = {
+            gucId: staff.gucId,
+            name: staff.name,
+            email: staff.email,
+            dayOff: staff.dayOff,
+            gender: staff.gender,
+            type: staff.type,
+            salary: staff.salary,
+            officeLocation: staff.officeLocation,
+            registeredDate: staff.registeredDate
+        }
+
+        if (!staff.officeLocation)
+            newStaff.officeLocation = 'N/A'
+
+
+        if (staff.type === 'Academic Member') {
+            newStaff.role = staff.role
+            newStaff.courses = staff.courses
+        }
+
+        return res.send({ data: newStaff });
     } catch (err) {
         console.log(err)
         return res.send({ err: err })
     }
-
 }
 
 //Function 20: Update the salary of a staff member.

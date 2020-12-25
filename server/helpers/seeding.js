@@ -63,9 +63,25 @@ exports.seedDB = async function () {
             location: 'C1.003',
             capacity: 15,
         },
+        {
+            type: 'Lecture Hall',
+            location: 'H1',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H2',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H3',
+            capacity: 150,
+        },
     ]
 
     await Location.insertMany(locations);
+    console.log('Seeded locations successfully');
 
     //Faculties 
     const faculties = [
@@ -92,6 +108,7 @@ exports.seedDB = async function () {
     ]
 
     await Faculty.insertMany(faculties);
+    console.log('Seeded faculties successfully');
 
     //departments
     const facENG = await Faculty.findOne({ code: 'ENG' });
@@ -139,6 +156,7 @@ exports.seedDB = async function () {
     ]
 
     await Department.insertMany(departments);
+    console.log('Seeded departments successfully');
 
     //courses
     const depMET = await Department.findOne({ name: 'MET' });
@@ -242,6 +260,7 @@ exports.seedDB = async function () {
     ]
 
     await Course.insertMany(courses);
+    console.log('Seeded courses successfully');
 
     //staff members 
     const office1 = await Location.findOne({ location: 'A1.001', });
@@ -328,6 +347,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(hr);
+    console.log('Seeded HR successfully');
 
     //Course instructors
     const cs1EngCourse = await Course.findOne({ department: depMET._id, name: 'Computer Science 1' })
@@ -389,6 +409,13 @@ exports.seedDB = async function () {
                 {
                     day: '2',
                     date: '2020-12-14',
+                    startTime: '6:00',
+                    endTime: '14:24',
+                    status: 'Present'
+                },
+                {
+                    day: '3',
+                    date: '2020-12-15',
                     startTime: '8:00',
                     endTime: '20:24',
                     status: 'Present'
@@ -470,9 +497,15 @@ exports.seedDB = async function () {
                     date: '2020-12-14',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
+                }, 
+              {
                     day: '3',
                     date: '2020-12-15',
+                    endTime: '17:24',
+                    status: 'Present'
+                }, {
+                    day: 'Wednesday',
+                    date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
                 },
@@ -485,6 +518,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(CI);
+    console.log('Seeded CI successfully');
 
     //Teaching assistants
     const TA = [
@@ -523,17 +557,17 @@ exports.seedDB = async function () {
             dayOff: 'Sunday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: '1',
                     date: '2020-12-12',
                     startTime: '6:00',
                     endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: '1',
+                    day: '2',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '20:24',
+                    startTime: '6:00',
+                    endTime: '14:24',
                     status: 'Present'
                 },
             ],
@@ -615,10 +649,11 @@ exports.seedDB = async function () {
                     status: 'Present'
                 }, {
                     day: '3',
+                    day: 'Tuesday',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
-                },
+                }, 
 
             ],
             faculty: facMNGT,
@@ -661,4 +696,5 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(TA);
+    console.log('Seeded TA successfully');
 }

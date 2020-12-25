@@ -57,7 +57,6 @@ const StaffMemberSchema = new Schema({
   officeLocation: {
     type: Schema.Types.ObjectId,
     ref: 'Location',
-    required: true,
   },
   courses: [
     {
@@ -77,6 +76,10 @@ const StaffMemberSchema = new Schema({
   is_deleted: {
     type: Boolean,
     default: false,
+  },
+  registeredDate: {
+    type: Date,
+    default: null
   },
   lastLogIn: {
     type: Date,
