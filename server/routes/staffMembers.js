@@ -13,7 +13,7 @@ router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 
-router.post("/changePassword", staffMemberController.changePassword);
+router.put("/changePassword", staffMemberController.changePassword);
 
 router.put("/profile", staffMemberController.updateProfile);
 router.get("/profile", staffMemberController.getProfile);

@@ -42,7 +42,7 @@ exports.addCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -96,7 +96,7 @@ exports.updateCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -131,7 +131,7 @@ exports.deleteCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });

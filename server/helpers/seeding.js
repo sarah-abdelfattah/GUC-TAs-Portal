@@ -63,9 +63,25 @@ exports.seedDB = async function () {
             location: 'C1.003',
             capacity: 15,
         },
+        {
+            type: 'Lecture Hall',
+            location: 'H1',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H2',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H3',
+            capacity: 150,
+        },
     ]
 
     await Location.insertMany(locations);
+    console.log('Seeded locations successfully');
 
     //Faculties 
     const faculties = [
@@ -92,6 +108,7 @@ exports.seedDB = async function () {
     ]
 
     await Faculty.insertMany(faculties);
+    console.log('Seeded faculties successfully');
 
     //departments
     const facENG = await Faculty.findOne({ code: 'ENG' });
@@ -139,6 +156,7 @@ exports.seedDB = async function () {
     ]
 
     await Department.insertMany(departments);
+    console.log('Seeded departments successfully');
 
     //courses
     const depMET = await Department.findOne({ name: 'MET' });
@@ -242,6 +260,7 @@ exports.seedDB = async function () {
     ]
 
     await Course.insertMany(courses);
+    console.log('Seeded courses successfully');
 
     //staff members 
     const office1 = await Location.findOne({ location: 'A1.001', });
@@ -328,6 +347,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(hr);
+    console.log('Seeded HR successfully');
 
     //Course instructors
     const cs1EngCourse = await Course.findOne({ department: depMET._id, name: 'Computer Science 1' })
@@ -477,6 +497,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(CI);
+    console.log('Seeded CI successfully');
 
     //Teaching assistants
     const TA = [
@@ -620,4 +641,6 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(TA);
+    console.log('Seeded TA successfully');
+
 }

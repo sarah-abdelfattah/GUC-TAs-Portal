@@ -74,7 +74,7 @@ app.all('*', async (req, res, next) => {
                 return res.sendStatus(401)
             }
         } else {
-            res.send("Sorry no token found in db");
+            return res.send("Sorry no token");
         }
 
         req.user = jwt.verify(token, tokenKey);

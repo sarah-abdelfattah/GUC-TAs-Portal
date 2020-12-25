@@ -220,18 +220,18 @@ const courseInstructorController = {
         staff.length === 0
           ? { data: errorMsgs.notAssignedTo('staff', 'course') }
           : {
-              data: staff.map((member) => {
-                return {
-                  gucId: member.gucId,
-                  name: member.name,
-                  email: member.email,
-                  dayOff: member.dayOff,
-                  courses: member.courses.map(({ name }) => name),
-                  officeLocation: member.officeLocation.location,
-                  gender: member.gender,
-                };
-              }),
-            }
+            data: staff.map((member) => {
+              return {
+                gucId: member.gucId,
+                name: member.name,
+                email: member.email,
+                dayOff: member.dayOff,
+                courses: member.courses.map(({ name }) => name),
+                officeLocation: member.officeLocation.location,
+                gender: member.gender,
+              };
+            }),
+          }
       );
     } catch (err) {
       return res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -388,7 +388,7 @@ const courseInstructorController = {
     } catch (err) {
       if (err.isJoi) {
         console.log(' JOI validation error: ', err);
-        return res.send({ JOI_validation_error: err });
+        return res.send({ JOI_validation_error: err.details[0].message });
       }
       return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }

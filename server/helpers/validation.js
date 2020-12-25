@@ -29,6 +29,7 @@ const updateSchema = Joi.object({
     department: Joi.string(),
     officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/),
     leaveBalance: Joi.number().integer(),
+    gender: Joi.string().valid('female', 'male'),
 })
 
 const logInSchema = Joi.object({
