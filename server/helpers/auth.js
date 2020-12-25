@@ -1,40 +1,51 @@
-const jwt = require("jsonwebtoken");
-const Faculty = require('../models/Faculty');
+const jwt = require('jsonwebtoken');
+const Course = require('../models/Course');
+const StaffMember = require('../models/StaffMember');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 const StaffMember = require('../models/StaffMember');
 
 exports.HRAuth = async function (req, res, next) {
-    if (req.user.type === 'HR') {
-        next();
-    } else {
-        return res.sendStatus(401)
-    }
-}
+  if (req.user.type === 'HR') {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};
 
 exports.AcademicMemberAuth = async function (req, res, next) {
-    if (req.user.type === 'Academic Member') {
-        next();
-    } else {
-        return res.sendStatus(401)
-    }
-}
+  if (req.user.type === 'Academic Member') {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};
 
 exports.TAAuth = async function (req, res, next) {
-    if (req.user.role === 'Teaching Assistant') {
-        next();
-    } else {
-        return res.sendStatus(401)
-    }
-}
+  if (req.user.role === 'Teaching Assistant') {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};
 
 exports.CIAuth = async function (req, res, next) {
-    if (req.user.role === 'Course Instructor') {
-        next();
-    } else {
-        return res.sendStatus(401)
-    }
-}
+  if (req.user.role === 'Course Instructor') {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};
+
+exports.HODAuth = async function (req, res, next) {
+  const hod = await StaffMember.findOne({ gucId: req.user.gucId });
+  const department = await Department.findOne({ HOD: hod });
+  if (department) {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};
 
 exports.CCAuth = async function (req, res, next) {
     const cc = await StaffMember.findOne({ gucId: req.user.gucId })
@@ -47,12 +58,12 @@ exports.CCAuth = async function (req, res, next) {
 }
 
 exports.HODAuth = async function (req, res, next) {
-    const hod = await StaffMember.findOne({ gucId: req.user.gucId })
-    const department = await Department.findOne({ HOD: hod })
+  const hod = await StaffMember.findOne({ gucId: req.user.gucId });
+  const department = await Department.findOne({ HOD: hod });
 
-    if (department) {
-        next();
-    } else {
-        return res.sendStatus(401)
-    }
-}
+  if (department) {
+    next();
+  } else {
+    return res.sendStatus(401);
+  }
+};

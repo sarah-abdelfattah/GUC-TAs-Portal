@@ -16,7 +16,7 @@ const CourseSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'StaffMember',
   },
-  slots: [Slot],
+  slots: [Slot], 
   coverage: {
     type: Number,
     default: 0,
