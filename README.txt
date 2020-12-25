@@ -210,8 +210,8 @@ Request body:
 ```
 {
 	"facultyCode": "ENG",
-    	"depName": "Test dep with HOD",
-   	 "HOD": "AC-1"
+    "depName": "Test dep with HOD",
+   	"HOD": "AC-1"
 }
 ```
 Response: Created Department Object
@@ -384,7 +384,11 @@ Response: AttendanceRecord Object of all the attendance records exists for HR-3
 Response: AttendanceRecord Object of the attendance records for HR-3 from 11. May to 10. June
 
 ### 28.
-Functionality: View staff members with missing hours/days.Route: /attendance/viewStaffMissingRequest type: GETRequest body:Response: Array of staffMember Object
+Functionality: View staff members with missing hours/days.
+Route: /attendance/viewStaffMissing
+Request type: GET
+
+Response: Array of staffMember Object
 
 ### 29.
 Functionality: Update the salary of a staff member.
@@ -396,5 +400,74 @@ Request body:
     "newSalary": 234
 }
 Response: “Salary is updated successfully to 234"
+
+### 30.
+Functionality: Assign/delete/update a course instructor for each course in his department.
+Route: /departments/assignInstructor
+    a. Assign a course instructor
+        Request Type: POST
+        Body:
+            {
+                "gucId": "AC-1",
+                "name":"computer science"
+            }
+
+        Response: An object having a message of assigning the course, the course name, and the TA who will be assigned to that course.
+    b. Delete a course instructor
+        Request Type: DELETE
+        Body:
+            {
+                "gucId": "AC-2",
+                "name":"computer science"
+            }
+
+        Response: An object having a message of success/fail message of deletion.
+    c. Update a course instructor
+        Request Type: PUT
+        Body:
+            {
+                "gucId": "AC-1",
+                "newName":"computer science 1",
+                "oldName":"computer science"
+            }
+
+        Response: An object having a success message of updating, the old course info, and the TA who will be assigned to the updated course.
+
+### 31. 
+Functionality: 
+Request Type: GET
+    1- View all the staff in his/her department along with their profiles.
+        Route: /departments/getAllStaffMembers
+        Response: An array of the staff members in the department with their info.
+    2- View staff in his/her department per course along with their profiles.
+        Route: /departments/getAllStaffMembers/:course
+        Respponse: An array of the staff members in the department and in the same course specified with their info.
+
+### 32. 
+Functionality:
+Request Type: GET
+    1- View the day off of all the staff in his/her department.
+        Route: /departments/viewDayOff
+        Response: An array of staff IDs in the department along with their day off.
+    2- View the day off of a single staff in his/her department.
+        Route: /departments/viewDayOff/:idStaff
+        :idStaff -> some gucId of a staff member in the department to get his day off.
+        Response: An array of staff IDs in the department along with his/her day off.
+
+///////// TODO: Functions 33:35 that are in Aya's branch
+
+### 36.
+Functionality: View the coverage of each course in his/her department.
+Request Type: GET
+Route: /departments/viewCourseCoverage
+Response: An object containing the course name and its coverage.
+
+### 37.
+Functionality: View teaching assignments (which staff members teach which slots) of course offered by his department.
+Route: /departments/viewTeachingAssignments/:course
+Request Type: GET
+Parameters: course: which represents the course name and shows the teaching assignments for this specific course.
+            all: views all the courses teaching assignments.
+Response: Array of TAs, their courses and their assigned slots.
 
 
