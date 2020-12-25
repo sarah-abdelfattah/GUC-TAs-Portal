@@ -6,14 +6,15 @@ const validation = require('../helpers/validation');
 
 exports.getRoom = async function (req, res) {
     try {
-        let JOI_Result = await validation.getRoomSchema.validateAsync({ params: req.params.num })
+        // let JOI_Result = await validation.getRoomSchema.validateAsync({ params: req.params.num })
 
         if (req.params.num === "all") {
             const result = await Location.find();
             return res.send({ data: result });
         }
         else {
-            const result = await Location.findOne({ location: req.params.num });
+            const loc = req.params.num.toUpperCase();
+            const result = await Location.findOne({ location: loc });
             if (result)
                 return res.send({ data: result });
             else
@@ -31,7 +32,7 @@ exports.getRoom = async function (req, res) {
 
 exports.createRoom = async function (req, res) {
     try {
-        let JOI_Result = await validation.roomSchema.validateAsync(req.body)
+        let JOI_Result = await validation.createRoomSchema.validateAsync(req.body)
 
         const { type, location, capacity } = req.body;
 
