@@ -506,38 +506,38 @@ exports.slotLinkingReqResponse = async (req, res) => {
     const id = req.user.gucId;
     const { reqNumber, status } = req.body;
     if (!reqNumber || !status) {
-      res.send({ message: "You should specify all the data" });
+      res.status(400).send({ error: "You should specify all the data" });
       return;
     }
     const slotLinkingValid = await validation.validateSlotLinking.validateAsync(req.body)
     course = "";
     const staff = await StaffMember.findOne({ gucId: id });
     if (!staff) {
-      res.send(`There is no staff member with ID: ${id}`)
+      res.status(404).send({ error: `There is no staff member with ID: ${id}`})
       return;
     }
     if (staff.type !== 'Academic Member') {
-      res.send({ message: 'You are not authorized to go this page' })
+      res.status(403).send({ error: 'You are not authorized to go this page' })
       return
     }
 
     slotRequests = await Request.find({ reciever: staff._id, type: 'Slot Request' }).lean();
     if (!slotRequests) {
-      res.send("There is no slot-linking requests yet.");
+      res.status(200).send({ message: 'There is no slot-linking requests yet.' });
       return;
     }
     if (reqNumber > slotRequests.length) {
-      res.send({ message: 'You must specify a correct slot request number' })
+      res.status(400).send({ error: 'You must specify a correct slot request number' })
       return
     }
     const courseCC = await Course.findOne({ name: slotRequests[reqNumber - 1].coursename });
     // console.log(courseCC);
     if (!courseCC.courseCoordinator.equals(staff._id)) {
-      res.send("You are not authorized to go to this page.");
+      res.status(403).send({ error: 'You are not authorized to go to this page.' });
       return;
     }
     if (slotRequests[reqNumber - 1].status !== 'pending') {
-      res.send(`You have already responded to this request with ${slotRequests[reqNumber - 1].status}`);
+      res.status(200).send({ message: `You have already responded to this request with ${slotRequests[reqNumber - 1].status}` });
       return;
     }
     slotRequests[reqNumber - 1].status = status;
@@ -560,7 +560,7 @@ exports.slotLinkingReqResponse = async (req, res) => {
       }
       slotLocation = await Location.find({ type: slotRequests[reqNumber - 1].locationType });
       if (!slotLocation) {
-        res.send(`The slot location ${slotRequests[reqNumber - 1].locationType} does not exist`);
+        res.status(404).send({ error: `The slot location ${slotRequests[reqNumber - 1].locationType} does not exist` });
         return;
       }
       assignedCourses = 0;
@@ -580,7 +580,7 @@ exports.slotLinkingReqResponse = async (req, res) => {
       if (slotFound) {
         courseCoverage = (assignedCourses / courseSlots.length) * 100;
         const updatedCourses = await Course.findOneAndUpdate({ name: slotRequests[reqNumber - 1].coursename }, { slots: courseSlots, coverage: courseCoverage });
-        const saveCourses = updatedCourses.save();
+        const saveCourses = await updatedCourses.save();
       } else {
         slotRequests[reqNumber - 1].status = 'rejected';
       }
@@ -592,7 +592,7 @@ exports.slotLinkingReqResponse = async (req, res) => {
       message:`Your ${slotRequests[reqNumber - 1].subject} was ${status}`
     });
     await newNotification.save()
-    res.send(`The slot-linking request is ${slotRequests[reqNumber - 1].status} successfully`);
+    res.status(200).send({ message: `The slot-linking request is ${slotRequests[reqNumber - 1].status} successfully` });
   } catch (err) {
     console.log('~ err', err);
     res.status(500).send({ message: `Internal Server Error: ${err}` });
