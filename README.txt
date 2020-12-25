@@ -571,51 +571,55 @@ Request:
 
 Path: /academicMember/courseInstructor/staffMembers/:courseName
 Method: GET
-Parameters: courseName can be "all" if you want to view all the department staff
+Parameters: courseName: which is the name of the course and can also pass params "all" to view all staff members
 Body: None
 
 Success Response Example
 
   StatusCode: 200
   Body:
-  {
-      "data": [
-          {
-              "gucId": "AC-7",
-              "name": "AhmedAshraf 4",
-              "email": "AhmedAshraf4@guc.edu.eg",
-              "dayOff": "Sunday",
-              "courses": [
-                  "Computer Science 4",
-                  "Computer Science 2"
-              ],
-              "officeLocation": "C6.276",
-              "gender": "female"
-          },
-          {
-              "gucId": "AC-8",
-              "name": "AhmedAshraf 6",
-              "email": "AhmedAshraf6@guc.edu.eg",
-              "dayOff": "Saturday",
-              "courses": [
-                  "Computer Science 4"
-              ],
-              "officeLocation": "C6.276",
-              "gender": "male"
-          },
-          {
-              "gucId": "AC-9",
-              "name": "AhmedAshraf 8",
-              "email": "AhmedAshraf8@guc.edu.eg",
-              "dayOff": "Saturday",
-              "courses": [
-                  "Computer Science 4"
-              ],
-              "officeLocation": "C6.276",
-              "gender": "male"
-          }
-      ]
-  }
+{
+    "data": [
+        {
+            "gucId": "AC-1",
+            "name": "Mohammed",
+            "email": "mohammed.abdelfattah@guc.edu.eg",
+            "dayOff": "Monday",
+            "courses": [
+                "Computer Science 1",
+                "Computer Science 3",
+                "Computer Science 1",
+                "Computer Science 1"
+            ],
+            "officeLocation": "A1.003",
+            "gender": "male"
+        },
+        {
+            "gucId": "AC-5",
+            "name": "Yahia",
+            "email": "yahia@guc.edu.eg",
+            "dayOff": "Saturday",
+            "courses": [
+                "Computer Science 1",
+                "Computer Science 3"
+            ],
+            "officeLocation": "A1.001",
+            "gender": "male"
+        },
+        {
+            "gucId": "AC-6",
+            "name": "Leen",
+            "email": "leen@guc.edu.eg",
+            "dayOff": "Sunday",
+            "courses": [
+                "Computer Science 1",
+                "Computer Science 3"
+            ],
+            "officeLocation": "A1.001",
+            "gender": "female"
+        }
+    ]
+}
 
 41. Assign an academic member to an unassigned slots in course(s) he/she is assigned to
 
@@ -746,3 +750,224 @@ Request body:
 Response: "The slot-linking request is rejected successfully"
 
 
+///aya
+method:sendRequest
+functionalities: any staff member can send any type of those requests
+                        'Replacement Request', 'Slot Request' , 'Change DayOff',  'Leave Request'
+                       leave request can be one out of 5 types
+                       Sick , Compensation , Annual , Maternity , Accidental
+methodType:post
+route:    /requests/sendrequest
+**### 40-** **send replacement request**
+{
+    
+     "type":"Replacement Request",
+     "replacementDate":"2021-10-10T10:30:00",
+     "recieverId":"AC-7", 
+    "location":"c6102",
+    "course":"Computer Science 4" 
+}
+
+**### 41-** ** slot linking request**
+
+{
+ 
+     "type":"Slot Request",
+     "date":"2021-10-10T10:30:00", 
+    "locationType":"Hall",
+    "course":"Computer Science 4" 
+
+}
+
+**### 42-** ** ChangeDayOff**
+
+{
+     
+     "type": "Change DayOff", 
+       "newDayOff":"Sunday",
+       "currentDayOff":"Monday",
+     "reason":".....somestring"
+    
+    
+ 
+}
+
+**### 43-** ** Leave request**
+hint:here you could have a reason or not
+**Accidental**
+{
+    
+     "type":"Leave Request", 
+    "leaveType": "Accidental",
+    "AccidentDate":"2021-10-12T10:30:00"  
+ 
+}
+
+
+**Compensation**
+hint:you must have a reason
+{
+     
+     "type":"Leave Request", 
+   "CompensationDate":"2020-12-20",
+     "LeaveDate":"2020-12-15", 
+     "reason":".....somestring"
+    
+    
+ 
+}
+
+**Annual:**
+hint:here you could have a reason or not and you can add more than one replacement
+you should include these lines in your header 
+Accept : application/json, text/plain, 
+Content-Type : application/json;charset=UTF-8
+
+{
+   
+     "type":"Leave Request",
+     "AnnualLeaveDate":"2021-10-10", 
+     "leaveType": "Annual", 
+ "rep":[{ 
+     "id":"AC-7",
+     "date":"2021-10-10T10:30:00",
+     "courseName":"Computer Science 4"
+ }]
+    
+  
+}
+
+
+**sick leave**:
+{
+  
+     "type":"Leave Request",  
+    "leaveType": "Sick",
+    "SickDayDate":"2020-12-18", 
+    "document":"string . "
+
+}
+
+**Maternity:**
+
+{
+   
+     "type":"Leave Request",
+     "leaveType": "Maternity",
+    "startDate":"2020-12-18", 
+    "document":"string . "
+
+}
+
+**44** **Notifications**
+functionality: view all notification
+path:/requests/viewNotification
+for the following use /requests
+
+
+
+**45 View all Requests** 
+path/viewMyRequest
+
+
+
+**View Accepted or rejected or pending Requests**
+path:  /requests/viewMyRequeststatus/:status
+so you can use
+      /requests/viewMyRequeststatus/accepted
+     /requests/viewMyRequeststatus/pending 
+      /requests/viewMyRequeststatus/rejected
+
+
+
+ **40-View Replacement Request or any type**
+path: /requests/viewMyRequestType/:type
+so for replacement you can use
+          /requests/viewMyRequestType/Replacement Request
+
+
+
+  ****View Received Replacement Request**** 
+path: /requests/viewRecievedReplacementRequest
+
+
+
+
+ **24 View all the requests “change day off/leave” sent by staff members in his/her department. FOR HOD** 
+path: /requests/viewRecievedRequest/:type
+so you can use 
+          /requests/viewRecievedRequest/Change DayOff
+         /requests/viewRecievedRequest/Leave Request
+
+
+
+**36 View “slot linking” request(s) from academic members linked to his/her course FOR CC.**
+path: /viewSlotRequest
+ 
+
+
+**46 cancel request**
+requests/CancelRequest/:_id
+path: requests/CancelRequest/5fdfc73c306f274a93ea5fae
+type:delete
+
+
+
+**AcceptOrReject replacement Request**
+path:/requests/AcceptOrRejectRep/:_id
+type:put
+body:{
+
+AcceptOrReject:"accepted"
+
+}
+
+
+
+
+
+
+38.
+Functionality: Add/update/delete course slot(s) in his/her course.
+Route: /slots/courseSlot
+a. Add:
+Request type: POST
+Request body:
+{
+"id":"AC-3",
+"course":"CS1",
+"day": "Saturday",
+"time": "14:45",
+"location": "C6.306"
+}
+Response: "The slot is added sucessfully"
+b. Delete:
+Request type: DELETE
+Request body:
+{
+"id":"AC-3",
+"course":"CS1",
+"day": "Saturday",
+"time": "14:45",
+"location": "C6.306"
+}
+Response: "The slot is deleted sucessfully"
+c. Update:
+Request type: PUT
+Request body:
+{
+"id":"AC-3",
+"course":"CS1",
+"dayOld": "Saturday",
+"timeOld": "14:45",
+"locationOld": "C6.306",
+"dayNew": "Sunday",
+"timeNew": "16:45",
+"locationNew": "C6.206",
+}
+Response: "The slots are updated sucessfully"
+39.
+Functionality: View their schedule. Schedule should show teaching activities and replacements if present.
+Route: /staffMembers/viewMySchedule
+Request type: GET
+Response: Object contains the slots assigned
