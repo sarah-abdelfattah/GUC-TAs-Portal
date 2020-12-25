@@ -417,10 +417,9 @@ exports.viewCourseCoverage = async (req, res) => {
 //////////
 exports.assignInstructor = async (req, res) => {
   try {
-    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync(req.body)
-
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName})
 
     if (!instructorId || !courseName)
       return res.send({ error: "Please enter all the details" });
@@ -526,11 +525,10 @@ exports.assignInstructor = async (req, res) => {
 
 exports.updateInstructor = async function (req, res) {
   try {
-    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync(req.body)
-
     let instructorId = req.body.gucId;
     let newCourseName = req.body.newName;
     let courseName = req.body.oldName;
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName,newCourseName})
 
     if (!instructorId || !newCourseName || !courseName)
       return res.send({ error: "Please enter new course name" });
@@ -612,10 +610,9 @@ exports.updateInstructor = async function (req, res) {
 
 exports.deleteInstructor = async function (req, res) {
   try {
-    let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
-
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName}) //departmentAssignmentSchema
 
     if (!instructorId || !courseName)
       return res.send({ error: "Please enter all the details" });
@@ -703,10 +700,11 @@ exports.viewTeachingAssignments = async (req, res) => {
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate(
       "HOD"
     );
+    console.log(HOD)
     let departmentFound = await Department.findOne({
       _id: req.user.department,
     }).populate("department");
-
+    console.log(departmentFound)
     // if there's no department found
     if (!departmentFound) {
       return res.status(404).send({
