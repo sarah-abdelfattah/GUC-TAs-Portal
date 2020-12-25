@@ -733,7 +733,7 @@ const courseInstructorController = {
   // ==> Functionality 35 <== //
   async courseCoordinator(req, res) {
     try {
-      await validation.ACSchema.withSlot.validateAsync(req.body);
+      await validation.ACSchema.withoutSlot.validateAsync(req.body);
       // * Get Course Instructor
       const instructor = await StaffMember.findOne({
         gucId: req.user.gucId,
