@@ -264,9 +264,8 @@ exports.sendRequest = async function (req, res) {
         const reason = req.body.reason;
 
         //date
-        if (!CompensationDate || !LeaveDate || !reason) {
-          return res.send({ error: 'please enter all data in a correct way' });
-        }
+        if (!CompensationDate || !LeaveDate || !reason) return res.send({ error: 'Please enter all the missing fields' });
+
         var flag = false;
 
         if (LeaveDate.getFullYear() < CompensationDate.getFullYear()) {
@@ -291,9 +290,8 @@ exports.sendRequest = async function (req, res) {
             }
           }
         }
-        if (!flag) {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
-        }
+        if (!flag) return res.send({ error: 'Sorry you cannot submit this request' });
+
         const AttendanceRecord = sender.attendanceRecords;
 
         var record;
@@ -306,11 +304,11 @@ exports.sendRequest = async function (req, res) {
             record = AttendanceRecord[i].date;
             recdate = new Date(Date.parse(record));
             recordDay = recdate.getDay();
+            console.log(recordDay);
             f3 = true;
             break;
           }
         }
-
         var Day;
         switch (recordDay) {
           case 1:
@@ -318,45 +316,35 @@ exports.sendRequest = async function (req, res) {
             break;
           case 2:
             Day = 'Tuesday';
-            // code block
             break;
           case 3:
             Day = 'Wednesday';
-            // code block
             break;
           case 4:
             Day = 'Thursday';
-            // code block
             break;
           case 5:
             Day = 'Friday';
-            // code block
             break;
           case 6:
             Day = 'Saturday';
-            // code block
             break;
           case 0:
             Day = 'Sunday';
-            // code block
             break;
         }
+        if (Day != sender.dayOff) return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
 
-        if (Day != sender.dayOff) {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
-        }
-        // search in his requests that there is no compansation    request of the same day
+        // search in his requests that there is no compensation request on the same day
         var f1 = false;
         const request = await Request.findOne({ date: CompensationDate, sender: sender });
         if (request) {
           const leavetype = request.leaveType;
-          if (leavetype && request.leavetype == 'Compensation') {
-            f1 = true;
-          }
+          if (leavetype && request.leavetype == 'Compensation') f1 = true;
         }
-        if (f1) {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
-        }
+
+        if (f1) return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
+
         const subject = type + ' (' + leaveType + ') at ' + req.body.CompensationDate;
         const newRequest = new Request({
           //TODO a4eel el sender
