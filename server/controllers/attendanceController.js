@@ -10,11 +10,12 @@ exports.viewAttendance = async function (req, res) {
         const id = req.user.gucId;
         const { month1, month2, all } = req.body;
 
+        const validateAttendance = await validation.viewAttendance.validateAsync({ all });
+
         if (((!month1 || !month2) && !all)) {
-            res.send({ error: "You should choose an option" });
+            res.send({ error: "You should choose an option either to enter month 1 and month2 or all" });
             return;
         }
-        const validateAttendance = await validation.viewAllAttendance.validateAsync({ all });
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -36,6 +37,10 @@ exports.viewAttendance = async function (req, res) {
                 res.json(attendanceRecord);
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
@@ -51,8 +56,12 @@ exports.viewMissingDays = async function (req, res) {
         } else
             res.send("Number of missing days: " + mDays);
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
-        res.status(500).send({ error: `Internal Server Error: ${err}` });
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
 }
 
@@ -71,6 +80,10 @@ exports.viewMissingHours = async function (req, res) {
         const sentRes = "Missing/extra hours: " + sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
         res.send(sentRes);
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
@@ -115,41 +128,41 @@ exports.addMissingSignInOut = async function (req, res) {
                 indexesOfDateRecords.push(i);
             }
         }
-        if(signIn){
+        if (signIn) {
             signInhrs = parseInt(signIn.substring(0, 2));
             signInMin = parseInt(signIn.substring(3, 5));
             signInSec = parseInt(signIn.substring(6, 8));
-            overLappedsignIn = indexesOfDateRecords.some((index)=>{
-                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0,2))<=signInhrs || 
-                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].startTime.substring(3,5))<=signInMin) ||
-                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].startTime.substring(3,5))===signInMin 
-                && parseInt(attendanceRecord[index].startTime.substring(6,8))<=signInSec))) &&
-                ( attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0,2))>=signInhrs || 
-                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].endTime.substring(3,5))>=signInMin) ||
-                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].endTime.substring(3,5))===signInMin 
-                && parseInt(attendanceRecord[index].endTime.substring(6,8))>=signIntSec)))
+            overLappedsignIn = indexesOfDateRecords.some((index) => {
+                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0, 2)) <= signInhrs ||
+                    (parseInt(attendanceRecord[index].startTime.substring(0, 2)) === signInhrs && parseInt(attendanceRecord[index].startTime.substring(3, 5)) <= signInMin) ||
+                    (parseInt(attendanceRecord[index].startTime.substring(0, 2)) === signInhrs && parseInt(attendanceRecord[index].startTime.substring(3, 5)) === signInMin
+                        && parseInt(attendanceRecord[index].startTime.substring(6, 8)) <= signInSec))) &&
+                    (attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0, 2)) >= signInhrs ||
+                        (parseInt(attendanceRecord[index].endTime.substring(0, 2)) === signInhrs && parseInt(attendanceRecord[index].endTime.substring(3, 5)) >= signInMin) ||
+                        (parseInt(attendanceRecord[index].endTime.substring(0, 2)) === signInhrs && parseInt(attendanceRecord[index].endTime.substring(3, 5)) === signInMin
+                            && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signIntSec)))
             });
-            if(overLappedsignIn){
-                res.send({msg:"You are not able to add a signIn that is between an existing signIn/Out"});
+            if (overLappedsignIn) {
+                res.send({ msg: "You are not able to add a signIn that is between an existing signIn/Out" });
                 return;
             }
         }
-        if(signOut){
+        if (signOut) {
             signOuthrs = parseInt(signOut.substring(0, 2));
             signOutMin = parseInt(signOut.substring(3, 5));
             signOutSec = parseInt(signOut.substring(6, 8));
-            overLappedsignOut = indexesOfDateRecords.some((index)=>{
-                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0,2))<=signOuthrs || 
-                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3,5))<=signOutMin) ||
-                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3,5))===signOutMin 
-                && parseInt(attendanceRecord[index].startTime.substring(6,8))>=signOutSec))) &&
-                (attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0,2))>=signOuthrs || 
-                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3,5))>=signOutMin) ||
-                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3,5))===signOutMin 
-                && parseInt(attendanceRecord[index].endTime.substring(6,8))>=signOutSec)))
+            overLappedsignOut = indexesOfDateRecords.some((index) => {
+                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0, 2)) <= signOuthrs ||
+                    (parseInt(attendanceRecord[index].startTime.substring(0, 2)) === signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3, 5)) <= signOutMin) ||
+                    (parseInt(attendanceRecord[index].startTime.substring(0, 2)) === signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3, 5)) === signOutMin
+                        && parseInt(attendanceRecord[index].startTime.substring(6, 8)) >= signOutSec))) &&
+                    (attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0, 2)) >= signOuthrs ||
+                        (parseInt(attendanceRecord[index].endTime.substring(0, 2)) === signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3, 5)) >= signOutMin) ||
+                        (parseInt(attendanceRecord[index].endTime.substring(0, 2)) === signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3, 5)) === signOutMin
+                            && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signOutSec)))
             });
-            if(overLappedsignOut){
-                res.send({msg:"You are not able to add a signOut that is between an existing signIn/Out"});
+            if (overLappedsignOut) {
+                res.send({ msg: "You are not able to add a signOut that is between an existing signIn/Out" });
                 return;
             }
         }
@@ -269,6 +282,10 @@ exports.addMissingSignInOut = async function (req, res) {
         attendanceRecordUpdated = await updatedStaff.save();
         res.send({ data: "The missing sign in/out is added successfully" });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
@@ -305,6 +322,10 @@ exports.viewAttendanceHR = async function (req, res) {
                 return res.json(attendanceRecord);
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
@@ -329,12 +350,16 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             staffIDs.push(
                 {
                     GUCID: attendanceRecords[i].gucId,
-                    MissingDays:missingDays,
-                    MissingHours:sentRes
+                    MissingDays: missingDays,
+                    MissingHours: sentRes
                 });
         }
         return res.json({ data: staffIDs });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         return res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
@@ -455,12 +480,12 @@ exports.findMissingDays = async function (id) {
         (initDate >= 11 && initialMonth == monthLastDays && initialYear === previousYear)))) {
         dayRecords = monthRecords.filter((record) => {
             return parseInt(record.date.substring(5, 7)) === initialMonth && parseInt(record.date.substring(0, 4)) === initialYear
-                && parseInt(record.date.substring(8, 10)) === initialDay && (record.startTime && record.endTime 
-                && !(parseInt(record.startTime.substring(0,2))>=19 || parseInt(record.endTime.substring(0,2))<7 ||
-                (parseInt(record.endTime.substring(0,2))==7 && parseInt(record.endTime.substring(3,5))==0)) )
+                && parseInt(record.date.substring(8, 10)) === initialDay && (record.startTime && record.endTime
+                    && !(parseInt(record.startTime.substring(0, 2)) >= 19 || parseInt(record.endTime.substring(0, 2)) < 7 ||
+                        (parseInt(record.endTime.substring(0, 2)) == 7 && parseInt(record.endTime.substring(3, 5)) == 0)))
         });
 
-        if (dayRecords.length === 0  && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
+        if (dayRecords.length === 0 && initialWeekDay !== 5 && initialWeekDay !== parseInt(dayOffNum)) missingDays++;
 
         if (((initialMonth === 1 || initialMonth === 3 || initialMonth === 5 || initialMonth === 7 || initialMonth === 8 || initialMonth === 10 || initialMonth === 12) && initialDay === 31)
             || ((initialMonth === 4 || initialMonth === 6 || initialMonth === 9 || initialMonth === 11) && initialDay === 30) ||
@@ -519,8 +544,8 @@ exports.findMissingMinutes = async function (id) {
     filteredRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
-        && record.status === "Present" && (record.startTime && record.endTime && !(parseInt(record.startTime.substring(0,2))>=19 || parseInt(record.endTime.substring(0,2))<7 ||
-        (parseInt(record.endTime.substring(0,2))==7 && parseInt(record.endTime.substring(3,5))==0))) && record.day !== dayOffNum && record.day !== "5");
+        && record.status === "Present" && (record.startTime && record.endTime && !(parseInt(record.startTime.substring(0, 2)) >= 19 || parseInt(record.endTime.substring(0, 2)) < 7 ||
+            (parseInt(record.endTime.substring(0, 2)) == 7 && parseInt(record.endTime.substring(3, 5)) == 0))) && record.day !== dayOffNum && record.day !== "5");
 
     cumulativeHours = 0.0;
     cumulativeMin = 0.0;

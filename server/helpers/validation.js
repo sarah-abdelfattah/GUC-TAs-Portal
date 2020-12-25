@@ -97,11 +97,13 @@ const viewMonthAttendance = Joi.object({
 })
 
 const viewAllAttendance = Joi.object({
-    all: Joi.string().valid('all','month').required()
+    all: Joi.string(),
+    month1: Joi.number().integer().min(1).max(12).required(),
+    month2: Joi.number().integer().min(1).max(12).required(),
 })
 
 const addMissingSign = Joi.object({
-    id: Joi.string().regex(/['HR','AC']-*/).required(),
+    id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
     signIn: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
     signOut: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
     date: Joi.string().regex(/(2[0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])/).required(),
@@ -110,8 +112,10 @@ const addMissingSign = Joi.object({
 })
 
 const viewStaffAttendance = Joi.object({
-    id: Joi.string().regex(/['HR','AC']-*/).required(),
-    all: Joi.string().valid('all','month').required()
+    id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
+    all: Joi.string(),
+    month1: Joi.number().integer().min(1).max(12).required(),
+    month2: Joi.number().integer().min(1).max(12).required(),
 })
 
 //Add-Delete-Update Slot by CC
@@ -120,9 +124,15 @@ const validateCourse = Joi.object({
 })
 
 const validateSlotCC = Joi.object({
-    day:Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
-    time:Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
-    location:Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
+    day: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
+    time: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
+    location: Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
+})
+
+const viewAttendance = Joi.object({
+    month1: Joi.string(),
+    month2: Joi.string(),
+    all: Joi.string()
 })
 
 module.exports = {
@@ -138,9 +148,9 @@ module.exports = {
     courseSchema,
     ACSchema,
     viewMonthAttendance,
-    viewAllAttendance,
+    viewAttendance,
     addMissingSign,
     viewStaffAttendance,
     validateCourse,
-    validateSlotCC
+    validateSlotCC,
 }
