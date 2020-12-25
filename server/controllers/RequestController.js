@@ -113,7 +113,7 @@ exports.sendRequest = async function (req, res) {
       //Notification.create(newNotificatin);
       return res.send({ data: newRequest });
     }
-    
+
     if (type == 'Change DayOff') {
       //TODO to be changed
       var department = await Department.findOne({ _id: sender.department._id });
@@ -151,35 +151,31 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Slot Request') {
       const coursename = req.body.course;
-      const rec = course.courseCoordinator;
       const x = req.body.date;
       const locationType = req.body.locationType;
-      if (!coursename || !x || !locationType) {
-        return res.send({ error: 'please enter all data' });
-      }
+      if (!coursename || !x || !locationType) return res.send({ error: 'Please enter all the missing fields' });
+      if (locationType !== 'Tutorial Room' && locationType !== 'Lecture Hall' && locationType !== 'Lab') return res.send({ error: 'Please enter a valid location type' });
 
       const course = await Course.findOne({ name: coursename });
+      if (!course) return res.send({ error: 'This course is not found' });
+
+      const rec = course.courseCoordinator;
+      if (!rec) return res.send({ error: 'This course has no course coordinator yet' });
+
       const date = new Date(Date.parse(x));
+      if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });
 
-      if (locationType != 'Tutorial Room' || locationType != 'Lecture Hall' || locationType != 'Lab')
-        if (!course || !date) {
-          return res.send({ error: 'please enter Correct location type' });
-        }
-      if (!course || !date || !locationType) {
-        return res.send({ error: 'please enter all data' });
-      }
       var foundCourse = await Course.findOne({ name: coursename }).populate();
-      var f2;
 
+      var f2;
       for (i = 0; i < sender.courses.length; i++) {
         if (sender.courses[i]._id.equals(foundCourse._id)) {
           f2 = true;
         }
       }
 
-      if (!f2) {
-        return res.send({ error: 'please enter correct course name' });
-      }
+      if (!f2) return res.status(400).send({ error: 'This academic member does not teach this course' });
+
       const subject = type + ' at ' + req.body.date + 'of course ' + coursename;
       const newRequest = new Request({
         //TODO a4eel el sender
@@ -192,8 +188,9 @@ exports.sendRequest = async function (req, res) {
         subject: subject,
       });
       await newRequest.save();
-      return res.send({ data: newRequest });
+      return res.status(200).send({ data: newRequest });
     }
+
     if (type == 'Leave Request') {
       //const department =sender.department;
 
@@ -527,7 +524,7 @@ exports.sendRequest = async function (req, res) {
         return res.send({ error: 'There is no such a leave request ' });
       }
     } else {
-      return res.send({ error: 'There is no such a request ' });
+      return res.status(404).send({ error: 'This request type is not supported.' });
     }
   } catch (err) {
     // const NewRequest = await Request.post(senderID,recieverId,req.body);
