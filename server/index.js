@@ -54,7 +54,7 @@ app.use(bodyParser.json());
 //seeding
 const Tokens = require("./models/Token");
 const dummy = require('./helpers/seeding');
-// dummy.seedDB();
+dummy.seedDB();
 
 
 //All routes should be tested for auth except login

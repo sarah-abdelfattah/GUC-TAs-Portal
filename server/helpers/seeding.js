@@ -276,7 +276,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '16:24',
@@ -297,7 +297,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '18:24',
@@ -317,7 +317,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:20',
@@ -357,7 +357,8 @@ exports.seedDB = async function () {
             ],
         },
 
-        // 2 attendance records 
+        // 3 attendance records 
+        // 1 on his day off
         // 1 before 7 AM and 1 after 7 PM --> no extra hours
         {
             gucId: 'AC-2',
@@ -372,15 +373,22 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '6:00',
                     endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '1',
                     date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '20:24',
+                    status: 'Present'
+                },
+                {
+                    day: '2',
+                    date: '2020-12-14',
                     startTime: '8:00',
                     endTime: '20:24',
                     status: 'Present'
@@ -408,14 +416,14 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '2',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
@@ -445,25 +453,25 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Monday',
+                    day: '1',
                     date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '2',
                     date: '2020-12-14',
                     endTime: '17:24',
                     status: 'Present'
                 }, {
-                    day: 'Wednesday',
+                    day: '3',
                     date: '2020-12-15',
                     endTime: '17:24',
                     status: 'Present'
@@ -515,14 +523,14 @@ exports.seedDB = async function () {
             dayOff: 'Sunday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '6:00',
                     endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '1',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '20:24',
@@ -551,14 +559,14 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '2',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
@@ -588,25 +596,25 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
+                    day: '2',
                     date: '2020-12-13',
                     endTime: '17:24',
                     status: 'Present'
                 }, {
-                    day: 'Wednesday',
+                    day: '3',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
@@ -632,14 +640,14 @@ exports.seedDB = async function () {
             dayOff: 'Wednesday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:00',
                     status: 'Present'
                 },
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '12:01',
                     endTime: '16:24',
