@@ -142,7 +142,7 @@ exports.sendRequest = async function (req, res) {
         reason: req.body.reason,
       });
       if (!newRequest.reason) delete newRequest.reason;
-      
+
       await newRequest.save();
       //const name=sender.name;
       // const newNotificatin = new Notification({
@@ -205,9 +205,8 @@ exports.sendRequest = async function (req, res) {
 
       const leaveType = req.body.leaveType;
 
-      if (!leaveType) {
-        return res.send({ error: 'please enter all data' });
-      }
+      if (!leaveType) return res.send({ error: 'Please enter all the missing fields' });
+
       if (!rec) {
         return res.send({ error: 'there is no HOD for this Department' });
       }
@@ -272,6 +271,7 @@ exports.sendRequest = async function (req, res) {
         await newRequest.save();
         return res.send({ data: newRequest });
       }
+
       if (leaveType == 'Compensation') {
         const cdate = req.body.CompensationDate;
         const CompensationDate = new Date(Date.parse(req.body.CompensationDate)); //date
@@ -461,6 +461,7 @@ exports.sendRequest = async function (req, res) {
         await newRequest.save();
         return res.send({ data: newRequest });
       }
+
       if (leaveType == 'Maternity') {
         if (sender.gender != 'female') {
           return res.send({ error: 'Sorry you Cannot submit this Request' });
@@ -491,6 +492,7 @@ exports.sendRequest = async function (req, res) {
         await newRequest.save();
         return res.send({ data: newRequest });
       }
+
       if (leaveType == 'Accidental') {
         var reason = req.body.reason;
         if (!reason) {
@@ -526,7 +528,7 @@ exports.sendRequest = async function (req, res) {
         await newRequest.save();
         return res.send({ data: newRequest });
       } else {
-        return res.send({ error: 'There is no such a leave request ' });
+        return res.status(400).send({ error: 'This leave type is not supported.' });
       }
     } else {
       return res.status(404).send({ error: 'This request type is not supported.' });
@@ -535,7 +537,7 @@ exports.sendRequest = async function (req, res) {
     // const NewRequest = await Request.post(senderID,recieverId,req.body);
 
     console.log('~ err', err);
-    return res.send({ err: err });
+    return res.status(500).send({ err: err });
   }
 };
 
