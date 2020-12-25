@@ -473,7 +473,7 @@ exports.findMissingDays = async function (id) {
     monthRecords = attendanceRecord.filter((record) =>
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
-        && record.day !== "5" && record.day !== dayOffNum);
+        && record.day !== "Friday" && record.day !== dayOff);
     missingDays = 0;
     initialDay = 11;
     initialMonth = monthLastDays;
@@ -552,7 +552,7 @@ exports.findMissingMinutes = async function (id) {
         (todayDate < 11 && (parseInt(record.date.substring(5, 7)) === monthFirstDays && parseInt(record.date.substring(8, 10)) < 11 && parseInt(record.date.substring(0, 4)) === nextYear))
         || (parseInt(record.date.substring(5, 7)) === monthLastDays && parseInt(record.date.substring(8, 10)) >= 11 && parseInt(record.date.substring(0, 4)) === previousYear)
         && record.status === "Present" && (record.startTime && record.endTime && !(parseInt(record.startTime.substring(0, 2)) >= 19 || parseInt(record.endTime.substring(0, 2)) < 7 ||
-            (parseInt(record.endTime.substring(0, 2)) == 7 && parseInt(record.endTime.substring(3, 5)) == 0))) && record.day !== dayOffNum && record.day !== "5");
+            (parseInt(record.endTime.substring(0, 2)) == 7 && parseInt(record.endTime.substring(3, 5)) == 0))));
 
     cumulativeHours = 0.0;
     cumulativeMin = 0.0;
@@ -588,7 +588,7 @@ exports.findMissingMinutes = async function (id) {
             dateFound = datesExist.some((date) => {
                 return date === record.date;
             })
-            if (!dateFound) datesExist.push(record.date);
+            if (!dateFound && record.day !== dayOff && record.day !== "Friday") datesExist.push(record.date);
         }
     })
     return (cumulativeHours * 60 + cumulativeMin) - 504 * datesExist.length;
