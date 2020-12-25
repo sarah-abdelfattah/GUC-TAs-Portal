@@ -9,6 +9,7 @@ const StaffMember = require('../models/StaffMember');
 const Course = require('../models/Course');
 const Notification = require('../models/Notification')
 const Location = require('../models/Location')
+const validation = require('../helpers/validation');
 //const { appendFileSync } = require('fs');
 
 exports.sendRequest = async function (req, res) {
@@ -504,10 +505,11 @@ exports.slotLinkingReqResponse = async (req, res) => {
   try {
     const id = req.user.gucId;
     const { reqNumber, status } = req.body;
-    if (!reqNumber || !status || (status !== 'accepted' && status !== 'rejected')) {
+    if (!reqNumber || !status) {
       res.send({ message: "You should specify all the data" });
       return;
     }
+    const slotLinkingValid = await validation.validateSlotLinking.validateAsync(req.body)
     course = "";
     const staff = await StaffMember.findOne({ gucId: id });
     if (!staff) {

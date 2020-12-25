@@ -125,6 +125,11 @@ const validateSlotCC = Joi.object({
     location:Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
 })
 
+const validateSlotLinking = Joi.object({
+    reqNumber:Joi.number().integer().min(1).required(),
+    status:Joi.string().valid('accepted','rejected').required()
+})
+
 module.exports = {
     registerSchema,
     registerACSchema,
@@ -142,5 +147,6 @@ module.exports = {
     addMissingSign,
     viewStaffAttendance,
     validateCourse,
-    validateSlotCC
+    validateSlotCC,
+    validateSlotLinking
 }
