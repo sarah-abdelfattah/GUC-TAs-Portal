@@ -113,7 +113,7 @@ exports.seedDB = async function () {
     //departments
     const facENG = await Faculty.findOne({ code: 'ENG' });
     const facPHARM = await Faculty.findOne({ code: 'PHARM' });
-    const facMNGT = await Faculty.findOne({ code: 'facMNGT' });
+    const facMNGT = await Faculty.findOne({ code: 'MNGT' });
 
     const departments = [
         //engineering
@@ -295,7 +295,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '16:24',
@@ -316,7 +316,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '18:24',
@@ -336,7 +336,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:20',
@@ -377,9 +377,9 @@ exports.seedDB = async function () {
             ],
         },
 
-        // 3 attendance records 
+        // 4 attendance records 
         // 1 on his day off
-        // 1 before 7 AM and 1 after 7 PM --> no extra hours
+        // 1 before 7 AM and 2 after 7 PM 
         {
             gucId: 'AC-2',
             name: 'Sarah',
@@ -392,29 +392,32 @@ exports.seedDB = async function () {
             role: 'Course Instructor',
             dayOff: 'Monday',
             attendanceRecords: [
+                //9:24 hours
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-12',
                     startTime: '6:00',
                     endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: '1',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '20:24',
                     status: 'Present'
                 },
+                //7:24 hours
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-14',
                     startTime: '6:00',
                     endTime: '14:24',
                     status: 'Present'
                 },
+                //11:00 hours
                 {
-                    day: '3',
+                    day: 'Wednesday',
                     date: '2020-12-15',
                     startTime: '8:00',
                     endTime: '20:24',
@@ -443,14 +446,14 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
@@ -480,31 +483,32 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: '1',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-14',
                     endTime: '17:24',
                     status: 'Present'
-                }, 
-              {
-                    day: '3',
+                },
+                {
+                    day: 'Wednesday',
                     date: '2020-12-15',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
-                    day: 'Wednesday',
+                },
+                {
+                    day: 'Saturday',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
@@ -557,14 +561,14 @@ exports.seedDB = async function () {
             dayOff: 'Sunday',
             attendanceRecords: [
                 {
-                    day: '1',
+                    day: 'Monday',
                     date: '2020-12-12',
                     startTime: '6:00',
                     endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-13',
                     startTime: '6:00',
                     endTime: '14:24',
@@ -593,14 +597,14 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
@@ -630,30 +634,30 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: '0',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
-                    day: '2',
+                    day: 'Tuesday',
                     date: '2020-12-13',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
-                    day: '3',
-                    day: 'Tuesday',
+                },
+                {
+                    day: 'Wednesday',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
-                }, 
+                },
 
             ],
             faculty: facMNGT,
@@ -675,14 +679,14 @@ exports.seedDB = async function () {
             dayOff: 'Wednesday',
             attendanceRecords: [
                 {
-                    day: '0',
+                    day: 'Sunday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:00',
                     status: 'Present'
                 },
                 {
-                    day: '0',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '12:01',
                     endTime: '16:24',

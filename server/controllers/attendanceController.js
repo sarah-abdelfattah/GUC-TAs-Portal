@@ -8,15 +8,19 @@ const validation = require('../helpers/validation');
 exports.viewAttendance = async function (req, res) {
     try {
         const id = req.user.gucId;
-        const { month1, month2, all } = req.body;
+        let { month1, month2, all } = req.body;
 
         //All field vaildation
         const validateAttendance = await validation.viewAllAttendance.validateAsync({ all });
 
         if (((!month1 || !month2) && !all)) {
-            res.send({ error: "You should choose an option either to enter month 1 and month2 or all" });
+            res.send({ error: "You should choose an option either to enter month1 and month2 or all" });
             return;
         }
+
+        month1 = parseInt(month1);
+        month2 = parseInt(month2);
+
         if (all === 'all') {
             const staff = await staffMember.findOne({ gucId: id });
             if (!staff) {
@@ -41,7 +45,7 @@ exports.viewAttendance = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -60,7 +64,7 @@ exports.viewMissingDays = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -70,6 +74,7 @@ exports.viewMissingDays = async function (req, res) {
 //Function 10: View if they are having missing hours or extra hours.
 exports.viewMissingHours = async function (req, res) {
     try {
+        const d = new Date();
         const id = req.user.gucId;
         const minutesSpent = await module.exports.findMissingMinutes(id);
         if (typeof (minutesSpent) === 'string') {
@@ -84,7 +89,7 @@ exports.viewMissingHours = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -286,7 +291,7 @@ exports.addMissingSignInOut = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
@@ -326,7 +331,7 @@ exports.viewAttendanceHR = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
@@ -360,7 +365,7 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.status(500).send({ err: `Internal Server Error: ${err}` });

@@ -104,7 +104,9 @@ const viewMonthAttendance = Joi.object({
 })
 
 const viewAllAttendance = Joi.object({
-    all: Joi.string().valid('all')
+    all: Joi.string(),
+    month1: Joi.number().integer().min(1).max(12),
+    month2: Joi.number().integer().min(1).max(12),
 })
 
 const addMissingSign = Joi.object({
@@ -133,8 +135,8 @@ const validateSlotCC = Joi.object({
 })
 
 const validateSlotLinking = Joi.object({
-    reqNumber:Joi.number().integer().min(1).required(),
-    status:Joi.string().valid('accepted','rejected').required()
+    reqNumber: Joi.number().integer().min(1).required(),
+    status: Joi.string().valid('accepted', 'rejected').required()
 })
 
 module.exports = {
