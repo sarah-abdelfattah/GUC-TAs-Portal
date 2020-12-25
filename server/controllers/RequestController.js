@@ -24,9 +24,7 @@ exports.sendRequest = async function (req, res) {
     // var sender= await StaffMember.findOne({gucID:senderId}). populate();
     //  senderID:req.user.gucID,
     //let send= await StaffMember.findOne({gucID:senderId }) .populate();
-    if (!senderId) {
-      return res.send({ error: 'feeh 7aga 8alat' });
-    }
+    if (!senderId) return res.send({ error: 'Error getting the sender' });
 
     if (!type) return res.send({ error: 'Please enter the type of your request' });
 
@@ -116,18 +114,22 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Change DayOff') {
       //TODO to be changed
+      const newDayOff = req.body.newDayOff;
+      if (!newDayOff) return res.status(400).send({ error: 'Please enter all the missing fields' });
+
       var department = await Department.findOne({ _id: sender.department._id });
+      if (!department) return res.status(400).send({ error: 'This department does not exist.' });
+      if (!department.HOD === null) return res.status(400).send({ error: 'This department has no HOD yet.' });
+
       const recid = department.HOD._id;
       const rec = await StaffMember.findOne({ _id: recid });
 
-      const newDayOff = req.body.newDayOff;
       const currentDayOff = sender.dayOff;
-      if (!newDayOff) {
-        return res.send({ error: 'please enter all data' });
-      }
-      if (newDayOff != 'Saturday' || newDayOff != 'Monday' || newDayOff != 'Tuesday' || newDayOff != 'Wednesday' || newDayOff != 'Thursday') {
-        return res.send({ error: 'please enter correct Day' });
-      }
+
+      if (newDayOff !== 'Saturday' && newDayOff !== 'Sunday' && newDayOff !== 'Monday' && newDayOff !== 'Tuesday' && newDayOff !== 'Wednesday' && newDayOff !== 'Thursday')
+        return res.status(400).send({ error: 'Please enter a valid day off' });
+      if (currentDayOff === newDayOff) return res.status(400).send({ error: 'This is already your current day off' });
+
       const subject = type + ' Request from ' + currentDayOff + ' to ' + newDayOff;
       const newRequest = new Request({
         //TODO a4eel el sender
@@ -137,7 +139,10 @@ exports.sendRequest = async function (req, res) {
         newDayOff: newDayOff,
         currentDayOff: currentDayOff,
         subject: subject,
+        reason: req.body.reason,
       });
+      if (!newRequest.reason) delete newRequest.reason;
+      
       await newRequest.save();
       //const name=sender.name;
       // const newNotificatin = new Notification({
