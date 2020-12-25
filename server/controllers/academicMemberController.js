@@ -131,7 +131,7 @@ const courseInstructorController = {
                 return {
                   day: day,
                   time: `${time.toLocaleString('en-EG').split(',')[1].trim() || time.getHours() + ':' + time.getMinutes()}`,
-                  location: location['location'],
+                  location: location ? location['location'] : 'No location is assigned yet',
                 };
               }),
           };
