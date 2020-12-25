@@ -3,6 +3,7 @@
 - To launch the server: npm /server/index.js
 - The server is listening to port 3000
 - for seeded data (some locations/departments/faculties/staff members) please uncomment "dummy.seedDB();" found in index.js, then run once then comment it back again after seeing the last message "Seeded TA successfully"
+- sheet routes has organized data related to our work
 - Routes: 
 
 
@@ -469,5 +470,279 @@ Request Type: GET
 Parameters: course: which represents the course name and shows the teaching assignments for this specific course.
             all: views all the courses teaching assignments.
 Response: Array of TAs, their courses and their assigned slots.
+
+38. View the coverage of course(s) he/she is assigned to
+Request:
+Path:/academicMember/courseInstructor/courseCoverage
+Method: GET
+Parameters: none
+Body: None
+Success Response Example
+
+  StatusCode: 200
+  Body:
+{
+    "data": [
+        {
+            "course_name": "Computer Science 1",
+            "course_coverage": 50
+        },
+        {
+            "course_name": "Computer Science 3",
+            "course_coverage": 0
+        },
+        {
+            "course_name": "Computer Science 1",
+            "course_coverage": 50
+        },
+        {
+            "course_name": "Computer Science 1",
+            "course_coverage": 50
+        }
+    ]
+}
+
+39. View the slots’ assignment of course(s) he/she is assigned to
+Request:
+Path: /academicMember/courseInstructor/slotsAssignment
+Method: GET
+Parameters: none
+Body: None
+Success Response Example
+
+  StatusCode: 200
+  Body:
+{
+    "data": [
+        {
+            "course_name": "Computer Science 1",
+            "course_slots": [
+                {
+                    "day": "Saturday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                },
+                {
+                    "day": "Monday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                }
+            ]
+        },
+        {
+            "course_name": "Computer Science 3",
+            "course_slots": []
+        },
+        {
+            "course_name": "Computer Science 1",
+            "course_slots": [
+                {
+                    "day": "Saturday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                },
+                {
+                    "day": "Monday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                }
+            ]
+        },
+        {
+            "course_name": "Computer Science 1",
+            "course_slots": [
+                {
+                    "day": "Saturday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                },
+                {
+                    "day": "Monday",
+                    "time": "8:15:00 AM",
+                    "location": "No location is assigned yet"
+                }
+            ]
+        }
+    ]
+}
+
+40. View all the staff in his/her department or per course along with their profiles.
+Request:
+
+Path: /academicMember/courseInstructor/staffMembers/:courseName
+Method: GET
+Parameters: courseName can be "all" if you want to view all the department staff
+Body: None
+
+Success Response Example
+
+  StatusCode: 200
+  Body:
+  {
+      "data": [
+          {
+              "gucId": "AC-7",
+              "name": "AhmedAshraf 4",
+              "email": "AhmedAshraf4@guc.edu.eg",
+              "dayOff": "Sunday",
+              "courses": [
+                  "Computer Science 4",
+                  "Computer Science 2"
+              ],
+              "officeLocation": "C6.276",
+              "gender": "female"
+          },
+          {
+              "gucId": "AC-8",
+              "name": "AhmedAshraf 6",
+              "email": "AhmedAshraf6@guc.edu.eg",
+              "dayOff": "Saturday",
+              "courses": [
+                  "Computer Science 4"
+              ],
+              "officeLocation": "C6.276",
+              "gender": "male"
+          },
+          {
+              "gucId": "AC-9",
+              "name": "AhmedAshraf 8",
+              "email": "AhmedAshraf8@guc.edu.eg",
+              "dayOff": "Saturday",
+              "courses": [
+                  "Computer Science 4"
+              ],
+              "officeLocation": "C6.276",
+              "gender": "male"
+          }
+      ]
+  }
+
+41. Assign an academic member to an unassigned slots in course(s) he/she is assigned to
+
+Request:
+
+Path: /academicMember/courseInstructor/slotsAssignment
+Method: POST
+Parameters: none
+Body:
+{
+  "gucId": "AC-1",
+  "courseName": "Computer Science 1",
+  "slot": {
+    "day": "Saturday",
+    "time": "10:00 AM"
+  }
+}
+Success Response Example
+
+ StatusCode: 200
+ Body: 
+{
+    "data": {
+        "course": "Computer Science 1",
+        "assignedTo": "Mohammed",
+        "slot": {
+            "day": "Saturday",
+            "time": "10:00 AM"
+        }
+    }
+}
+
+42. Update assignment of academic member in course(s) he/she is assigned to.
+
+Request:
+
+Path: /academicMember/courseInstructor/slotsAssignment
+Method: PUT
+Parameters: none
+Body:
+{
+  "gucId": "AC-1",
+  "courseName": "Computer Science 1",
+  "slot": {
+    "day": "Saturday",
+    "time": "10:00 AM"
+  }
+}
+Success Response Example
+
+ StatusCode: 200
+ Body: 
+{
+    "data": {
+        "course": "Computer Science 1",
+        "oldAC": "Mohammed",
+        "newAC": "Mohammed",
+        "slot": {
+            "day": "Saturday",
+            "time": "10:00 AM"
+        }
+    }
+}
+
+43. Delete assignment of academic member in course(s) he/she is assigned to.
+Request:
+
+Path: /academicMember/courseInstructor/slotsAssignment
+Method: DELETE
+Parameters: none
+Body:
+{
+  "gucId": "AC-1",
+  "courseName": "Computer Science 1",
+  "slot": {
+    "day": "Saturday",
+    "time": "10:00 AM"
+  }
+}
+Success Response Example
+
+ StatusCode: 200
+ Body: 
+{
+    "data": {
+        "course": "Computer Science 1",
+        "slot": {
+            "day": "Saturday",
+            "time": "10:00 AM"
+        },
+        "assignedTo": null
+    }
+}
+
+44. Assign an academic member in each of his/her course(s) to be a course coordinator
+Request:
+
+Path: /academicMember/courseInstructor/courseCoordinator
+Method: POST
+Parameters: None
+Body: {
+    "gucId": "AC-9",
+    "courseName": "Computer Science 2"
+}
+Success Response Example
+
+  StatusCode: 200
+  Body:
+  {
+      "data": {
+          "courseName": "Computer Science 2",
+          "courseCoordinator": "AhmedAshraf 8"
+      }
+  }  
+
+
+//requests
+### 45
+Functionality: Accept/reject “slot linking” requests from academic members linked to his/her course. 
+Note that once a “slot linking” request is accepted, it should be automatically added to the sender’s schedule.
+Route: /requests/cc/acceptRejectSlotLinking
+Request type: PUT
+Request body:
+{
+    "reqNumber":1,
+    "status":"rejected"
+}
+Response: "The slot-linking request is rejected successfully"
 
 
