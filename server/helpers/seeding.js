@@ -295,7 +295,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '16:24',
@@ -316,7 +316,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '18:24',
@@ -324,7 +324,7 @@ exports.seedDB = async function () {
                 }
             ],
         },
-        // from 8:00 to 12:20 --> 2:04 missing hours
+        // from 8:00 to 12:20 --> 4:04 missing hours
         {
             gucId: 'HR-4',
             name: 'Adam',
@@ -336,7 +336,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:20',
@@ -377,7 +377,8 @@ exports.seedDB = async function () {
             ],
         },
 
-        // 2 attendance records 
+        // 3 attendance records 
+        // 1 on his day off
         // 1 before 7 AM and 1 after 7 PM --> no extra hours
         {
             gucId: 'AC-2',
@@ -392,15 +393,29 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
+                    startTime: '6:00',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
+                {
+                    day: '1',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '20:24',
+                    status: 'Present'
+                },
+                {
+                    day: '2',
+                    date: '2020-12-14',
                     startTime: '6:00',
                     endTime: '14:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
-                    date: '2020-12-12',
+                    day: '3',
+                    date: '2020-12-15',
                     startTime: '8:00',
                     endTime: '20:24',
                     status: 'Present'
@@ -428,15 +443,15 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
-                    date: '2020-12-12',
+                    day: '2',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
                     status: 'Present'
@@ -465,21 +480,27 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Monday',
-                    date: '2020-12-12',
+                    day: '1',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
-                    date: '2020-12-12',
+                    day: '2',
+                    date: '2020-12-14',
+                    endTime: '17:24',
+                    status: 'Present'
+                }, 
+              {
+                    day: '3',
+                    date: '2020-12-15',
                     endTime: '17:24',
                     status: 'Present'
                 }, {
@@ -536,17 +557,17 @@ exports.seedDB = async function () {
             dayOff: 'Sunday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '1',
                     date: '2020-12-12',
                     startTime: '6:00',
-                    endTime: '14:24',
+                    endTime: '16:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
-                    date: '2020-12-12',
-                    startTime: '8:00',
-                    endTime: '20:24',
+                    day: '2',
+                    date: '2020-12-13',
+                    startTime: '6:00',
+                    endTime: '14:24',
                     status: 'Present'
                 },
             ],
@@ -572,15 +593,15 @@ exports.seedDB = async function () {
             dayOff: 'Monday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: '0',
                     date: '2020-12-12',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Tuesday',
-                    date: '2020-12-12',
+                    day: '2',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
                     status: 'Present'
@@ -609,30 +630,64 @@ exports.seedDB = async function () {
             dayOff: 'Thursday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
-                    date: '2020-12-12',
+                    day: '0',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
-                    day: 'Monday',
-                    date: '2020-12-12',
+                    day: '0',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
+                    day: '2',
+                    date: '2020-12-13',
+                    endTime: '17:24',
+                    status: 'Present'
+                }, {
+                    day: '3',
                     day: 'Tuesday',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
-                    day: 'Wednesday',
-                    date: '2020-12-12',
-                    endTime: '17:24',
+                }, 
+
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [],
+        },
+        //2 attendance records
+        // from 7:00 to 12:00 and from 12:01 to 16:24 --> 1 missing minute
+        {
+            gucId: 'AC-9',
+            name: 'Khalid',
+            gender: 'male',
+            email: 'khalid@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Wednesday',
+            attendanceRecords: [
+                {
+                    day: '0',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '12:00',
                     status: 'Present'
                 },
-
+                {
+                    day: '0',
+                    date: '2020-12-13',
+                    startTime: '12:01',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
             ],
             faculty: facMNGT,
             department: depBI,
@@ -642,5 +697,4 @@ exports.seedDB = async function () {
 
     await StaffMember.insertMany(TA);
     console.log('Seeded TA successfully');
-
 }

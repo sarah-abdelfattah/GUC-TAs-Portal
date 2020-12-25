@@ -18,7 +18,7 @@ const locations = require('./routes/locations');
 const academicMemberRoutes = require('./routes/academicMembers');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
-
+const requests = require('./routes/requests');
 
 // Create the app
 const app = express();
@@ -85,7 +85,7 @@ app.all('*', async (req, res, next) => {
     }
 });
 
-app.use('/attendances', attendances);
+app.use('/attendance', attendances);
 app.use('/courses', courses);
 app.use('/departments', departments);
 app.use('/faculties', faculties);
@@ -93,6 +93,7 @@ app.use('/locations', locations);
 app.use('/academicMember', academicMemberRoutes);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
+app.use('/requests', requests);
 
 app.post('/logOut', async function (req, res) {
     const tokenFound = await Token.findOne({ tokenId: req.header('auth-token') })

@@ -8,6 +8,11 @@ const staffMemberController = require('../controllers/staffMemberController');
 router.post("/staff", auth.HRAuth, staffMemberController.registerStaff);
 router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
 router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
+router.put("/updateSalary", auth.HRAuth, staffMemberController.updateSalary);
+
+//academic member
+router.get('/viewMySchedule', auth.AcademicMemberAuth, staffMemberController.viewMySchedule);
+
 
 //all users
 router.post("/signIn", staffMemberController.signIn);

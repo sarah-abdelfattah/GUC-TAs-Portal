@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 //staff member
 const registerSchema = Joi.object({
@@ -77,8 +77,7 @@ const departmentSchema = Joi.object({
 })
 
 const departmentAssignmentSchema = Joi.object({
-    //TODO: regex if id
-    instructorId: Joi.string().required(),
+    instructorId: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
     courseName: Joi.string().required(),
     newCourseName: Joi.string(),
     oldCourseName: Joi.string(),
@@ -98,6 +97,45 @@ const ACSchema = Joi.object({
     courseName: Joi.string().required(),
 })
 
+//Attendance
+const viewMonthAttendance = Joi.object({
+    month1: Joi.number().integer().min(1).max(12).required(),
+    month2: Joi.number().integer().min(1).max(12).required(),
+})
+
+const viewAllAttendance = Joi.object({
+    all: Joi.string().valid('all','month').required()
+})
+
+const addMissingSign = Joi.object({
+    id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
+    signIn: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
+    signOut: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
+    date: Joi.string().regex(/(2[0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])/).required(),
+    day: Joi.number().integer().min(0).max(6).required(),
+    number: Joi.number().integer().required()
+})
+
+const viewStaffAttendance = Joi.object({
+    id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
+    all: Joi.string().valid('all','month').required()
+})
+
+//Add-Delete-Update Slot by CC
+const validateCourse = Joi.object({
+    course: Joi.string().required()
+})
+
+const validateSlotCC = Joi.object({
+    day: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
+    time: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
+    location: Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
+})
+
+const validateSlotLinking = Joi.object({
+    reqNumber:Joi.number().integer().min(1).required(),
+    status:Joi.string().valid('accepted','rejected').required()
+})
 
 module.exports = {
     registerSchema,
@@ -111,5 +149,12 @@ module.exports = {
     departmentSchema,
     departmentAssignmentSchema,
     courseSchema,
-    ACSchema
+    ACSchema,
+    viewMonthAttendance,
+    viewAllAttendance,
+    addMissingSign,
+    viewStaffAttendance,
+    validateCourse,
+    validateSlotCC,
+    validateSlotLinking
 }
