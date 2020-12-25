@@ -19,7 +19,7 @@ const LocationSchema = new Schema({
       // 4- A number from 0 to 4 .. level number
       // 5- A number form 0 to 9 .. room number 1st digit
       // 6- A number from 1 to 9 .. room number 2nd digit
-      (v) => /[ABCDGMN][1-7].[0-4][0-9][1-9]/g.test(v),
+      (v) => /[ABCDGMN][1-7].[0-4][0-9][1-9]/g.test(v) || /^H[1-9]{1,}/g.test(v),
       'Invalid location format',
     ],
   },
@@ -29,8 +29,8 @@ const LocationSchema = new Schema({
   },
   is_deleted: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 module.exports = mongoose.model('Location', LocationSchema);

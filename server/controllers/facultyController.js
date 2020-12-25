@@ -1,9 +1,14 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const Faculty = require('../models/Faculty');
+const Department = require('../models/Department');
+
+const validation = require('../helpers/validation');
 
 exports.addFaculty = async function (req, res) {
     try {
+        let JOI_Result = await validation.facultySchema.validateAsync(req.body)
+
         const code = req.body.code;
         const name = req.body.name;
 
@@ -28,6 +33,10 @@ exports.addFaculty = async function (req, res) {
         const facultyCreated = await Faculty.create(newFaculty);
         return res.send({ data: facultyCreated });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         return res.send({ err: err });
     }
@@ -35,6 +44,8 @@ exports.addFaculty = async function (req, res) {
 
 exports.updateFaculty = async function (req, res) {
     try {
+        let JOI_Result = await validation.facultySchema.validateAsync(req.body)
+
         const code = req.body.code;
         const name = req.body.name;
         const newName = req.body.newName;
@@ -53,6 +64,10 @@ exports.updateFaculty = async function (req, res) {
         const updatedFaculty = await facultyFound.save();
         return res.send({ data: updatedFaculty });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         return res.send({ err: err });
     }
@@ -60,6 +75,8 @@ exports.updateFaculty = async function (req, res) {
 
 exports.deleteFaculty = async function (req, res) {
     try {
+        let JOI_Result = await validation.facultySchema.validateAsync(req.body)
+
         const code = req.body.code;
 
         if (!code)
@@ -69,9 +86,20 @@ exports.deleteFaculty = async function (req, res) {
         if (!facultyFound)
             return res.send({ error: "Sorry no faculty with this code" });
 
+
+        const departments = await Department.find({ faculty: facultyFound._id })
+        for (let i = 0; i < departments.length; i++) {
+            departments[i].faculty = undefined;
+            await departments[i].save();
+        }
+
         await Faculty.findOneAndDelete({ code: code });
         return res.send({ data: "Faculty deleted successfully " });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log('~ err', err);
         return res.send({ err: err });
     }

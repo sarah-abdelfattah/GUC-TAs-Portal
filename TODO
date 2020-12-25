@@ -1,2 +1,0 @@
-- I need to make sure how to import schemas (type: Schema.Types.ObjectId, ref:'Attendance' )
-- make sure of "Each faculty contains one or more department"

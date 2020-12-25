@@ -1,20 +1,30 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Location = require('../models/Location');
 
+const validation = require('../helpers/validation');
+
+
 exports.getRoom = async function (req, res) {
     try {
+        // let JOI_Result = await validation.getRoomSchema.validateAsync({ params: req.params.num })
+
         if (req.params.num === "all") {
             const result = await Location.find();
             return res.send({ data: result });
         }
         else {
-            const result = await Location.findOne({ location: req.params.num });
+            const loc = req.params.num.toUpperCase();
+            const result = await Location.findOne({ location: loc });
             if (result)
                 return res.send({ data: result });
             else
                 return res.send({ error: "Sorry no room with this location" });
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log("~ err", err);
         return res.send({ err: err })
     }
@@ -22,6 +32,8 @@ exports.getRoom = async function (req, res) {
 
 exports.createRoom = async function (req, res) {
     try {
+        let JOI_Result = await validation.createRoomSchema.validateAsync(req.body)
+
         const { type, location, capacity } = req.body;
 
         //both are entered
@@ -35,6 +47,10 @@ exports.createRoom = async function (req, res) {
         const newRoom = await Location.create(req.body);
         return res.send({ data: newRoom })
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log("~ err", err);
         return res.send({ err: err })
     }
@@ -42,6 +58,7 @@ exports.createRoom = async function (req, res) {
 
 exports.updateRoom = async function (req, res) {
     try {
+        let JOI_Result = await validation.roomSchema.validateAsync(user)
         const type = req.body.type;
         const location = req.body.location;
         const newLocation = req.body.newLocation;
@@ -70,6 +87,10 @@ exports.updateRoom = async function (req, res) {
             return res.send({ data: updatedRoom })
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log("~ err", err);
         return res.send({ err: err })
     }
@@ -77,6 +98,7 @@ exports.updateRoom = async function (req, res) {
 
 exports.deleteRoom = async function (req, res) {
     try {
+        let JOI_Result = await validation.roomSchema.validateAsync(user)
         const location = req.body.location;
 
         if (!location)
@@ -90,6 +112,10 @@ exports.deleteRoom = async function (req, res) {
         return res.send({ data: "Room deleted successfully" })
 
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log("~ err", err);
         return res.send({ err: err })
     }

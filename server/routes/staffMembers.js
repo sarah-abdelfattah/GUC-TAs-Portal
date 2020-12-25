@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 
 const staffMemberController = require('../controllers/staffMemberController');
 
@@ -10,9 +10,12 @@ router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
 router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
 
 //all users
-router.post("/logOut", staffMemberController.logout);
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 
 router.post("/changePassword", staffMemberController.changePassword);
+
+router.put("/profile", staffMemberController.updateProfile);
+router.get("/profile", staffMemberController.getProfile);
+
 module.exports = router;  

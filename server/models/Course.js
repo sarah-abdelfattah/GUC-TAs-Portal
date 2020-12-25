@@ -11,7 +11,6 @@ const CourseSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
   },
   courseCoordinator: {
     type: Schema.Types.ObjectId,

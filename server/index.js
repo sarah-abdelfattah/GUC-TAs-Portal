@@ -6,6 +6,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const tokenKey = require('./config/keys').secretOrKey;
 
+const Token = require('./models/Token');
 
 //Require Route Handlers
 const logIn = require('./routes/logIn');
@@ -14,6 +15,7 @@ const courses = require('./routes/courses');
 const departments = require('./routes/departments');
 const faculties = require('./routes/faculties');
 const locations = require('./routes/locations');
+const academicMemberRoutes = require('./routes/academicMembers');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
 
@@ -27,8 +29,6 @@ app.use(cors());
 
 //Getting Mongo's connection URI
 const db = require('./config/keys').mongoURI;
-const { cpuUsage } = require("process");
-const { login } = require("./controllers/staffMemberController");
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -40,6 +40,7 @@ const connectionOptions = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
 };
+
 mongoose
     .connect(db, connectionOptions)
     .then(() => console.log('Connected to MongoDB'))
@@ -51,8 +52,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //seeding
-const dummy = require('./seeding');
-dummy.seedDB();
+const Tokens = require("./models/Token");
+const dummy = require('./helpers/seeding');
+// dummy.seedDB();
+
 
 //All routes should be tested for auth except login
 app.use('/logIn', logIn);
@@ -64,6 +67,15 @@ app.all('*', async (req, res, next) => {
 
         if (token == null)
             return res.sendStatus(401) // there isn't any token
+
+        const tokenFound = await Token.findOne({ tokenId: token })
+        if (tokenFound) {
+            if (!tokenFound.valid) {
+                return res.sendStatus(401)
+            }
+        } else {
+            res.send("Sorry no token found in db");
+        }
 
         req.user = jwt.verify(token, tokenKey);
         next();
@@ -78,49 +90,41 @@ app.use('/courses', courses);
 app.use('/departments', departments);
 app.use('/faculties', faculties);
 app.use('/locations', locations);
+app.use('/academicMember', academicMemberRoutes);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
 
+app.post('/logOut', async function (req, res) {
+    const tokenFound = await Token.findOne({ tokenId: req.header('auth-token') })
+    if (tokenFound) {
+        if (tokenFound.valid) {
+            tokenFound.valid = false;
+            await tokenFound.save();
+            res.send("Logged out successfully");
+        }
+    } else {
+        res.send("Sorry no token found in db");
+    }
+});
 
+//simulation of the month
+/*
+this is a simulation how adding annual balance each month
+the server should be running 
+showing total number of months since this user register 
+and calculating corresponding balance relative to the number and attendance 
 
-// const locX = new Location({
-//   type: 'Office',
-//   location: 'C7.301',
-//   capacity: 4,
-// });
-// locX.save();
+if we saved the date the user registered 
+only we will be needing to call "updateAnnualBalance" function every month 
+*/
 
-// const staffX = new StaffMember({
-//   gucId: '1233',
-//   name: 'Ahmed Ashraf',
-//   gender: 'male',
-//   email: 'ahmed@mail.com',
-//   password: '123445',
-//   dayOff: 'Saturday',
-//   salary: 99999,
-//   type: 'Academic Member',
-//   leaveBalance: 99,
-//   officeLocation: locX,
-//   role: 'Teaching Assistant',
-// });
-// staffX.save();
+// let totalMonths = 0;
+// var intervalID = window.setInterval(updateMonth, 5000);
 
-// StaffMember.find({ gucId: '1233' })
-//   .populate('officeLocation')
-//   .then((res) => {
-//     console.log(res[0]);
-//   });
-
-// Handling 404
-// app.use((req, res) => {
-//     res.status(404).send({ err: 'We can not find what you are looking for' });
-// });
-
-// Handling 404
-// app.use((req, res) => {
-//     res.status(404).send({ err: 'We can not find what you are looking for' });
-// });
-
+// function updateMonth() {
+//     totalMonths += 1;
+//     console.log("Total numbers of months so far: ", totalMonths);
+// }
 
 //running port
 const port = process.env.PORT || 3000;

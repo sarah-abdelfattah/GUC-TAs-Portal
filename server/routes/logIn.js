@@ -1,12 +1,16 @@
 var express = require("express");
 var router = express.Router();
-const auth = require('./auth');
+const auth = require('../helpers/auth');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
+const Token = require('../models/Token');
 const StaffMember = require('../models/StaffMember');
+
+const validation = require('../helpers/validation');
+
 
 const readline = require('readline').createInterface({
     input: process.stdin,
@@ -15,6 +19,8 @@ const readline = require('readline').createInterface({
 
 router.post("", async function (req, res) {
     try {
+        let JOI_Result = await validation.logInSchema.validateAsync(req.body)
+
         const { gucId, password } = req.body;
 
         if (!gucId || !password)
@@ -25,17 +31,33 @@ router.post("", async function (req, res) {
             return res.status(400).json({ error: 'Wrong Id or password' });
 
         const match = bcrypt.compareSync(password, staff.password);
+        // const match = true
+
         if (match) {
-            const payload = {
-                gucId: staff.gucId,
-                password: staff.password,
-                name: staff.name,
-                email: staff.email,
-                type: staff.type,
-                role: staff.role
+            let payload;
+            if (staff.type === 'HR') {
+                payload = {
+                    gucId: staff.gucId,
+                    password: staff.password,
+                    name: staff.name,
+                    email: staff.email,
+                    type: staff.type
+                }
+            } else {
+                payload = {
+                    gucId: staff.gucId,
+                    password: staff.password,
+                    name: staff.name,
+                    email: staff.email,
+                    type: staff.type,
+                    role: staff.role,
+                    faculty: staff.faculty,
+                    department: staff.department
+                }
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '30m' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
+            await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
                 console.log("not logged in before")
@@ -71,6 +93,10 @@ router.post("", async function (req, res) {
         else
             return res.status(400).send({ error: "Wrong Id or password" });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err });
+        }
         console.log(err)
         return res.send({ err: err })
     }
