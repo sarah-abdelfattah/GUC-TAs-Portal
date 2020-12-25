@@ -753,167 +753,142 @@ Response: "The slot-linking request is rejected successfully"
 ///aya
 method:sendRequest
 functionalities: any staff member can send any type of those requests
-                        'Replacement Request', 'Slot Request' , 'Change DayOff',  'Leave Request'
-                       leave request can be one out of 5 types
-                       Sick , Compensation , Annual , Maternity , Accidental
+'Replacement Request', 'Slot Request' , 'Change DayOff', 'Leave Request'
+leave request can be one out of 5 types
+Sick , Compensation , Annual , Maternity , Accidental
 methodType:post
-route:    /requests/sendrequest
-**### 40-** **send replacement request**
+route: /requests/sendrequest
+### 40- send replacement request
 {
-    
-     "type":"Replacement Request",
-     "replacementDate":"2021-10-10T10:30:00",
-     "recieverId":"AC-7", 
-    "location":"c6102",
-    "course":"Computer Science 4" 
+
+ "type":"Replacement Request",
+ "replacementDate":"2021-10-10T10:30:00",
+ "recieverId":"AC-7", 
+"location":"c6102",
+"course":"Computer Science 4" 
 }
 
-**### 41-** ** slot linking request**
+### 41- * slot linking request*
 
 {
- 
-     "type":"Slot Request",
-     "date":"2021-10-10T10:30:00", 
-    "locationType":"Hall",
-    "course":"Computer Science 4" 
 
+ "type":"Slot Request",
+ "date":"2021-10-10T10:30:00", 
+"locationType":"Hall",
+"course":"Computer Science 4" 
 }
 
-**### 42-** ** ChangeDayOff**
+### 42- * ChangeDayOff*
 
 {
-     
-     "type": "Change DayOff", 
-       "newDayOff":"Sunday",
-       "currentDayOff":"Monday",
-     "reason":".....somestring"
-    
-    
- 
+
+ "type": "Change DayOff", 
+   "newDayOff":"Sunday",
+   "currentDayOff":"Monday",
+ "reason":".....somestring"
 }
 
-**### 43-** ** Leave request**
+### 43- * Leave request*
 hint:here you could have a reason or not
-**Accidental**
+Accidental
 {
-    
-     "type":"Leave Request", 
-    "leaveType": "Accidental",
-    "AccidentDate":"2021-10-12T10:30:00"  
- 
+
+ "type":"Leave Request", 
+"leaveType": "Accidental",
+"AccidentDate":"2021-10-12T10:30:00"  
 }
 
-
-**Compensation**
+Compensation
 hint:you must have a reason
 {
-     
-     "type":"Leave Request", 
-   "CompensationDate":"2020-12-20",
-     "LeaveDate":"2020-12-15", 
-     "reason":".....somestring"
-    
-    
- 
+
+ "type":"Leave Request", 
+"CompensationDate":"2020-12-20",
+"LeaveDate":"2020-12-15",
+"reason":".....somestring"
+
 }
 
-**Annual:**
+Annual:
 hint:here you could have a reason or not and you can add more than one replacement
-you should include these lines in your header 
-Accept : application/json, text/plain, 
+you should include these lines in your header
+Accept : application/json, text/plain,
 Content-Type : application/json;charset=UTF-8
 
 {
-   
-     "type":"Leave Request",
-     "AnnualLeaveDate":"2021-10-10", 
-     "leaveType": "Annual", 
- "rep":[{ 
-     "id":"AC-7",
-     "date":"2021-10-10T10:30:00",
-     "courseName":"Computer Science 4"
- }]
-    
-  
+
+ "type":"Leave Request",
+ "AnnualLeaveDate":"2021-10-10", 
+ "leaveType": "Annual", 
+"rep":[{
+"id":"AC-7",
+"date":"2021-10-10T10:30:00",
+"courseName":"Computer Science 4"
+}]
+
 }
 
-
-**sick leave**:
+sick leave:
 {
-  
-     "type":"Leave Request",  
-    "leaveType": "Sick",
-    "SickDayDate":"2020-12-18", 
-    "document":"string . "
 
+ "type":"Leave Request",  
+"leaveType": "Sick",
+"SickDayDate":"2020-12-18", 
+"document":"string . "
 }
 
-**Maternity:**
+Maternity:
 
 {
-   
-     "type":"Leave Request",
-     "leaveType": "Maternity",
-    "startDate":"2020-12-18", 
-    "document":"string . "
 
+ "type":"Leave Request",
+ "leaveType": "Maternity",
+"startDate":"2020-12-18", 
+"document":"string . "
 }
 
-**44** **Notifications**
+44 Notifications
 functionality: view all notification
 path:/requests/viewNotification
 for the following use /requests
+type:get
 
-
-
-**45 View all Requests** 
+hint:all view methods are type get
+45 View all Requests
 path/viewMyRequest
 
-
-
-**View Accepted or rejected or pending Requests**
-path:  /requests/viewMyRequeststatus/:status
+View Accepted or rejected or pending Requests
+path: /requests/viewMyRequeststatus/:status
 so you can use
-      /requests/viewMyRequeststatus/accepted
-     /requests/viewMyRequeststatus/pending 
-      /requests/viewMyRequeststatus/rejected
+/requests/viewMyRequeststatus/accepted
+/requests/viewMyRequeststatus/pending
+/requests/viewMyRequeststatus/rejected
 
-
-
- **40-View Replacement Request or any type**
+40-View Replacement Request or any type
 path: /requests/viewMyRequestType/:type
 so for replacement you can use
-          /requests/viewMyRequestType/Replacement Request
+/requests/viewMyRequestType/Replacement Request
 
-
-
-  ****View Received Replacement Request**** 
+View Received Replacement Request
 path: /requests/viewRecievedReplacementRequest
 
-
-
-
- **24 View all the requests “change day off/leave” sent by staff members in his/her department. FOR HOD** 
+24 View all the requests “change day off/leave” sent by staff members in his/her department. FOR HOD
 path: /requests/viewRecievedRequest/:type
-so you can use 
-          /requests/viewRecievedRequest/Change DayOff
-         /requests/viewRecievedRequest/Leave Request
+so you can use
+/requests/viewRecievedRequest/Change DayOff
+/requests/viewRecievedRequest/Leave Request
 
-
-
-**36 View “slot linking” request(s) from academic members linked to his/her course FOR CC.**
+36 View “slot linking” request(s) from academic members linked to his/her course FOR CC.
 path: /viewSlotRequest
- 
 
-
-**46 cancel request**
+46 cancel request
 requests/CancelRequest/:_id
 path: requests/CancelRequest/5fdfc73c306f274a93ea5fae
 type:delete
 
-
-
-**AcceptOrReject replacement Request**
+AcceptOrReject Requests
+all of them are type put
+accept or reject replacement
 path:/requests/AcceptOrRejectRep/:_id
 type:put
 body:{
@@ -922,6 +897,16 @@ AcceptOrReject:"accepted"
 
 }
 
+AcceptOrReject changeDayoff
+path:/AcceptOrRejectChangeDay/:_id
+body{
+"accept_or_reject_request": true
+}
+AcceptOrReject leave Request
+path:/ AcceptOrRejectLeave/:_id
+body{
+"accept_or_reject_request": true
+}
 
 
 
