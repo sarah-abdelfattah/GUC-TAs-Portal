@@ -290,7 +290,7 @@ exports.sendRequest = async function (req, res) {
             }
           }
         }
-        if (!flag) return res.send({ error: 'Sorry you cannot submit this request' });
+        if (!flag) return res.status(400).send({ error: 'Please enter a valid compensation date & leave date' });
 
         const AttendanceRecord = sender.attendanceRecords;
 
@@ -333,7 +333,7 @@ exports.sendRequest = async function (req, res) {
             Day = 'Sunday';
             break;
         }
-        if (Day != sender.dayOff) return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
+        if (Day != sender.dayOff) return res.status(400).send({ error: 'Please enter a valid compensation date' });
 
         // search in his requests that there is no compensation request on the same day
         var f1 = false;
@@ -343,7 +343,7 @@ exports.sendRequest = async function (req, res) {
           if (leavetype && request.leavetype == 'Compensation') f1 = true;
         }
 
-        if (f1) return res.status(400).send({ error: 'Sorry you Cannot submit this Request' });
+        if (f1) return res.status(400).send({ error: 'Sorry you have submitted for with this compensation date before' });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.CompensationDate;
         const newRequest = new Request({
@@ -358,7 +358,7 @@ exports.sendRequest = async function (req, res) {
           subject: subject,
         });
         await newRequest.save();
-        return res.send({ data: newRequest });
+        return res.status(200).send({ data: newRequest });
       }
 
       if (leaveType == 'Annual') {
