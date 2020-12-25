@@ -120,9 +120,9 @@ const validateCourse = Joi.object({
 })
 
 const validateSlotCC = Joi.object({
-    day:Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
-    time:Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
-    location:Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
+    day: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
+    time: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
+    location: Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
 })
 
 const validateSlotLinking = Joi.object({
