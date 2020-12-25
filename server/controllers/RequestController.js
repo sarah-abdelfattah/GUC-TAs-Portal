@@ -516,7 +516,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
   try {
     const Requestid = req.params._id;
 
-    var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
+    var NewRequest = await Request.findOne({ _id: Requestid }).populate();
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
     }
@@ -529,7 +529,8 @@ exports.AcceptOrRejectRep = async function (req, res) {
     if (!AcceptOrReject) {
       return res.send({ error: 'please enter AcceptOrReject ' });
     }
-    if (AcceptOrReject == 'accepted') {
+    
+    if (AcceptOrReject === 'accepted') {
       var date = NewRequest.replacemntDate;
       const teachingCoursesObjIDs = staff.courses;
       var flag = false;
@@ -559,7 +560,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
         accepted = true;
       }
     }
-    if (AcceptOrReject == 'rejected') {
+    if (AcceptOrReject === 'rejected') {
       accepted = false;
     } else {
       return res.send({ error: 'enter accepted or rejected please' });
@@ -601,10 +602,32 @@ exports.AcceptOrRejectRep = async function (req, res) {
 
 exports.AcceptOrRejectChangeDay = async function (req, res) {
   try {
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    if (!HOD)
+      return res.status(404).send({
+        error: 'Sorry no staff with this ID',
+      });
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+    }).populate('department');
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res.status(404).send({
+        error: `No department found with this id ${req.user.department}`,
+      });
+    }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+
     const Requestid = req.params._id;
 
-    var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
-    var accepted = false;
+    var NewRequest = await Request.findOne({ _id: Requestid }).populate();
+    var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
     }
@@ -686,9 +709,31 @@ exports.AcceptOrRejectSlot = async function (req, res) {
 };
 exports.AcceptOrRejectLeave = async function (req, res) {
   try {
+    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    if (!HOD)
+      return res.status(404).send({
+        error: 'Sorry no staff with this ID',
+      });
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+    }).populate('department');
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res.status(404).send({
+        error: `No department found with this id ${req.user.department}`,
+      });
+    }
+    // if this department has different HOD
+    if (!HOD._id.equals(departmentFound.HOD)) {
+      return res.send({
+        error: "Sorry, you don't have access to view this department",
+      });
+    }
+
     const Requestid = req.params._id;
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
-    var accepted = false;
+    var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
     }
@@ -806,6 +851,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       await newNotificatin.save();
       // updates
       NewRequest.status = 'rejected';
+      NewRequest.comment = req.body.comment;
       await NewRequest.save();
     }
     return res.send({ data: NewRequest });
