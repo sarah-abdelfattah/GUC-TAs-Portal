@@ -161,6 +161,8 @@ exports.seedDB = async function () {
     //courses
     const depMET = await Department.findOne({ name: 'MET' });
     const depBI = await Department.findOne({ name: 'Business Informatics' });
+    const courseLoc1 = await Location.findOne({ location: 'B1.001' });
+    const courseLoc2 = await Location.findOne({ location: 'B1.002' });
 
     const courses = [
         {
@@ -169,19 +171,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Monday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc2,
                 }
             ]
         },
@@ -191,11 +197,13 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
             ]
         },
@@ -205,19 +213,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Thursday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T11:45:00')
+                    time: new Date('2020-12-12T11:45:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Tuesday',
-                    time: new Date('2020-12-12T13:45:00')
+                    time: new Date('2020-12-12T13:45:00'),
+                    location: courseLoc2,
                 },
             ]
         },
@@ -227,19 +239,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Monday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 }
             ]
         },
@@ -249,11 +265,13 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc1,
                 },
             ]
         },

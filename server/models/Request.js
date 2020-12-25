@@ -20,7 +20,6 @@ const RequestSchema = new Schema({
   },
   status: {
     type: String,
-
     enum: ['accepted', 'rejected', 'pending'],
     default: 'pending',
   },
