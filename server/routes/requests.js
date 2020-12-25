@@ -19,13 +19,19 @@ router.put('/AcceptOrRejectSlot/:_id', auth.CCAuth, RequestController.AcceptOrRe
 router.put('/AcceptOrRejectLeave/:_id', auth.HODAuth, RequestController.AcceptOrRejectLeave);
 router.delete('/CancelRequest/:_id', auth.AcademicMemberAuth, RequestController.CancelRequest);
 
-//view notification
+//const { auth } = require("../../utils/authentication");
+//router.get("/viewMyRequest",RequestController.viewmyReequests);
+// //with staus
+// router.get("/viewMyRequest/:type ",RequestController.viewTypeOfRequests) ;
+// router.get("/viewMyRequest/:status ",RequestController.viewStatusOfRequests) ;
+
 // router.get("/viewMyRequest/:type ",RequestController.viewSendedRequests) ;
 // router.delete("/viewMyRequest/:status ",RequestController.viewSendedRequests) ;
 // router.delete("/viewMyRequest/:day ",RequestController.viewSendedRequests) ;
 
 //TODO add replacment
+router.post('/sendrequest', RequestController.sendRequest);
 
-router.post('/sendrequest', auth.AcademicMemberAuth, RequestController.sendRequest);
+router.put('/acceptRejectSlotLinking', auth.CCAuth, RequestController.slotLinkingReqResponse);
 
 module.exports = router;

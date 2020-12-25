@@ -10,7 +10,9 @@ exports.addCourse = async function (req, res) {
     try {
         let JOI_Result = await validation.courseSchema.validateAsync(req.body)
 
-        const { facultyCode, departmentName, courseName } = req.body;
+        let { facultyCode, departmentName, courseName } = req.body;
+
+        facultyCode = facultyCode.toUpperCase();
 
         //all data entered
         if (!departmentName || !courseName || !facultyCode)
@@ -29,10 +31,10 @@ exports.addCourse = async function (req, res) {
         //course found in department?
         const courseFound = await Course.findOne({ department: depFound._id, name: courseName });
         if (courseFound)
-            return res.send({ error: "There is another course with this name" });
+            return res.send({ error: "There is another course with this name under the same department" });
 
         const newCourse = {
-            department: departmentName,
+            department: depFound,
             name: courseName,
             slots: [],
         };
@@ -42,7 +44,7 @@ exports.addCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -53,11 +55,13 @@ exports.updateCourse = async function (req, res) {
     try {
         let JOI_Result = await validation.courseSchema.validateAsync(req.body)
 
-        const { facultyCode, departmentName, courseName, newDepartment, newName } = req.body;
+        let { facultyCode, departmentName, courseName, newDepartment, newName } = req.body;
+
+        facultyCode = facultyCode.toUpperCase();
 
         //all data entered
-        if (!facultyCode || !departmentName || !courseName)
-            return res.send({ error: "Please enter all details" });
+        if (!(newName || newDepartment))
+            return res.send({ error: "Please enter newDepartment and/or newName" });
 
         //faculty found? 
         const facultyFound = await Faculty.findOne({ code: facultyCode }).populate();
@@ -74,16 +78,16 @@ exports.updateCourse = async function (req, res) {
         if (!courseFound)
             return res.send({ error: "No course with this name" });
 
-
         if (newDepartment) {
             const newDepFound = await Department.findOne({ faculty: facultyFound._id, name: newDepartment }).populate();
             if (!newDepFound)
                 return res.send({ error: "No department with this new name under this faculty" });
 
+            const course = await Course.findOne({ name: courseName })
             courseFound.department = newDepFound;
         }
         if (newName) {
-            const nameFound = await Course.findOne({ name: newName }).populate();
+            const nameFound = await Course.findOne({ department: newDepFound, name: courseName }).populate();
             if (nameFound)
                 return res.send({ error: "Sorry there is another course with this name" });
 
@@ -91,12 +95,12 @@ exports.updateCourse = async function (req, res) {
         }
 
         const updatedCourse = await courseFound.save();
-        return res.send({ data: updatedCourse });
+        return res.send({ data: "Course Updated Successfully" });
 
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });
@@ -107,9 +111,11 @@ exports.deleteCourse = async function (req, res) {
     try {
         let JOI_Result = await validation.courseSchema.validateAsync(req.body)
 
-        const facultyCode = req.body.faculty;
-        const departmentName = req.body.department;
-        const courseName = req.body.course;
+        let facultyCode = req.body.facultyCode;
+        const departmentName = req.body.departmentName;
+        const courseName = req.body.courseName;
+
+        facultyCode = facultyCode.toUpperCase();
 
         if (!courseName || !departmentName || !facultyCode)
             return res.send({ error: "Please enter all details" });
@@ -131,7 +137,7 @@ exports.deleteCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err });
+            return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
         return res.send({ err: err });

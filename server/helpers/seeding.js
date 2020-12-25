@@ -15,7 +15,7 @@ exports.seedDB = async function () {
     //Office --> A
     //Tutorial Room --> B
     //Lab --> C
-    //TODO: Halls
+    //Halls --> H
     const locations = [
         {
             type: 'Office',
@@ -63,9 +63,25 @@ exports.seedDB = async function () {
             location: 'C1.003',
             capacity: 15,
         },
+        {
+            type: 'Lecture Hall',
+            location: 'H1',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H2',
+            capacity: 150,
+        },
+        {
+            type: 'Lecture Hall',
+            location: 'H3',
+            capacity: 150,
+        },
     ]
 
     await Location.insertMany(locations);
+    console.log('Seeded locations successfully');
 
     //Faculties 
     const faculties = [
@@ -92,11 +108,12 @@ exports.seedDB = async function () {
     ]
 
     await Faculty.insertMany(faculties);
+    console.log('Seeded faculties successfully');
 
     //departments
     const facENG = await Faculty.findOne({ code: 'ENG' });
     const facPHARM = await Faculty.findOne({ code: 'PHARM' });
-    const facMNGT = await Faculty.findOne({ code: 'facMNGT' });
+    const facMNGT = await Faculty.findOne({ code: 'MNGT' });
 
     const departments = [
         //engineering
@@ -139,10 +156,13 @@ exports.seedDB = async function () {
     ]
 
     await Department.insertMany(departments);
+    console.log('Seeded departments successfully');
 
     //courses
     const depMET = await Department.findOne({ name: 'MET' });
     const depBI = await Department.findOne({ name: 'Business Informatics' });
+    const courseLoc1 = await Location.findOne({ location: 'B1.001' });
+    const courseLoc2 = await Location.findOne({ location: 'B1.002' });
 
     const courses = [
         {
@@ -151,19 +171,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Monday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc2,
                 }
             ]
         },
@@ -173,11 +197,13 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
             ]
         },
@@ -187,19 +213,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Thursday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T11:45:00')
+                    time: new Date('2020-12-12T11:45:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Tuesday',
-                    time: new Date('2020-12-12T13:45:00')
+                    time: new Date('2020-12-12T13:45:00'),
+                    location: courseLoc2,
                 },
             ]
         },
@@ -209,19 +239,23 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Wednesday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 },
                 {
                     day: 'Monday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc1,
                 }
             ]
         },
@@ -231,17 +265,20 @@ exports.seedDB = async function () {
             slots: [
                 {
                     day: 'Saturday',
-                    time: new Date('2020-12-12T08:15:00')
+                    time: new Date('2020-12-12T08:15:00'),
+                    location: courseLoc2,
                 },
                 {
                     day: 'Sunday',
-                    time: new Date('2020-12-12T10:00:00')
+                    time: new Date('2020-12-12T10:00:00'),
+                    location: courseLoc1,
                 },
             ]
         },
     ]
 
     await Course.insertMany(courses);
+    console.log('Seeded courses successfully');
 
     //staff members 
     const office1 = await Location.findOne({ location: 'A1.001', });
@@ -276,7 +313,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '16:24',
@@ -297,7 +334,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '18:24',
@@ -305,7 +342,7 @@ exports.seedDB = async function () {
                 }
             ],
         },
-        // from 8:00 to 12:20 --> 2:04 missing hours
+        // from 8:00 to 12:20 --> 4:04 missing hours
         {
             gucId: 'HR-4',
             name: 'Adam',
@@ -317,7 +354,7 @@ exports.seedDB = async function () {
             type: 'HR',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: 'Monday',
                     date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '12:20',
@@ -328,6 +365,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(hr);
+    console.log('Seeded HR successfully');
 
     //Course instructors
     const cs1EngCourse = await Course.findOne({ department: depMET._id, name: 'Computer Science 1' })
@@ -357,8 +395,9 @@ exports.seedDB = async function () {
             ],
         },
 
-        // 2 attendance records 
-        // 1 before 7 AM and 1 after 7 PM --> no extra hours
+        // 4 attendance records 
+        // 1 on his day off
+        // 1 before 7 AM and 2 after 7 PM 
         {
             gucId: 'AC-2',
             name: 'Sarah',
@@ -371,16 +410,33 @@ exports.seedDB = async function () {
             role: 'Course Instructor',
             dayOff: 'Monday',
             attendanceRecords: [
+                //9:24 hours
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
                     startTime: '6:00',
-                    endTime: '14:24',
+                    endTime: '16:24',
                     status: 'Present'
                 },
                 {
+                    day: 'Monday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '20:24',
+                    status: 'Present'
+                },
+                //7:24 hours
+                {
                     day: 'Tuesday',
-                    date: '2020-12-12',
+                    date: '2020-12-14',
+                    startTime: '6:00',
+                    endTime: '14:24',
+                    status: 'Present'
+                },
+                //11:00 hours
+                {
+                    day: 'Wednesday',
+                    date: '2020-12-15',
                     startTime: '8:00',
                     endTime: '20:24',
                     status: 'Present'
@@ -416,7 +472,7 @@ exports.seedDB = async function () {
                 },
                 {
                     day: 'Tuesday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
                     status: 'Present'
@@ -453,17 +509,24 @@ exports.seedDB = async function () {
                 },
                 {
                     day: 'Monday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
-                    date: '2020-12-12',
+                    date: '2020-12-14',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
+                },
+                {
                     day: 'Wednesday',
+                    date: '2020-12-15',
+                    endTime: '17:24',
+                    status: 'Present'
+                },
+                {
+                    day: 'Saturday',
                     date: '2020-12-12',
                     endTime: '17:24',
                     status: 'Present'
@@ -477,6 +540,7 @@ exports.seedDB = async function () {
     ]
 
     await StaffMember.insertMany(CI);
+    console.log('Seeded CI successfully');
 
     //Teaching assistants
     const TA = [
@@ -515,17 +579,17 @@ exports.seedDB = async function () {
             dayOff: 'Sunday',
             attendanceRecords: [
                 {
-                    day: 'Sunday',
+                    day: 'Monday',
                     date: '2020-12-12',
                     startTime: '6:00',
-                    endTime: '14:24',
+                    endTime: '16:24',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
-                    date: '2020-12-12',
-                    startTime: '8:00',
-                    endTime: '20:24',
+                    date: '2020-12-13',
+                    startTime: '6:00',
+                    endTime: '14:24',
                     status: 'Present'
                 },
             ],
@@ -559,7 +623,7 @@ exports.seedDB = async function () {
                 },
                 {
                     day: 'Tuesday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '17:24',
                     status: 'Present'
@@ -589,23 +653,24 @@ exports.seedDB = async function () {
             attendanceRecords: [
                 {
                     day: 'Sunday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     endTime: '15:24',
                     status: 'Present'
                 },
                 {
                     day: 'Monday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     startTime: '8:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
-                    date: '2020-12-12',
+                    date: '2020-12-13',
                     endTime: '17:24',
                     status: 'Present'
-                }, {
+                },
+                {
                     day: 'Wednesday',
                     date: '2020-12-12',
                     endTime: '17:24',
@@ -617,7 +682,41 @@ exports.seedDB = async function () {
             department: depBI,
             courses: [],
         },
+        //2 attendance records
+        // from 7:00 to 12:00 and from 12:01 to 16:24 --> 1 missing minute
+        {
+            gucId: 'AC-9',
+            name: 'Khalid',
+            gender: 'male',
+            email: 'khalid@guc.edu.eg',
+            password: await bcrypt.hash('123456', 12),
+            salary: 10000,
+            officeLocation: office1,
+            type: 'Academic Member',
+            role: 'Teaching Assistant',
+            dayOff: 'Wednesday',
+            attendanceRecords: [
+                {
+                    day: 'Sunday',
+                    date: '2020-12-13',
+                    startTime: '8:00',
+                    endTime: '12:00',
+                    status: 'Present'
+                },
+                {
+                    day: 'Monday',
+                    date: '2020-12-13',
+                    startTime: '12:01',
+                    endTime: '16:24',
+                    status: 'Present'
+                },
+            ],
+            faculty: facMNGT,
+            department: depBI,
+            courses: [],
+        },
     ]
 
     await StaffMember.insertMany(TA);
+    console.log('Seeded TA successfully');
 }
