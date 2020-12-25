@@ -198,18 +198,13 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Leave Request') {
       //const department =sender.department;
-
       var department = await Department.findOne({ _id: sender.department._id });
+      if (!department) return res.status(400).send({ error: 'This department does not exist' });
+      if (!department.HOD === null) return res.status(400).send({ error: 'This department does not have a HOD yet' });
       const recid = department.HOD._id;
       const rec = await StaffMember.findOne({ _id: recid });
-
       const leaveType = req.body.leaveType;
-
       if (!leaveType) return res.send({ error: 'Please enter all the missing fields' });
-
-      if (!rec) {
-        return res.send({ error: 'there is no HOD for this Department' });
-      }
 
       if (leaveType == 'Sick') {
         const SickDayDate = new Date(Date.parse(req.body.SickDayDate));
@@ -494,26 +489,21 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Accidental') {
-        var reason = req.body.reason;
-        if (!reason) {
-          reason = '';
-        }
-        if (sender.leaveBalance == 0) {
-          return res.send({ error: 'Sorry you cannot your balance is 0' });
-        }
+        var reason = req.body.reason || '';
+
+        if (sender.leaveBalance === 0) return res.send({ error: 'Sorry you cannot because your balance is 0' });
+
         const AccidentDate = new Date(Date.parse(req.body.AccidentDate));
-        if (!AccidentDate) {
-          return res.send({ error: 'Please enter all data in a correct way' });
-        }
+        if (!AccidentDate || `${AccidentDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
+
         const subject = type + ' (' + leaveType + ') at ' + req.body.AccidentDate;
-        // add status and dender
+        // add status and sender
         const Arr = await Request.find({ type: 'Leave Request', leavetype: 'Accidental', sender: sender, status: 'accepted' });
         //var lucky = await Request.filter({type:"Leave Request" ,leaveType:"Accidental"  });
 
         const numberOfDays = Arr.length;
-        if (numberOfDays > 6) {
-          return res.send({ error: "sorry you cann't take more than 6 days" });
-        }
+        if (numberOfDays >= 6) return res.status(400).send({ error: 'Sorry you exceeded the Accidental Leaves limit which is 6' });
+
         const newRequest = new Request({
           //TODO a4eel el sender
           sender: sender,
@@ -521,12 +511,11 @@ exports.sendRequest = async function (req, res) {
           type: type,
           leavetype: leaveType,
           AccidentDate: AccidentDate,
-
           reason: reason,
           subject: subject,
         });
         await newRequest.save();
-        return res.send({ data: newRequest });
+        return res.status(200).send({ data: newRequest });
       } else {
         return res.status(400).send({ error: 'This leave type is not supported.' });
       }
