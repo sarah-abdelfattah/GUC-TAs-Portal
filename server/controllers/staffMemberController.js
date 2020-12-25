@@ -312,8 +312,6 @@ exports.deleteStaff = async function (req, res) {
     }
 };
 
-//TODO: check the updated one with reem's branch .. user not body at least, and sign in process .. multiple ones per day
-
 exports.signIn = async function (req, res) {
     try {
         const gucId = req.user.gucId;
@@ -333,6 +331,15 @@ exports.signIn = async function (req, res) {
 
             let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+            let time = currentTime.getHours() +
+                ':' +
+                currentTime.getMinutes() +
+                ':' +
+                currentTime.getSeconds();
+
+            if (currentTime.getHours() < 7)
+                time = '7:00:00'
+
             const newAttendance = {
                 day: days[currentTime.getDay()],
                 date:
@@ -341,12 +348,7 @@ exports.signIn = async function (req, res) {
                     (currentTime.getMonth() + 1) +
                     '-' +
                     currentTime.getDate(),
-                startTime:
-                    currentTime.getHours() +
-                    ':' +
-                    currentTime.getMinutes() +
-                    ':' +
-                    currentTime.getSeconds(),
+                startTime: time,
                 status: 'Present',
             };
 
@@ -387,6 +389,9 @@ exports.signOut = async function (req, res) {
 
             const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
             const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+            if (currentTime > 19)
+                currentTime = '19:00:00'
             let found = false;
 
             const attendanceRecord = staff.attendanceRecords;
@@ -399,7 +404,7 @@ exports.signOut = async function (req, res) {
                 }
             }
 
-                         
+
             let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             if (days[today.getDay()] === 'Friday') {
                 return res.send({ error: 'Sorry you cannot sign out on Friday' });

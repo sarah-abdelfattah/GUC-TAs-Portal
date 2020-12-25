@@ -9,11 +9,13 @@ exports.addFaculty = async function (req, res) {
     try {
         let JOI_Result = await validation.facultySchema.validateAsync(req.body)
 
-        const code = req.body.code;
+        let code = req.body.code;
         const name = req.body.name;
 
-        if (!name || !code)
-            return res.send({ error: "Please enter all details" });
+        code = code.toUpperCase();
+
+        if (!name)
+            return res.send({ error: "Please enter the name of the new faculty " });
 
         let facultyFound = await Faculty.findOne({ code: code })
         if (facultyFound)
@@ -46,23 +48,22 @@ exports.updateFaculty = async function (req, res) {
     try {
         let JOI_Result = await validation.facultySchema.validateAsync(req.body)
 
-        const code = req.body.code;
-        const name = req.body.name;
+        let code = req.body.code;
         const newName = req.body.newName;
 
-        if (!code || !name || !newName)
-            return res.send({ error: "Please enter all details" });
+        code = code.toUpperCase()
 
-        const facultyFound = await Faculty.findOne({ code: code, });
+        if (!newName)
+            return res.send({ error: "Please enter newName of the faculty" });
+
+        const facultyFound = await Faculty.findOne({ code: code });
         if (!facultyFound)
             return res.send({ error: "No faculty with this code" });
-
-        const nameFacultyFound = await Faculty.findOne({ name: newName });
 
         facultyFound.name = newName;
 
         const updatedFaculty = await facultyFound.save();
-        return res.send({ data: updatedFaculty });
+        return res.send({ data: "Faculty updated successfully" });
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
@@ -77,7 +78,8 @@ exports.deleteFaculty = async function (req, res) {
     try {
         let JOI_Result = await validation.facultySchema.validateAsync(req.body)
 
-        const code = req.body.code;
+        let code = req.body.code;
+        code = code.toUpperCase();
 
         if (!code)
             return res.send({ error: "Please enter the code of the faculty" });

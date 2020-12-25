@@ -74,6 +74,7 @@ exports.viewMissingDays = async function (req, res) {
 //Function 10: View if they are having missing hours or extra hours.
 exports.viewMissingHours = async function (req, res) {
     try {
+        const d = new Date();
         const id = req.user.gucId;
         const minutesSpent = await module.exports.findMissingMinutes(id);
         if (typeof (minutesSpent) === 'string') {

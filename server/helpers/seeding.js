@@ -113,7 +113,7 @@ exports.seedDB = async function () {
     //departments
     const facENG = await Faculty.findOne({ code: 'ENG' });
     const facPHARM = await Faculty.findOne({ code: 'PHARM' });
-    const facMNGT = await Faculty.findOne({ code: 'facMNGT' });
+    const facMNGT = await Faculty.findOne({ code: 'MNGT' });
 
     const departments = [
         //engineering
@@ -377,9 +377,9 @@ exports.seedDB = async function () {
             ],
         },
 
-        // 3 attendance records 
+        // 4 attendance records 
         // 1 on his day off
-        // 1 before 7 AM and 1 after 7 PM --> no extra hours
+        // 1 before 7 AM and 2 after 7 PM 
         {
             gucId: 'AC-2',
             name: 'Sarah',
@@ -392,6 +392,7 @@ exports.seedDB = async function () {
             role: 'Course Instructor',
             dayOff: 'Monday',
             attendanceRecords: [
+                //9:24 hours
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
@@ -406,6 +407,7 @@ exports.seedDB = async function () {
                     endTime: '20:24',
                     status: 'Present'
                 },
+                //7:24 hours
                 {
                     day: 'Tuesday',
                     date: '2020-12-14',
@@ -413,6 +415,7 @@ exports.seedDB = async function () {
                     endTime: '14:24',
                     status: 'Present'
                 },
+                //11:00 hours
                 {
                     day: 'Wednesday',
                     date: '2020-12-15',
