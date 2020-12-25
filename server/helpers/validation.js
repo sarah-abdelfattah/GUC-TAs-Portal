@@ -104,7 +104,7 @@ const viewMonthAttendance = Joi.object({
 })
 
 const viewAllAttendance = Joi.object({
-    all: Joi.string().valid('all','month').required()
+    all: Joi.string().valid('all')
 })
 
 const addMissingSign = Joi.object({
@@ -118,7 +118,7 @@ const addMissingSign = Joi.object({
 
 const viewStaffAttendance = Joi.object({
     id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
-    all: Joi.string().valid('all','month').required()
+    all: Joi.string().valid('all')
 })
 
 //Add-Delete-Update Slot by CC
