@@ -11,11 +11,13 @@ exports.addDepartment = async function (req, res) {
   try {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
-    const { facultyCode, depName, HOD } = req.body;
+    let { facultyCode, depName, HOD } = req.body;
+
+    facultyCode = facultyCode.toUpperCase();
 
     //all data entered
     if (!facultyCode || !depName)
-      return res.send({ error: "Please enter all details" });
+      return res.send({ error: "Please department name, it is required" });
 
     //faculty found? 
     let facultyFound = await Faculty.findOne({ code: facultyCode });
@@ -27,14 +29,16 @@ exports.addDepartment = async function (req, res) {
     //faculty found? 
     const depFound = await Department.findOne({ faculty: facultyFound._id, name: depName })
     if (depFound)
-      return res.send({ error: "Sorry there is another department with this name" });
+      return res.send({ error: "Sorry there is another department with this name under the this faculty" });
 
     let staffMember;
     if (HOD) {
       // staff found? 
-      staffMember = (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
+      staffMember = (await StaffMember.findOne({ gucId: HOD }));
       if (!staffMember)
         return res.send({ error: "No staff member with this ID" });
+
+      staffMember = (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
 
       //staff is not TA and not HR 
       if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
@@ -73,11 +77,15 @@ exports.updateDepartment = async function (req, res) {
   try {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
-    const { facultyCode, depName, HOD, newFacultyCode } = req.body;
+    let { facultyCode, depName, HOD, newFacultyCode } = req.body;
+
+    facultyCode = facultyCode.toUpperCase();
 
     //all data entered
-    if (!facultyCode || !depName || !(HOD || newFacultyCode))
-      return res.send({ error: "Please enter all details" });
+    if (!depName)
+      return res.send({ error: "Please Department name is required" });
+    if (!(HOD || newFacultyCode))
+      return res.send({ error: "Please enter either new HOD or newFacultyCode" });
 
     //faculty found? 
     const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');
@@ -114,10 +122,11 @@ exports.updateDepartment = async function (req, res) {
         return res.send({ error: "No faculty with this new name" });
 
       depFound.faculty = newFacultyFound;
+      depFound.HOD = undefined;
     }
 
     const updatedDep = await depFound.save();
-    return res.send({ data: updatedDep });
+    return res.send({ data: "Department Updated Successfully" });
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
@@ -132,13 +141,15 @@ exports.deleteDepartment = async function (req, res) {
   try {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
-    const facultyCode = req.body.faculty;
-    const depName = req.body.department;
+    let facultyCode = req.body.facultyCode;
+    const depName = req.body.depName;
 
-    if (!facultyCode || !depName)
-      return res.send({ error: "Please enter all details" });
+    facultyCode = facultyCode.toUpperCase();
 
-    const facultyFound = await Faculty.findOne({ code: facultyCode, });
+    if (!depName)
+      return res.send({ error: "Please enter the Department name" });
+
+    const facultyFound = await Faculty.findOne({ code: facultyCode });
     if (!facultyFound)
       return res.send({ error: "Sorry no faculty with this name" });
 
