@@ -57,7 +57,7 @@ router.post("", async function (req, res) {
                 }
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '24h' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
             await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
