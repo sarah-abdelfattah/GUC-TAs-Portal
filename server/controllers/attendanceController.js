@@ -115,6 +115,44 @@ exports.addMissingSignInOut = async function (req, res) {
                 indexesOfDateRecords.push(i);
             }
         }
+        if(signIn){
+            signInhrs = parseInt(signIn.substring(0, 2));
+            signInMin = parseInt(signIn.substring(3, 5));
+            signInSec = parseInt(signIn.substring(6, 8));
+            overLappedsignIn = indexesOfDateRecords.some((index)=>{
+                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0,2))<=signInhrs || 
+                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].startTime.substring(3,5))<=signInMin) ||
+                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].startTime.substring(3,5))===signInMin 
+                && parseInt(attendanceRecord[index].startTime.substring(6,8))<=signInSec))) &&
+                ( attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0,2))>=signInhrs || 
+                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].endTime.substring(3,5))>=signInMin) ||
+                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signInhrs && parseInt(attendanceRecord[index].endTime.substring(3,5))===signInMin 
+                && parseInt(attendanceRecord[index].endTime.substring(6,8))>=signIntSec)))
+            });
+            if(overLappedsignIn){
+                res.send({msg:"You are not able to add a signIn that is between an existing signIn/Out"});
+                return;
+            }
+        }
+        if(signOut){
+            signOuthrs = parseInt(signOut.substring(0, 2));
+            signOutMin = parseInt(signOut.substring(3, 5));
+            signOutSec = parseInt(signOut.substring(6, 8));
+            overLappedsignOut = indexesOfDateRecords.some((index)=>{
+                return (attendanceRecord[index].startTime && (parseInt(attendanceRecord[index].startTime.substring(0,2))<=signOuthrs || 
+                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3,5))<=signOutMin) ||
+                (parseInt(attendanceRecord[index].startTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].startTime.substring(3,5))===signOutMin 
+                && parseInt(attendanceRecord[index].startTime.substring(6,8))>=signOutSec))) &&
+                (attendanceRecord[index].endTime && (parseInt(attendanceRecord[index].endTime.substring(0,2))>=signOuthrs || 
+                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3,5))>=signOutMin) ||
+                (parseInt(attendanceRecord[index].endTime.substring(0,2))===signOuthrs && parseInt(attendanceRecord[index].endTime.substring(3,5))===signOutMin 
+                && parseInt(attendanceRecord[index].endTime.substring(6,8))>=signOutSec)))
+            });
+            if(overLappedsignOut){
+                res.send({msg:"You are not able to add a signOut that is between an existing signIn/Out"});
+                return;
+            }
+        }
         //If the HR adds a missing signIn and a missing signOut (In this case, the number to add them will be neglected)
         if (signIn && signOut) {
             //Check if the start time greater than the end time
@@ -129,6 +167,7 @@ exports.addMissingSignInOut = async function (req, res) {
                 res.send({ error: `You cannot add a signIn time: ${signIn} that is after the signOut time: ${signOut}` });
                 return;
             }
+
             if (indexesOfDateRecords.length === 1 && !attendanceRecord[indexesOfDateRecords[0]].startTime && !attendanceRecord[indexesOfDateRecords[0]].endTime) {
                 //If it is the first time to sign in the given date, it will update the default record
                 attendanceRecord[indexesOfDateRecords[0]].startTime = signIn;

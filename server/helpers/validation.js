@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 //staff member
 const registerSchema = Joi.object({
@@ -102,8 +102,8 @@ const viewAllAttendance = Joi.object({
 
 const addMissingSign = Joi.object({
     id: Joi.string().regex(/['HR','AC']-*/).required(),
-    signIn: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])/),
-    signOut: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])/),
+    signIn: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
+    signOut: Joi.string().regex(/((0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))/).empty(""),
     date: Joi.string().regex(/(2[0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])/).required(),
     day: Joi.number().integer().min(0).max(6).required(),
     number: Joi.number().integer().required()
