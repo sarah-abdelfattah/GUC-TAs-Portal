@@ -31,12 +31,8 @@ const RequestSchema = new Schema({
   //TODO: edit if needed el location based 3ala el slot bt-assigned ezay
 },
   {
-
     strict: false,
   }
-
-
-
 );
 
 module.exports = mongoose.model('Request', RequestSchema);

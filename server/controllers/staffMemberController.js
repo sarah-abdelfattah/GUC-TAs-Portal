@@ -9,6 +9,7 @@ const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 const Request = require('../models/Request');
+const Notification = require('../models/Notification')
 
 const validation = require('../helpers/validation');
 
@@ -278,10 +279,37 @@ exports.updateStaffDayOff = async function (req, res) {
         if (newStaff.type === 'HR')
             return res.send({ error: 'Sorry days off for HR is Saturday' });
 
-        //TODO: update day off based on the request result
+        // update day off based on the request result
+        const requests = await Request.find({ type: 'Change DayOff' })
 
+        let r;
+        if (requests.length > 0) {
+            r = requests[requests.length - 1]
+            if (r.status === 'accepted') {
+                newStaff.dayOff = r.newDayOff;
 
-
+                const newNotification = new Notification({
+                    reciever: r.sender,
+                    message: `Your change day off request was changed successfully`
+                });
+                await newNotification.save()
+                return res.send({ data: 'Day off changed successfully' });
+            } else {
+                const newNotification = new Notification({
+                    reciever: r.sender,
+                    message: `Your change day off request was not changed`
+                });
+                await newNotification.save()
+                return res.send({ error: 'Sorry last request was not accepted' });
+            }
+        } else {
+            const newNotification = new Notification({
+                reciever: r.sender,
+                message: `Your change day off request was not changed`
+            });
+            await newNotification.save()
+            return res.send({ error: 'Sorry no change day off request was found' });
+        }
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);

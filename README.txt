@@ -441,7 +441,7 @@ Request Type: GET
         Response: An array of the staff members in the department with their info.
     2- View staff in his/her department per course along with their profiles.
         Route: /departments/getAllStaffMembers/:course
-        Respponse: An array of the staff members in the department and in the same course specified with their info.
+        Response: An array of the staff members in the department and in the same course specified with their info.
 
 ### 32. 
 Functionality:
