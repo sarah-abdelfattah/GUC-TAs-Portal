@@ -40,7 +40,6 @@ async function facultyHelper(facultyCode) {
     //check if faculty is found
     const refFaculty = await Faculty.findOne({
         code: facultyCode,
-        is_deleted: { $ne: true },
     }).populate('faculty')
     if (!refFaculty) return { error: 'Sorry Faculty not found' };
 
@@ -74,11 +73,7 @@ async function updateInfoHelper(user) {
             newStaff.gender = gender;
         }
 
-        if (officeLocation) {
-            const locResult = await locationHelper(officeLocation);
-            if (locResult.error) return res.send(locResult);
-            else newStaff.officeLocation = locResult;
-        }
+
 
         if (newStaff.type === 'Academic Member') {
             if (role) newStaff.role = role;
@@ -97,7 +92,7 @@ exports.registerStaff = async function (req, res) {
         if (req.body.type === 'Academic Member')
             JOI_Result = await validation.registerACSchema.validateAsync(req.body)
 
-        const {
+        let {
             name,
             gender,
             email,
@@ -111,6 +106,7 @@ exports.registerStaff = async function (req, res) {
         }
             = req.body;
 
+        faculty = faculty.toUpperCase();
 
         //check email is found and if he was deleted
         const foundMail = await StaffMember.findOne({ email: email });
@@ -219,8 +215,9 @@ exports.updateStaff = async function (req, res) {
 
         const gucId = req.body.gucId;
         const leaveBalance = req.body.leaveBalance;
-        const faculty = req.body.faculty;
+        let faculty = req.body.faculty;
         const department = req.body.department;
+
 
         if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
         const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
@@ -230,17 +227,26 @@ exports.updateStaff = async function (req, res) {
         if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
         if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
+            faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
-
             if (facultyResult.error) return res.send(facultyResult);
             else newStaff.faculty = facultyResult;
-        } else newStaff.faculty = undefined
-        if (req.body.department && newStaff.type === 'Academic Member') {
-            const departmentResult = await departmentHelper(newStaff.faculty, department);
 
+            const departmentResult = await departmentHelper(faculty, department);
             if (departmentResult.error) return res.send(departmentResult);
-            else foundMail.department = departmentResult;
-        } else newStaff.department = undefined
+
+            else newStaff.department = departmentResult;
+        } else newStaff.faculty = undefined
+        if (req.body.department && !req.body.faculty && newStaff.type === 'Academic Member')
+            return res.send({ error: 'Sorry Please the new faculty is required' });
+        if (req.body.faculty && !req.body.department && newStaff.type === 'Academic Member')
+            return res.send({ error: 'Sorry Please the new department is required' });
+
+        if (req.body.officeLocation) {
+            const locResult = await locationHelper(req.body.officeLocation);
+            if (locResult.error) return res.send(locResult);
+            else newStaff.officeLocation = locResult;
+        }
 
         await newStaff.save();
 
@@ -339,6 +345,8 @@ exports.signIn = async function (req, res) {
 
             if (currentTime.getHours() < 7)
                 time = '7:00:00'
+            if (currentTime.getHours() > 19)
+                time = '19:00:00'
 
             const newAttendance = {
                 day: days[currentTime.getDay()],
@@ -388,14 +396,15 @@ exports.signOut = async function (req, res) {
             const today = new Date();
 
             const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-            const currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-            if (currentTime > 19)
+            if (today.getHours() > 19)
                 currentTime = '19:00:00'
+
             let found = false;
 
             const attendanceRecord = staff.attendanceRecords;
-            if (attendanceRecord[attendanceRecord.length - 1].date === currentDate) {
+            if (attendanceRecord.length > 0 && attendanceRecord[attendanceRecord.length - 1].date === currentDate) {
                 if (attendanceRecord[attendanceRecord.length - 1].startTime && !attendanceRecord[attendanceRecord.length - 1].endTime) {
                     attendanceRecord[attendanceRecord.length - 1].endTime = currentTime;
                     staff.attendanceRecords = attendanceRecord;
@@ -530,6 +539,8 @@ exports.getProfile = async function (req, res) {
 exports.updateSalary = async function (req, res) {
     try {
         //no need to check if it is the same person or not (answered on piazza "I know it does not make ay scence")
+        let JOI_Result = await validation.updateSalarySchema.validateAsync(req.body)
+
         const { id, newSalary } = req.body;
         if (!id || !newSalary) {
             res.send({ error: "The id/salary should be specified" });
@@ -543,6 +554,10 @@ exports.updateSalary = async function (req, res) {
         attendanceRecordUpdated = await updatedStaff.save();
         res.send({ data: `Salary is updated successfully to ${newSalary}` });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
+        }
         console.log('~ err', err);
         res.status(500).send({ err: `Internal Server Error: ${err}` });
     }

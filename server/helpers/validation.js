@@ -6,7 +6,7 @@ const registerSchema = Joi.object({
     gender: Joi.string().valid('female', 'male').required(),
     email: Joi.string().email().lowercase().required(),
     salary: Joi.number().integer().required(),
-    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/).required(),
+    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9] || ^H[1-9]{1,}/).required(),
     type: Joi.string().valid('HR', 'Academic Member').required(),
     role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
     dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
@@ -15,6 +15,16 @@ const registerSchema = Joi.object({
 })
 
 const registerACSchema = Joi.object({
+    name: Joi.string().required(),
+    gender: Joi.string().valid('female', 'male').required(),
+    email: Joi.string().email().lowercase().required(),
+    salary: Joi.number().integer().required(),
+    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9] || ^H[1-9]{1,}/).required(),
+    type: Joi.string().valid('HR', 'Academic Member').required(),
+    role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
+    dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
+    faculty: Joi.string(),
+    department: Joi.string(),
     role: Joi.string().valid('Teaching Assistant', 'Course Instructor').required(),
     dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
     faculty: Joi.string().required(),
@@ -27,7 +37,7 @@ const updateSchema = Joi.object({
     role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
     faculty: Joi.string(),
     department: Joi.string(),
-    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/),
+    officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9] || ^H[1-9]{1,}/),
     leaveBalance: Joi.number().integer(),
     gender: Joi.string().valid('female', 'male'),
 })
@@ -42,6 +52,10 @@ const changePasswordSchema = Joi.object({
     oldPassword: Joi.string().min(6).alphanum().required()
 })
 
+const updateSalarySchema = Joi.object({
+    id: Joi.string().regex(/^(HR|AC)-\d{1,}/).required(),
+    newSalary: Joi.number().integer().min(1).required(),
+})
 
 //location
 // const getRoomSchema = Joi.object({
@@ -50,15 +64,15 @@ const changePasswordSchema = Joi.object({
 
 const createRoomSchema = Joi.object({
     type: Joi.string().valid('Tutorial Room', 'Lecture Hall', 'Lab', 'Office').required(),
-    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/).required(),
+    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/).required(),
     capacity: Joi.number().integer().required(),
 })
 
 const roomSchema = Joi.object({
     type: Joi.string().valid('Tutorial Room', 'Lecture Hall', 'Lab', 'Office'),
-    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/).required(),
+    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/).required(),
     capacity: Joi.number().integer(),
-    newLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/),
+    newLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/),
 })
 
 //faculty
@@ -131,13 +145,14 @@ const validateCourse = Joi.object({
 const validateSlotCC = Joi.object({
     day: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday').required(),
     time: Joi.string().regex(/(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])/).required(),
-    location: Joi.string().regex(/([ABCDGMN][1-7]).([0-4][0-9][1-9])/).required()
+    location: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9]/ || /^H[1-9]{1,}/).required()
 })
 
 const validateSlotLinking = Joi.object({
     reqNumber: Joi.number().integer().min(1).required(),
     status: Joi.string().valid('accepted', 'rejected').required()
 })
+
 
 module.exports = {
     registerSchema,
@@ -158,5 +173,6 @@ module.exports = {
     viewStaffAttendance,
     validateCourse,
     validateSlotCC,
-    validateSlotLinking
+    validateSlotLinking,
+    updateSalarySchema
 }
