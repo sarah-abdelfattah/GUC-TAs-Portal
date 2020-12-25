@@ -342,6 +342,8 @@ Request body:
 }
 ```
 Response: "Staff deleted successfully"
+Note: upon deletion, HOD of department is removed if it was this staff, CC of Course is removed if it was this staff,
+course coverage is updated, location capacity is updated 
 
 ### 26.
 Functionality: Manually add a missing signin/sign out record of a staff member except for himself/herself.

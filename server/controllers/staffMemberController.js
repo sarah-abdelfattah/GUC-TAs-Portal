@@ -301,13 +301,52 @@ exports.deleteStaff = async function (req, res) {
         if (!gucId) return res.send({ error: 'Please enter GUC-ID' });
 
         const staff = await StaffMember.findOne({ gucId: gucId });
-        if (!staff || staff.is_deleted)
+        if (!staff)
             return res.send({ error: 'No staff with this ID' });
-        else {
-            staff.is_deleted = true;
-            const deletedStaff = await staff.save();
-            return res.send({ data: 'Staff deleted successfully' });
-        }
+
+        // remove from HOD in any department
+        const allDepartments = await Department.find();
+        allDepartments.forEach(async (dep) => {
+            if (dep.HOD == staff.id) {
+                dep.HOD = undefined
+                await dep.save();
+            }
+        });
+
+        // remove from CC in any course and any slots assigned
+        const allCourses = await Course.find();
+        allCourses.forEach(async (course) => {
+            //if CC of the course remove it 
+            if (course.courseCoordinator == staff.id) {
+                course.courseCoordinator = undefined
+            }
+            //looping through the slots if the course
+            const allCourseSlots = course.slots;
+            allCourseSlots.forEach(async (slot) => {
+                //if staff was assigned to a slot .. remove it
+                if (slot.isAssigned == staff.id) {
+                    slot.isAssigned = null;
+                }
+            })
+
+            //update course coverage
+            const temp = (course.slots.filter((slot) => slot.isAssigned !== null).length);
+            const length = course.slots.length
+
+            if (length == 0)
+                course.coverage = 0
+            else
+                course.coverage = (temp / length) * 100
+
+            await course.save();
+        });
+
+        //when deleted .. location is removed so will not be occupied
+
+        // const deletedStaff = await staff.save();
+        await StaffMember.findOneAndDelete({ gucId: gucId })
+        return res.send({ data: 'Staff deleted successfully' });
+
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);

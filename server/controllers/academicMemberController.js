@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 // required models
 const StaffMember = require('./../models/StaffMember');
 
-// TODO: Import all the models after db connection
-
 const validation = require('../helpers/validation');
 const Department = require('./../models/Department');
 const Location = require('./../models/Location');

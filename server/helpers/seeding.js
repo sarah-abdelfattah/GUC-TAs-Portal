@@ -15,7 +15,7 @@ exports.seedDB = async function () {
     //Office --> A
     //Tutorial Room --> B
     //Lab --> C
-    //TODO: Halls
+    //Halls --> H
     const locations = [
         {
             type: 'Office',
