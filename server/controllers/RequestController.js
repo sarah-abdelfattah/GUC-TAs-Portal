@@ -105,7 +105,7 @@ exports.sendRequest = async function (req, res) {
       const name = sender.name;
       const newNotificatin = new Notification({
         reciever: rec,
-        message: name + ' ' + senderId + ' has send you a replacment Request',
+        message: name + ' ' + senderId + ' has send you a replacement Request',
       });
       await newNotificatin.save();
       //Notification.create(newNotificatin);
@@ -374,42 +374,32 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Annual') {
-        var reason = req.body.reason;
-        if (!reason) {
-          reason = '';
-        }
+        var reason = req.body.reason || '';
+
         //should be submitted before targeted day
         const x = req.body.AnnualLeaveDate;
         const AnnualLeaveDate = new Date(Date.parse(x));
-        const replacment = req.body.rep;
+        const replacement = req.body.rep || [];
 
-        if (!AnnualLeaveDate) {
-          return res.send({ error: 'please enter all data in a Right way ' });
-        }
+        if (!AnnualLeaveDate) return res.status(400).send({ error: 'Please enter all the required fields' });
+        if (`${AnnualLeaveDate}` === 'Invalid Date') return res.status(400).send({ error: 'Please enter the date in the correct format' });
 
-        for (i = 0; i < replacment.length; i++) {
-          var object = replacment[i];
-          if (!object.id || !object.date || !object.courseName) {
-            return res.send({ error: 'please enter all data' });
-          }
-
+        for (i = 0; i < replacement.length; i++) {
+          var object = replacement[i];
+          if (!object.id || !object.date || !object.courseName) return res.status(400).send({ error: 'Please enter all data' });
           const objectDate = new Date(Date.parse(object.date));
           const rec = await StaffMember.findOne({ gucId: object.id }).populate();
-          const course = await Course.findOne({ name: courseName }).populate();
-          if (!objectDate || !rec || !course) {
-            return res.send({ error: 'please enter correct replacement data' });
+          const course = await Course.findOne({ name: object.courseName }).populate();
+          if (`${objectDate}` === 'Invalid Date' || !rec || !course) return res.status(400).send({ error: 'Please enter correct replacement data' });
+          if (objectDate.getFullYear() != AnnualLeaveDate.getFullYear() || objectDate.getMonth() != AnnualLeaveDate.getMonth() || objectDate.getDate() != AnnualLeaveDate.getDate())
+            return res.status(400).send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
+          foundReplacementRequest = await Request.findOne(
+            //a7ot status tany
+            { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate }
+          );
+          if (!foundReplacementRequest) {
+            return res.status(400).send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
           }
-        }
-        if (objectDate.getFullYear() != AnnualLeaveDate.getFullYear() || objectDate.getMonth() != AnnualLeaveDate.getMonth() || objectDate.getDate() != AnnualLeaveDate.getDate()) {
-          return res.send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
-        }
-
-        foundReplacmentRequest = await Request.findOne(
-          //a7ot status tany
-          { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate }
-        );
-        if (!foundReplacmentRequest) {
-          return res.send({ error: 'Sorry you Cannot submit this Request: it is not an accepted replacment' });
         }
 
         var flag = false;
@@ -428,7 +418,7 @@ exports.sendRequest = async function (req, res) {
           flag = true;
         }
         if (!flag) {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
+          return res.status(400).send({ error: 'Sorry you cannot submit this request' });
         }
         const subject = type + ' (' + leaveType + ') at ' + req.body.AnnualLeaveDate;
 
@@ -439,7 +429,7 @@ exports.sendRequest = async function (req, res) {
           type: type,
           leavetype: leaveType,
           AnnualLeaveDate: AnnualLeaveDate,
-          replacments: replacment,
+          replacements: replacement,
           reason: reason,
           subject: subject,
         });
