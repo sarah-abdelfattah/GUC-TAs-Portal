@@ -96,7 +96,7 @@ exports.addMissingSignInOut = async function (req, res) {
     try {
         const { id, signIn, signOut, date, day, number } = req.body;
 
-        if ((!signIn && !signOut) || !date || (!day && day !== 0) || !id || !number) {
+        if ((!signIn && !signOut) || !date || !day || !id || !number) {
             res.send({ error: "The sign in/out, date, and day should be specified" });
             return;
         }
