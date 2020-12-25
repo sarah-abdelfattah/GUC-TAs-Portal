@@ -208,21 +208,15 @@ exports.sendRequest = async function (req, res) {
 
       if (leaveType == 'Sick') {
         const SickDayDate = new Date(Date.parse(req.body.SickDayDate));
-        var reason = req.body.reason;
-        if (!reason) {
-          reason = '';
-        }
-
-        if (!SickDayDate) {
-          return res.send({ error: 'please enter correct date' });
-        }
+        var reason = req.body.reason || '';
+        if (!SickDayDate || `${SickDayDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
         var flag = false;
         const x2 = new Date(Date.now());
         if (SickDayDate.getFullYear() == x2.getFullYear()) {
           if (SickDayDate.getMonth() == x2.getMonth()) {
             if (x2.getDate() - SickDayDate.getDate() <= 3) {
-              flag = true; //Ican accept annual leave
+              flag = true; //I can accept annual leave
             }
           }
           if (x2.getMonth() - SickDayDate.getMonth() == 1) {
@@ -241,14 +235,11 @@ exports.sendRequest = async function (req, res) {
             }
           } else flag = true;
         }
-        if (!flag) {
-          return res.send({ error: 'Sorry you Cannot submit this Request' });
-        }
+        if (!flag) return res.send({ error: 'Sorry you Cannot submit this Request' });
 
         const document = req.body.document;
-        if (!document) {
-          return res.send({ error: 'please enter all data' });
-        }
+        if (!document) return res.send({ error: 'Please enter all the required fields' });
+
         const subject = type + ' (' + leaveType + ') at ' + req.body.SickDayDate;
 
         const newRequest = new Request({
@@ -258,7 +249,6 @@ exports.sendRequest = async function (req, res) {
           type: type,
           leavetype: leaveType,
           SickDayDate: SickDayDate,
-
           document: document,
           reason: reason,
           subject: subject,
