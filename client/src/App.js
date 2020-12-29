@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 //Import the pages
+import UnauthorizedPage from './pages/UnauthorizedPage';
+
 
 function App() {
   // eslint-disable-next-line
@@ -24,6 +26,11 @@ function App() {
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
+
+            <Route
+              path="/unauthorized"
+              render={(props) => <UnauthorizedPage {...props} />}
+            />
           </Switch>
 
         </div>
