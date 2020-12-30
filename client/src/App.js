@@ -1,7 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./pages/Login";
-
+// import '../styles/Login.css'
+// import '../styles/util.css'
+import '../src/styles/Login.css'
+import '../src/styles/util.css'
 //Import the pages
 
 function App() {
