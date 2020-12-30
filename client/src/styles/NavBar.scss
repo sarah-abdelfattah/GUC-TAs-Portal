@@ -1,0 +1,65 @@
+@import './colorSchema';
+
+.navbar {
+    background-color: $primary-navy-blue;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 3px;
+    z-index: 2000;
+
+    .profile-icon {
+        margin-left: 10px;
+        width: 45px;
+        height: 45px;
+    }
+
+    .navbar-name {
+        color: white;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: 22px;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+
+    .logout-icon {
+        position: fixed;
+        right: 10px;
+        width: 40px;
+        height: 30px;
+    }
+}
+
+@media only screen and (max-width: 380px) {
+    .navbar {
+        .profile-icon {
+            width: 35px;
+            height: 35px;
+        }
+
+        .navbar-name {
+            margin-left: 5px;
+
+            font-size: 16px;
+        }
+
+        .logout-icon {
+            position: fixed;
+            width: 30px;
+            height: 20px;
+        }
+    }
+}
+
+@media only screen and (max-width: 300px) {
+    .navbar {
+        .navbar-name {
+            font-size: 14px;
+        }
+
+        .logout-icon {
+            width: 20px;
+            height: 20px;
+        }
+    }
+}

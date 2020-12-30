@@ -1,7 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+//Import the styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import '@trendmicro/react-sidenav/dist/react-sidenav.css';
+import 'react-pro-sidebar/dist/scss/styles.scss';
+import './styles/home.scss'
+import './styles/NavBar.scss';
+import './styles/SideBar.scss';
+
+
 //Import the pages
+import NavBar from './components/NavBar';
+import SideBar from './components/SideBar';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 
 
@@ -15,7 +26,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <div>
+        <div className="myApp">
           <Switch>
             {/* <Route
               exact
@@ -33,6 +44,14 @@ function App() {
             />
           </Switch>
 
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <NavBar />
+            )}
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <SideBar />
+            )}
         </div>
       </Router>
     </div>
