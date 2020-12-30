@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { ToastProvider } from 'react-toast-notifications'
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,25 +30,27 @@ function App() {
       <Router>
         <div className="myApp">
           <Switch>
-            {/* <Route
+            <ToastProvider>
+              {/* <Route
               exact
               path="/login"
               render={(props) => <Login {...props} />}
             /> */}
-            {/* 
+              {/* 
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
 
-            <Route
-              path="/location"
-              render={(props) => <Location {...props} />}
-            />
+              <Route
+                path="/location"
+                render={(props) => <Location {...props} />}
+              />
 
-            <Route
-              path="/unauthorized"
-              render={(props) => <UnauthorizedPage {...props} />}
-            />
+              <Route
+                path="/unauthorized"
+                render={(props) => <UnauthorizedPage {...props} />}
+              />
+            </ToastProvider>
           </Switch>
         </div>
       </Router>

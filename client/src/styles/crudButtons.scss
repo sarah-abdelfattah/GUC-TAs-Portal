@@ -5,10 +5,8 @@
     width: 200px;
     padding: 8px 10px 8px 15px;
     border-radius: 10px;
-    margin: 15px 20px;
-
+    margin: 30px 20px 20px 20px;
     box-shadow: 8px 8px 10px 0px rgba(0, 0, 0, 0.64);
-
 
     .icon {
         display: inline;
@@ -42,7 +40,7 @@
 .crud-inner-container {
     width: 60%;
     min-height: 380px;
-    margin: 30px auto;
+    margin: 20px auto;
     padding: 20px;
     background: white;
     border-radius: 10px;
@@ -50,6 +48,8 @@
     flex-direction: column;
 
     .crud-form {
+        margin-bottom: 25px;
+
         .crud-formControl {
             display: block;
             width: 60%;
@@ -68,10 +68,29 @@
         margin: auto;
         font-weight: bold;
         border: none;
+    }
+
+    .crud-add-btn {
 
         &:hover,
-        &:active {
+        &:active,
+        &:visited,
+        &:focus,
+        &:focus-visible,
+        &:focus-within {
             background: $secondary-green;
+        }
+    }
+
+    .crud-update-btn {
+
+        &:hover,
+        &:active,
+        &:visited,
+        &:focus,
+        &:focus-visible,
+        &:focus-within {
+            background: $secondary-blue;
         }
     }
 

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
+import { useToasts } from "react-toast-notifications";
+
 import {
   FormControl,
   InputLabel,
   Input,
   Select,
-  FormHelperText,
   MenuItem,
 } from "@material-ui/core";
 
@@ -14,9 +15,30 @@ function AddLocation() {
   const [type, setRoomType] = useState("");
   const [location, setRoomLocation] = useState("");
   const [capacity, setRoomCapacity] = useState("");
+  const { addToast } = useToasts();
 
-  const handleSubmit = () => {
-    console.log("hi");
+  const handleSubmit = async () => {
+    const body = {
+      type: type,
+      location: location.toUpperCase(),
+      capacity: capacity,
+    };
+
+    const res = await axiosCall("post", "locations/location", body);
+    if (res.data.data) {
+      addToast(res.data.data, {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      setRoomType("");
+      setRoomLocation("");
+      setRoomCapacity("");
+    } else {
+      addToast(res.data.error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
   };
 
   return (
@@ -48,16 +70,30 @@ function AddLocation() {
 
         <FormControl className="crud-formControl" required>
           <InputLabel className="crud-inputLabel">Location</InputLabel>
-          <Input className="crud-input" />
+          <Input
+            className="crud-input"
+            value={location}
+            onChange={(event) => setRoomLocation(event.target.value)}
+          />
         </FormControl>
 
         <FormControl className="crud-formControl" required>
           <InputLabel className="crud-inputLabel">Capacity</InputLabel>
-          <Input className="crud-input" type="number" min="1" />
+          <Input
+            className="crud-input"
+            type="number"
+            min="1"
+            value={capacity}
+            onChange={(event) => setRoomCapacity(event.target.value)}
+          />
         </FormControl>
       </div>
 
-      <Button className="crud-submit green" onClick={handleSubmit}>
+      <Button
+        variant="success"
+        className="crud-submit crud-add-btn green"
+        onClick={handleSubmit}
+      >
         Add Location
       </Button>
     </div>

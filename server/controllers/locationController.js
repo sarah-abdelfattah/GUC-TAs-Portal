@@ -51,10 +51,10 @@ exports.createRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 };
 
@@ -91,10 +91,10 @@ exports.updateRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -126,9 +126,9 @@ exports.deleteRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }

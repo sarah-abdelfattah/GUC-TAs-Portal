@@ -6,6 +6,8 @@ import Update from "../components/Update";
 import Delete from "../components/Delete";
 
 import AddLocation from "../components/location/AddLocation";
+import UpdateLocation from "../components/location/UpdateLocation";
+import DeleteLocation from "../components/location/DeleteLocation";
 
 function Location() {
   const [crudBtns, setBtns] = useState({
@@ -13,6 +15,10 @@ function Location() {
     update: false,
     delete: false,
   });
+
+  const handleSubmit = async () => {
+    console.log(crudBtns);
+  };
 
   return (
     <div className="location-container">
@@ -48,8 +54,13 @@ function Location() {
           }
         />
       </div>
-      {crudBtns.add ? <AddLocation /> : crudBtns.update ? null : null}
-      <AddLocation />
+      {crudBtns.add === true ? (
+        <AddLocation />
+      ) : crudBtns.update ? (
+        <UpdateLocation />
+      ) : (
+        <DeleteLocation />
+      )}
     </div>
   );
 }

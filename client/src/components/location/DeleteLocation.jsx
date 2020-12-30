@@ -12,12 +12,12 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-function UpdateLocation() {
+function DeleteLocation() {
   const [rooms, setRooms] = useState({ rooms: [] });
   const [roomChosen, setRoomChosen] = useState("");
   const [capacity, setRoomCapacity] = useState("");
-  const [newCapacity, setNewCapacity] = useState("");
-  const [newType, setNewType] = useState("");
+  const [type, setRoomType] = useState("");
+
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -30,30 +30,32 @@ function UpdateLocation() {
 
   const handleOnChange = (target) => {
     setRoomChosen(target.value);
-    const capacityRes = rooms.find(({ _id }) => _id === target.value).capacity;
-    setRoomCapacity(capacityRes);
+    const roomRes = rooms.find(({ _id }) => _id === target.value);
+    setRoomCapacity(roomRes.capacity);
+    setRoomType(roomRes.type);
   };
 
   const handleSubmit = async () => {
     const name = rooms.find(({ _id }) => _id === roomChosen).location;
 
     const body = {
-      type: newType !== "" ? newType : undefined,
       location: name,
-      capacity: newCapacity !== "" ? newCapacity : undefined,
     };
 
-    if (newCapacity !== "") setRoomCapacity(newCapacity);
-
-    const res = await axiosCall("put", "locations/location", body);
+    const res = await axiosCall("delete", "locations/location", body);
+    console.log(
+      "🚀 ~ file: DeleteLocation.jsx ~ line 46 ~ handleSubmit ~ res",
+      res
+    );
     if (res.data.data) {
       addToast(res.data.data, {
         appearance: "success",
         autoDismiss: true,
       });
 
-      setNewType("");
-      setNewCapacity("");
+      setRoomChosen("");
+      setRoomCapacity("");
+      setRoomType("");
     } else {
       addToast(res.data.error, {
         appearance: "error",
@@ -102,58 +104,20 @@ function UpdateLocation() {
         </FormControl>
 
         <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">New Capacity</InputLabel>
-          <Input
-            className="crud-input"
-            type="number"
-            min="1"
-            value={newCapacity}
-            onChange={(event) => setNewCapacity(event.target.value)}
-          />
-        </FormControl>
-
-        <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">New Type</InputLabel>
-          <Select
-            className="crud-select"
-            value={newType}
-            onChange={(event) => {
-              setNewType(event.target.value);
-            }}
-          >
-            <MenuItem className="crud-menuItem" value="Lab" key="Lab">
-              Lab
-            </MenuItem>
-            <MenuItem className="crud-menuItem" value="Office" key="Office">
-              Office
-            </MenuItem>
-            <MenuItem
-              className="crud-menuItem"
-              value="Lecture Hall"
-              key="Lecture Hall"
-            >
-              Lecture Hall
-            </MenuItem>
-            <MenuItem
-              className="crud-menuItem"
-              value="Tutorial Room"
-              key="Tutorial Room"
-            >
-              Tutorial Room
-            </MenuItem>
-          </Select>
+          <InputLabel className="crud-inputLabel">Type</InputLabel>
+          <Input className="crud-input" value={type} disabled={true} />
         </FormControl>
       </div>
 
       <Button
-        variant="primary"
-        className="crud-submit crud-update-btn blue"
+        variant="danger"
+        className="crud-submit crud-delete-btn red"
         onClick={handleSubmit}
       >
-        Update Location
+        Delete Location
       </Button>
     </div>
   );
 }
 
-export default UpdateLocation;
+export default DeleteLocation;
