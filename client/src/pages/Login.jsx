@@ -40,7 +40,7 @@ function Login() {
 		e.preventDefault();
 		const user = { gucId, password };
 		if(gucId === "" || password === ""){
-			addToast("gucId and password can't be empty", {appearance: 'error',autoDismiss: true});
+			addToast("Please enter your GUC ID and Password", {appearance: 'error',autoDismiss: true});
 		}
 		else{
 			try{
