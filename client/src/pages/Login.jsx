@@ -44,6 +44,7 @@ function Login() {
 		else{
 			try{
 				const response = await axios.post(`${link}/logIn`, user);
+				console.log(response);
 				if(response.data.err){
 					addToast(response.data.err, {appearance: 'warning',autoDismiss: true});
 				}
@@ -61,7 +62,7 @@ function Login() {
 				}
 			}
 			catch (err) {
-				addToast(err, {appearance: 'warning',autoDismiss: true});
+				addToast("err", {appearance: 'warning',autoDismiss: true});
 			}
 		}
 	};

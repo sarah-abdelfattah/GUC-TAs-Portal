@@ -27,7 +27,7 @@ router.post("", async function (req, res) {
         if (!gucId || !password)
             return res.send({ error: "Please enter all details" });
 
-        const staff = await StaffMember.findOne({ gucId: gucId });
+        const staff = await StaffMember.findOne({ gucId: gucId, password: password});
         if (!staff)
             return res.status(400).json({ error: 'Wrong Id or password' });
 
