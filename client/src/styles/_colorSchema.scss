@@ -1,14 +1,29 @@
+$primary-green: #01A65C;
 $primary-red: #DD4C39;
+$primary-blue: #00C0EF;
 $primary-yellow: #f39c10;
+$primary-orange: #F66A03;
+$primary-rose: #D7395F;
 $primary-navy-blue: #001829;
-$primary-WhiteGray: #ECEFF4;
+$primary-white-gray: #ECEFF4;
 
+$secondary-green: #02874b;
 $secondary-red: #a03b2d;
+$secondary-blue: #009dc4;
 $secondary-yellow: #cd830d;
+$secondary-orange: #c45200;
+$secondary-rose: #a42542;
 $secondary-navy-blue: #000b13;
-$secondary-WhiteGray: #f0f0f1b5;
-$secondary-gray: #2B2B2B;
+$secondary-white-gray: #f0f0f1b5;
 
+
+.green {
+    background-color: $primary-green;
+}
+
+.blue {
+    background-color: $primary-blue;
+}
 
 .red {
     background-color: $primary-red;
@@ -16,6 +31,14 @@ $secondary-gray: #2B2B2B;
 
 .yellow {
     background-color: $primary-yellow;
+}
+
+.dark-green {
+    background-color: $secondary-green;
+}
+
+.dark-blue {
+    background-color: $secondary-blue;
 }
 
 .dark-red {
@@ -26,12 +49,24 @@ $secondary-gray: #2B2B2B;
     background-color: $secondary-yellow;
 }
 
+.border-green {
+    border: 2px solid $primary-green;
+}
+
+.border-blue {
+    border: 2px solid $primary-blue;
+}
+
 .border-red {
     border: 2px solid $primary-red;
 }
 
 .border-yellow {
     border: 2px solid $primary-yellow;
+}
+
+.border-red {
+    border: 2px solid $primary-red;
 }
 
 .border-black {

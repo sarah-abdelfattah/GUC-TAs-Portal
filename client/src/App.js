@@ -13,6 +13,8 @@ import './styles/SideBar.scss';
 //Import the pages
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+
 
 function App() {
   // eslint-disable-next-line
@@ -35,7 +37,11 @@ function App() {
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
-            {/* <Route exact path="/" render={(props) => <NavBar {...props} />} /> */}
+
+            <Route
+              path="/unauthorized"
+              render={(props) => <UnauthorizedPage {...props} />}
+            />
           </Switch>
 
           {currentLocation === "/login" ||
