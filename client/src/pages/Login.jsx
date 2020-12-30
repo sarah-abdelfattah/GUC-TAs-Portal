@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import setAuthToken from '../helpers/setAuthToken';
 import { link } from '../helpers/constants';
-import { useToasts } from 'react-toast-notifications'
+//import { ToastProvider } from 'react-toast-notifications'
+import { useToasts } from "react-toast-notifications";
 
 function Login() {
 	// defining the variables and states
 	const [gucId, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [user, setUser] = useState();
+	const { addToast } = useToasts();
+
 
 	// => used in the header to greet the user <=
     var date = new Date();
@@ -37,7 +40,9 @@ function Login() {
 		e.preventDefault();
 		const user = { gucId, password };
 		if(gucId === "" || password === ""){
-			console.log("gucId or password can't be empty")
+			addToast("gucId and password can't be empty", 
+			{appearance: 'warning',
+			autoDismiss: true});
 		}
 		else{
 			try{
@@ -96,7 +101,10 @@ function Login() {
 					</div>
 
 					<div className="container-login100-form-btn">
-						<button type="submit" className="login100-form-btn">
+						<button onClick={() => addToast('content', {
+      appearance: 'success',
+      autoDismiss: true,
+    })} type="submit" className="login100-form-btn">
 							Login In
 						</button>
 					</div>
