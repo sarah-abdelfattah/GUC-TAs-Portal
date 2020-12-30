@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Login from "./pages/Login";
 
 //Import the pages
 
@@ -15,11 +16,11 @@ function App() {
       <Router>
         <div>
           <Switch>
-            {/* <Route
+          <Route
               exact
               path="/login"
               render={(props) => <Login {...props} />}
-            /> */}
+            />
             {/* 
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
