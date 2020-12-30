@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import 'react-pro-sidebar/dist/scss/styles.scss';
-
+import './styles/home.scss'
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
 
@@ -24,7 +24,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <div>
+        <div className="myApp">
           <Switch>
             {/* <Route
               exact
@@ -40,7 +40,6 @@ function App() {
 
           <NavBar />
           <SideBar />
-
         </div>
       </Router>
     </div>

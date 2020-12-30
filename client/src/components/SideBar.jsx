@@ -1,18 +1,16 @@
 import React from "react";
-import { ProSidebar, SidebarContent, Menu, MenuItem } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 
-//assets
+//icons
 import { FaUserAlt } from "react-icons/fa";
+import { AiFillHome } from "react-icons/ai";
 
 function SideBar() {
   return (
-    <ProSidebar collapsed="false">
-      <Menu iconShape="square">
-        <br></br>
-        <br></br>
-        <br></br>
-
-        <MenuItem icon={<FaUserAlt />}>Dashboard</MenuItem>
+    <ProSidebar collapsed="false" className="custom-sidebar">
+      <Menu iconShape="round">
+        <MenuItem icon={<AiFillHome />}></MenuItem>
+        <MenuItem icon={<FaUserAlt />}></MenuItem>
       </Menu>
     </ProSidebar>
   );

@@ -12,24 +12,12 @@ function NavBar() {
   return (
     <Navbar className="navbar">
       <Navbar.Brand href="#home">
-        <img
-          alt=""
-          src={profileIcon}
-          width="45"
-          height="45"
-          className="profile-icon"
-        />{" "}
+        <img alt="" src={profileIcon} className="profile-icon" />{" "}
         <a className="navbar-name" href="/">
           Mohammed Abdelafattah
         </a>
       </Navbar.Brand>
-      <img
-        alt="logout icon"
-        src={logout}
-        width="40"
-        height="30"
-        className="logout-icon"
-      />
+      <img alt="logout icon" src={logout} className="logout-icon" />
     </Navbar>
   );
 }
