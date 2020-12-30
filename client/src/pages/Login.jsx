@@ -51,7 +51,7 @@ function Login() {
 					addToast(response.data.err, {appearance: 'error',autoDismiss: true});
 				}
 				else{
-					setUser(response.header);
+					setUser(response.data.token);
 					// store the user in the localStorage
 					const token = response.data.token
 					localStorage.setItem('user', token);
