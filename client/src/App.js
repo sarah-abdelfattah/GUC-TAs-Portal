@@ -3,10 +3,16 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
+// import '@trendmicro/react-sidenav/dist/react-sidenav.css';
+import 'react-pro-sidebar/dist/scss/styles.scss';
+
 import './styles/NavBar.scss';
+import './styles/SideBar.scss';
+
 
 //Import the pages
 import NavBar from './components/NavBar';
+import SideBar from './components/SideBar';
 
 function App() {
   // eslint-disable-next-line
@@ -29,8 +35,11 @@ function App() {
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
-            <Route exact path="/" render={(props) => <NavBar {...props} />} />
+            {/* <Route exact path="/" render={(props) => <NavBar {...props} />} /> */}
           </Switch>
+
+          <NavBar />
+          <SideBar />
 
         </div>
       </Router>

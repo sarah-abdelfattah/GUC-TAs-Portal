@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
-import { Nav, Link } from "react-bootstrap";
 
 //assets
 import profileIcon from "../assets/profileIcon.svg";
@@ -16,8 +15,8 @@ function NavBar() {
         <img
           alt=""
           src={profileIcon}
-          width="50"
-          height="50"
+          width="45"
+          height="45"
           className="profile-icon"
         />{" "}
         <a className="navbar-name" href="/">

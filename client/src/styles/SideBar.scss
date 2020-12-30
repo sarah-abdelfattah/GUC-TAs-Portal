@@ -1,0 +1,9 @@
+@import './colorSchema';
+
+.sidebar-container {
+    background-color: $primary-navy-blue;
+}
+
+.pro-sidebar {
+    z-index: 2;
+}
