@@ -32,6 +32,7 @@ function Login() {
 		if (loggedInUser) {
 		  const foundUser = JSON.parse(loggedInUser);
 		  setUser(foundUser);
+		  document.location.href = '/home'  
 		}
 	}, []);
 
