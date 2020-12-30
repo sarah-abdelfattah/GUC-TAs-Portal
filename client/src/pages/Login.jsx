@@ -40,17 +40,15 @@ function Login() {
 		e.preventDefault();
 		const user = { gucId, password };
 		if(gucId === "" || password === ""){
-			addToast("gucId and password can't be empty", 
-			{appearance: 'warning',
-			autoDismiss: true});
+			addToast("gucId and password can't be empty", {appearance: 'error',autoDismiss: true});
 		}
 		else{
 			try{
 				const response = await axios.post(`${link}/logIn`, user);
 				console.log(response);
-				if(response.data.JOI_validation_error){
+				if(response.err){
 					// here we need to show toast and display err
-					console.log(response.err);
+					addToast(response.err, {appearance: 'error',autoDismiss: true});
 				}
 				else{
 					setUser(response.header);
@@ -64,7 +62,7 @@ function Login() {
 				}
 			}
 			catch (err) {
-				console.log(err);
+				addToast(err, {appearance: 'error',autoDismiss: true});
 			}
 		}
 	};
