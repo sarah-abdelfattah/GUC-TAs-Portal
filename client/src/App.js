@@ -38,8 +38,14 @@ function App() {
             {/* <Route exact path="/" render={(props) => <NavBar {...props} />} /> */}
           </Switch>
 
-          <NavBar />
-          <SideBar />
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <NavBar />
+            )}
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <SideBar />
+            )}
         </div>
       </Router>
     </div>

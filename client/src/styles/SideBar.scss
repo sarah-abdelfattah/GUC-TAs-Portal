@@ -27,8 +27,17 @@
     padding: 8px 10px;
 }
 
-.hide {
-    display: none;
+.pro-sidebar .pro-menu .pro-menu-item>.pro-inner-item>.pro-item-content {
+    position: fixed;
+    color: white;
+    background: $secondary-gray;
+    margin-left: 40px;
+    height: 40px;
+    padding-top: 8px;
+    font-size: 15px;
+    padding-right: 5px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 
@@ -48,6 +57,13 @@
         height: 35px;
         width: 35px;
         font-size: 18px;
+    }
+
+    .pro-sidebar .pro-menu .pro-menu-item>.pro-inner-item>.pro-item-content {
+        margin-left: 30px;
+        height: 35px;
+        padding-top: 10px;
+        font-size: 13px;
     }
 
 }
