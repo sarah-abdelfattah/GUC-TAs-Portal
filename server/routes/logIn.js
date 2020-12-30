@@ -27,12 +27,12 @@ router.post("", async function (req, res) {
         if (!gucId || !password)
             return res.send({ error: "Please enter all details" });
 
-        const staff = await StaffMember.findOne({ gucId: gucId, password: password});
+        const staff = await StaffMember.findOne({ gucId: gucId });
         if (!staff)
             return res.status(400).json({ error: 'Wrong Id or password' });
 
-       // const match = bcrypt.compareSync(password, staff.password);
-        const match = true
+        const match = bcrypt.compareSync(password, staff.password);
+        //const match = true
 
         if (match) {
             let payload;
