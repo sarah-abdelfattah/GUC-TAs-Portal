@@ -46,9 +46,9 @@ function Login() {
 			try{
 				const response = await axios.post(`${link}/logIn`, user);
 				console.log(response);
-				if(response.err){
+				if(response.data.err){
 					// here we need to show toast and display err
-					addToast(response.err, {appearance: 'error',autoDismiss: true});
+					addToast(response.data.err, {appearance: 'error',autoDismiss: true});
 				}
 				else{
 					setUser(response.header);
