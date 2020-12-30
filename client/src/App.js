@@ -13,6 +13,7 @@ import 'react-pro-sidebar/dist/scss/styles.scss';
 import './styles/home.scss'
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
+import { ToastProvider } from 'react-toast-notifications'
 
 
 //Import the pages
@@ -33,6 +34,7 @@ function App() {
       <Router>
         <div className="myApp">
           <Switch>
+          <ToastProvider>
           <Route
               exact
               path="/login"
@@ -47,6 +49,7 @@ function App() {
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
             />
+          </ToastProvider>
           </Switch>
 
           {currentLocation === "/login" ||

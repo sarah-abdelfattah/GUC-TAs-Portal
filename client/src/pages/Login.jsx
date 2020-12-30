@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import setAuthToken from '../helpers/setAuthToken';
 import { link } from '../helpers/constants';
-//import { ToastProvider } from 'react-toast-notifications'
-import { useToasts } from "react-toast-notifications";
+import { useToasts } from 'react-toast-notifications'
+
 
 function Login() {
 	// defining the variables and states
@@ -101,10 +101,7 @@ function Login() {
 					</div>
 
 					<div className="container-login100-form-btn">
-						<button onClick={() => addToast('content', {
-      appearance: 'success',
-      autoDismiss: true,
-    })} type="submit" className="login100-form-btn">
+						<button type="submit" className="login100-form-btn">
 							Login In
 						</button>
 					</div>
