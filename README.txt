@@ -158,7 +158,7 @@ Note: upon deleting, any staff member with that location, the location will be s
 
 ### 13.
 Functionality: get all rooms in the system
-Route: /locations/:num
+Route: /locations/room/:num
 Request type: GET
 Parameters: all || room number
 Response: Array of rooms

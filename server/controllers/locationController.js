@@ -39,6 +39,9 @@ exports.createRoom = async function (req, res) {
         if (!type || !location || !capacity)
             return res.send({ error: "Missing details" })
 
+        if (capacity <= 0)
+            return res.send({ error: "Sorry capacity cannot be zero or less" })
+
         const roomFound = await Location.findOne({ location: location });
         if (roomFound)
             return res.send({ error: "Sorry there is already a room with that location" })
