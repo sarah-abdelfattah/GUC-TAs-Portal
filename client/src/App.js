@@ -5,7 +5,21 @@ import Login from "./pages/Login";
 // import '../styles/util.css'
 import '../src/styles/Login.css'
 import '../src/styles/util.css'
+
+//Import the styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import '@trendmicro/react-sidenav/dist/react-sidenav.css';
+import 'react-pro-sidebar/dist/scss/styles.scss';
+import './styles/home.scss'
+import './styles/NavBar.scss';
+import './styles/SideBar.scss';
+
+
 //Import the pages
+import NavBar from './components/NavBar';
+import SideBar from './components/SideBar';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+
 
 function App() {
   // eslint-disable-next-line
@@ -17,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <div>
+        <div className="myApp">
           <Switch>
           <Route
               exact
@@ -28,8 +42,21 @@ function App() {
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
+
+            <Route
+              path="/unauthorized"
+              render={(props) => <UnauthorizedPage {...props} />}
+            />
           </Switch>
 
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <NavBar />
+            )}
+          {currentLocation === "/login" ||
+            currentLocation === "/unauthorized" ? null : (
+              <SideBar />
+            )}
         </div>
       </Router>
     </div>
