@@ -62,7 +62,7 @@ function Login() {
 				}
 			}
 			catch (err) {
-				addToast("err", {appearance: 'warning',autoDismiss: true});
+				addToast("wrong Id or password", {appearance: 'warning',autoDismiss: true});
 			}
 		}
 	};
