@@ -1,7 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+//Import the styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/NavBar.scss';
+
 //Import the pages
+import NavBar from './components/NavBar';
 
 function App() {
   // eslint-disable-next-line
@@ -24,6 +29,7 @@ function App() {
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
             <Route exact path="/" render={(props) => <Home {...props} />} /> */}
+            <Route exact path="/" render={(props) => <NavBar {...props} />} />
           </Switch>
 
         </div>

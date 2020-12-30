@@ -1,0 +1,27 @@
+@import './colorSchema';
+
+.navbar {
+    background-color: $primary-navy-blue;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 5px;
+
+    .profile-icon {
+        margin-left: 60px;
+    }
+
+    .navbar-name {
+        color: white;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-size: 22px;
+        // margin-top: 2;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+
+    .logout-icon {
+        position: fixed;
+        right: 30px;
+    }
+}
