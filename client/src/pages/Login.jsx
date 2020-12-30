@@ -41,15 +41,16 @@ function Login() {
 		e.preventDefault();
 		const user = { gucId, password };
 		if(gucId === "" || password === ""){
-			addToast("Please enter your GUC ID and Password", {appearance: 'error',autoDismiss: true});
+			addToast("Please enter your GUC ID and Password", {appearance: 'warning',autoDismiss: true});
 		}
 		else{
 			try{
 				const response = await axios.post(`${link}/logIn`, user);
-				console.log(response);
 				if(response.data.err){
-					// here we need to show toast and display err
-					addToast(response.data.err, {appearance: 'error',autoDismiss: true});
+					addToast(response.data.err, {appearance: 'warning',autoDismiss: true});
+				}
+				else if(response.data.JOI_validation_error){
+					addToast(response.data.JOI_validation_error, {appearance: 'warning',autoDismiss: true});
 				}
 				else{
 					setUser(response.data.token);
@@ -59,11 +60,10 @@ function Login() {
 					setAuthToken(token);
 					// go to the home page after login is successful
 					document.location.href = '/home'
-					console.log(token);
 				}
 			}
 			catch (err) {
-				addToast(err, {appearance: 'error',autoDismiss: true});
+				addToast(err, {appearance: 'warning',autoDismiss: true});
 			}
 		}
 	};
