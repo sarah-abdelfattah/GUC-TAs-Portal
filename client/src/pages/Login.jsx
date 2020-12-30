@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import setAuthToken from '../helpers/setAuthToken';
 import { link } from '../helpers/constants';
+import { useToasts } from 'react-toast-notifications'
 
 function Login() {
+	// defining the variables and states
 	const [gucId, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [user, setUser] = useState();
 
+	// => used in the header to greet the user <=
     var date = new Date();
     var hrs = date.getHours();
     var greet;
@@ -18,7 +21,9 @@ function Login() {
        greet = 'Good Afternoon'
     else if (hrs >=17 && hrs <=24)
 	   greet = 'Good Evening';
-	
+	//-------------------------------------------
+
+	// get the token of the user to be used later
 	useEffect(() => {
 		const loggedInUser = localStorage.getItem("user");
 		if (loggedInUser) {
@@ -31,20 +36,31 @@ function Login() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const user = { gucId, password };
-		const response = await axios.post(`${link}/logIn`, user);
-		console.log(response.data.token);
-		if(response.err){
-			// here we need to show toast and display err
-			console.log(response.err);
+		if(gucId === "" || password === ""){
+			console.log("gucId or password can't be empty")
 		}
 		else{
-			setUser(response.header);
-			// store the user in the localStorage
-			const token = response.data.token
-			localStorage.setItem('user', token);
-			setAuthToken(token);
-			//document.location.href = '/home'
-			console.log(token);
+			try{
+				const response = await axios.post(`${link}/logIn`, user);
+				console.log(response);
+				if(response.data.JOI_validation_error){
+					// here we need to show toast and display err
+					console.log(response.err);
+				}
+				else{
+					setUser(response.header);
+					// store the user in the localStorage
+					const token = response.data.token
+					localStorage.setItem('user', token);
+					setAuthToken(token);
+					// go to the home page after login is successful
+					document.location.href = '/home'
+					console.log(token);
+				}
+			}
+			catch (err) {
+				console.log(err);
+			}
 		}
 	};
 
