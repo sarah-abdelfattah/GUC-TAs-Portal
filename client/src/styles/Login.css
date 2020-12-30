@@ -1,11 +1,3 @@
-
-html{
-    background: url('../assets/guc.jpg') no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
 /*//////////////////////////////////////////////////////////////////
 [ FONT ]*/
 
@@ -151,6 +143,11 @@ html{
   [ login ]*/
   
   .container-login100 {
+    background: url('../assets/guc.jpg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     width: 100%;  
     min-height: 100vh;
     display: -webkit-box;
