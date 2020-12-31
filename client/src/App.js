@@ -28,25 +28,21 @@ function App() {
   return (
     <div className='App'>
       <Router>
-        <div className='myApp'>
-          <Switch>
-            <ToastProvider>
-              {/* <Route
-              exact
-              path="/login"
-              render={(props) => <Login {...props} />}
-            /> */}
-              {/* 
-            <Route exact path="/home" render={(props) => <Home {...props} />} />
-
-            <Route exact path="/" render={(props) => <Home {...props} />} /> */}
-
-              <Route path='/location' render={(props) => <Location {...props} />} />
-
-              <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
-            </ToastProvider>
-          </Switch>
-        </div>
+        <Switch>
+          <ToastProvider>
+            {currentLocation === '/login' || currentLocation === '/unauthorized' ?
+              <Route
+                exact
+                path="/login"
+                render={(props) => <Login {...props} />}
+              /> :
+              <div className='myApp'>
+                <Route path='/location' render={(props) => <Location {...props} />} />
+                <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
+              </div>
+            }
+          </ToastProvider>
+        </Switch>
       </Router>
       {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar />}
       {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
