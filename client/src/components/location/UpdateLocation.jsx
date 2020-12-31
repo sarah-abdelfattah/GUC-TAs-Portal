@@ -46,6 +46,7 @@ function UpdateLocation() {
     if (newCapacity !== "") setRoomCapacity(newCapacity);
 
     const res = await axiosCall("put", "locations/location", body);
+
     if (res.data.data) {
       addToast(res.data.data, {
         appearance: "success",
@@ -148,6 +149,7 @@ function UpdateLocation() {
       <Button
         variant="primary"
         className="crud-submit crud-update-btn blue"
+        disabled={roomChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Update Location

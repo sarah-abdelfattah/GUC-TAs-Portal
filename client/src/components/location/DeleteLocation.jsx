@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import axios from "axios";
 
 import {
   FormControl,
@@ -26,7 +27,7 @@ function DeleteLocation() {
       setRooms(result.data.data);
     }
     fetchData();
-  }, []);
+  }, [roomChosen]);
 
   const handleOnChange = (target) => {
     setRoomChosen(target.value);
@@ -36,17 +37,14 @@ function DeleteLocation() {
   };
 
   const handleSubmit = async () => {
-    const name = rooms.find(({ _id }) => _id === roomChosen).location;
+    const name = await rooms.find(({ _id }) => _id === roomChosen).location;
 
     const body = {
       location: name,
     };
 
     const res = await axiosCall("delete", "locations/location", body);
-    console.log(
-      "🚀 ~ file: DeleteLocation.jsx ~ line 46 ~ handleSubmit ~ res",
-      res
-    );
+
     if (res.data.data) {
       addToast(res.data.data, {
         appearance: "success",
@@ -112,6 +110,7 @@ function DeleteLocation() {
       <Button
         variant="danger"
         className="crud-submit crud-delete-btn red"
+        disabled={roomChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Delete Location

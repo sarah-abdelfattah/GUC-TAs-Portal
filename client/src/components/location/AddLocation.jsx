@@ -25,19 +25,23 @@ function AddLocation() {
     };
 
     const res = await axiosCall("post", "locations/location", body);
-    if (res.data.data) {
-      addToast(res.data.data, {
+    console.log(
+      "🚀 ~ file: addLocation.jsx ~ line 28 ~ handleSubmit ~ res",
+      res
+    );
+    if (res.data.error) {
+      addToast(res.data.error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } else {
+      addToast("Location created successfully", {
         appearance: "success",
         autoDismiss: true,
       });
       setRoomType("");
       setRoomLocation("");
       setRoomCapacity("");
-    } else {
-      addToast(res.data.error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
     }
   };
 
@@ -53,16 +57,24 @@ function AddLocation() {
               setRoomType(event.target.value);
             }}
           >
-            <MenuItem className="crud-menuItem" value="Lab">
+            <MenuItem className="crud-menuItem" value="Lab" key="Lab">
               Lab
             </MenuItem>
-            <MenuItem className="crud-menuItem" value="Office">
+            <MenuItem className="crud-menuItem" value="Office" key="Office">
               Office
             </MenuItem>
-            <MenuItem className="crud-menuItem" value="Lecture Hall">
+            <MenuItem
+              className="crud-menuItem"
+              value="Lecture Hall"
+              key="Lecture Hall"
+            >
               Lecture Hall
             </MenuItem>
-            <MenuItem className="crud-menuItem" value="Tutorial Room">
+            <MenuItem
+              className="crud-menuItem"
+              value="Tutorial Room"
+              key="Lecture Hall"
+            >
               Tutorial Room
             </MenuItem>
           </Select>
@@ -92,6 +104,9 @@ function AddLocation() {
       <Button
         variant="success"
         className="crud-submit crud-add-btn green"
+        disabled={
+          type === "" || capacity === "" || location === "" ? true : false
+        }
         onClick={handleSubmit}
       >
         Add Location
