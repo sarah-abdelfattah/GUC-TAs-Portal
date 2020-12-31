@@ -31,7 +31,7 @@ function DeleteFaculty() {
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
       const body = {
-        code: code,
+        code: code.toUpperCase(),
       };
 
       const res = await axiosCall("delete", "faculties/Faculty", body);

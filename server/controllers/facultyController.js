@@ -29,7 +29,6 @@ exports.getFaculty = async function (req, res) {
     }
 }
 
-
 exports.addFaculty = async function (req, res) {
     try {
         let JOI_Result = await validation.facultySchema.validateAsync(req.body)

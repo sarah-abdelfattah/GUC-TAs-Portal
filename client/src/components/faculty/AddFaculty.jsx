@@ -19,7 +19,7 @@ function AddFaculty() {
   const handleSubmit = async () => {
     try {
       const body = {
-        code: code,
+        code: code.toUpperCase(),
         name: name,
       };
 

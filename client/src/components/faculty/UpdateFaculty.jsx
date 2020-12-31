@@ -13,41 +13,38 @@ import {
 } from "@material-ui/core";
 
 function UpdateFaculty() {
-  const [rooms, setRooms] = useState({ rooms: [] });
-  const [roomChosen, setRoomChosen] = useState("");
-  const [capacity, setRoomCapacity] = useState("");
-  const [newCapacity, setNewCapacity] = useState("");
-  const [newType, setNewType] = useState("");
+  const [faculties, setfaculties] = useState({ faculties: [] });
+  const [facultyChosen, setFacultyChosen] = useState("");
+  const [name, setName] = useState("");
+  const [newName, setNewName] = useState("");
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axiosCall("get", "Facultys/room/all");
-      setRooms(result.data.data);
+      const result = await axiosCall("get", "faculties/faculty/all");
+      setfaculties(result.data.data);
     }
     fetchData();
   }, []);
 
   const handleOnChange = (target) => {
-    setRoomChosen(target.value);
-    const capacityRes = rooms.find(({ _id }) => _id === target.value).capacity;
-    setRoomCapacity(capacityRes);
+    setFacultyChosen(target.value);
+    const nameRes = faculties.find(({ _id }) => _id === target.value).name;
+    setName(nameRes);
   };
 
   const handleSubmit = async () => {
     try {
-      let name;
-      if (rooms) name = rooms.find(({ _id }) => _id === roomChosen).Faculty;
+      let code;
+      if (faculties)
+        code = faculties.find(({ _id }) => _id === facultyChosen).code;
 
       const body = {
-        type: newType !== "" ? newType : undefined,
-        Faculty: name,
-        capacity: newCapacity !== "" ? newCapacity : undefined,
+        code: code,
+        newName: newName,
       };
 
-      if (newCapacity !== "") setRoomCapacity(newCapacity);
-
-      const res = await axiosCall("put", "Facultys/Faculty", body);
+      const res = await axiosCall("put", "faculties/faculty", body);
 
       if (res.data.data) {
         addToast(res.data.data, {
@@ -55,8 +52,8 @@ function UpdateFaculty() {
           autoDismiss: true,
         });
 
-        setNewType("");
-        setNewCapacity("");
+        setName(newName);
+        setNewName("");
       }
       if (res.data.error) {
         addToast(res.data.error, {
@@ -76,19 +73,19 @@ function UpdateFaculty() {
           <InputLabel className="crud-inputLabel">Faculty</InputLabel>
           <Select
             className="crud-select"
-            value={roomChosen}
+            value={facultyChosen}
             onChange={(event) => {
               handleOnChange(event.target);
             }}
           >
-            {rooms.length > 0 &&
-              rooms.map((room) => (
+            {faculties.length > 0 &&
+              faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={room._id}
-                  key={room._id}
+                  value={faculty._id}
+                  key={faculty._id}
                 >
-                  {room.type} - {room.Faculty}
+                  {faculty.code} - {faculty.name}
                 </MenuItem>
               ))}
           </Select>
@@ -99,63 +96,23 @@ function UpdateFaculty() {
 
         <FormControl className="crud-formControl">
           <InputLabel className="crud-inputLabel">Capacity</InputLabel>
-          <Input
-            className="crud-input"
-            type="number"
-            min="1"
-            value={capacity}
-            disabled={true}
-          />
+          <Input className="crud-input" value={name} disabled={true} />
         </FormControl>
 
         <FormControl className="crud-formControl">
           <InputLabel className="crud-inputLabel">New Capacity</InputLabel>
           <Input
             className="crud-input"
-            type="number"
-            min="1"
-            value={newCapacity}
-            onChange={(event) => setNewCapacity(event.target.value)}
+            value={newName}
+            onChange={(event) => setNewName(event.target.value)}
           />
-        </FormControl>
-
-        <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">New Type</InputLabel>
-          <Select
-            className="crud-select"
-            value={newType}
-            onChange={(event) => {
-              setNewType(event.target.value);
-            }}
-          >
-            <MenuItem className="crud-menuItem" value="Lab" key="Lab">
-              Lab
-            </MenuItem>
-            <MenuItem className="crud-menuItem" value="Office" key="Office">
-              Office
-            </MenuItem>
-            <MenuItem
-              className="crud-menuItem"
-              value="Lecture Hall"
-              key="Lecture Hall"
-            >
-              Lecture Hall
-            </MenuItem>
-            <MenuItem
-              className="crud-menuItem"
-              value="Tutorial Room"
-              key="Tutorial Room"
-            >
-              Tutorial Room
-            </MenuItem>
-          </Select>
         </FormControl>
       </div>
 
       <Button
         variant="primary"
         className="crud-submit crud-update-btn blue"
-        disabled={roomChosen === "" ? true : false}
+        disabled={facultyChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Update Faculty
