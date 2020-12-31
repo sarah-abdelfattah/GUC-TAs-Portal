@@ -14,8 +14,9 @@ import './styles/crudButtons.scss';
 //Import the pages
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
-import Location from './pages/Location';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import Location from './pages/Location';
+import Faculty from "./pages/Faculty.";
 
 
 function App() {
@@ -31,15 +32,10 @@ function App() {
         <div className="myApp">
           <Switch>
             <ToastProvider>
-              {/* <Route
-              exact
-              path="/login"
-              render={(props) => <Login {...props} />}
-            /> */}
-              {/* 
-            <Route exact path="/home" render={(props) => <Home {...props} />} />
-
-            <Route exact path="/" render={(props) => <Home {...props} />} /> */}
+              <Route
+                path="/unauthorized"
+                render={(props) => <UnauthorizedPage {...props} />}
+              />
 
               <Route
                 path="/location"
@@ -47,9 +43,11 @@ function App() {
               />
 
               <Route
-                path="/unauthorized"
-                render={(props) => <UnauthorizedPage {...props} />}
+                path="/faculty"
+                render={(props) => <Faculty {...props} />}
               />
+
+
             </ToastProvider>
           </Switch>
         </div>
