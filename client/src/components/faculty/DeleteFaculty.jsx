@@ -2,51 +2,39 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-import axios from "axios";
 
 import {
   FormControl,
   InputLabel,
-  Input,
   Select,
   FormHelperText,
   MenuItem,
 } from "@material-ui/core";
 
 function DeleteFaculty() {
-  const [rooms, setRooms] = useState({ rooms: [] });
-  const [roomChosen, setRoomChosen] = useState("");
-  const [capacity, setRoomCapacity] = useState("");
-  const [type, setRoomType] = useState("");
-
+  const [faculties, setFaculties] = useState({ faculties: [] });
+  const [facultyChosen, setFacultyChosen] = useState("");
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axiosCall("get", "Facultys/room/all");
-      setRooms(result.data.data);
+      const result = await axiosCall("get", "faculties/faculty/all");
+      setFaculties(result.data.data);
     }
     fetchData();
-  }, [roomChosen]);
-
-  const handleOnChange = (target) => {
-    setRoomChosen(target.value);
-    const roomRes = rooms.find(({ _id }) => _id === target.value);
-    setRoomCapacity(roomRes.capacity);
-    setRoomType(roomRes.type);
-  };
+  }, [facultyChosen]);
 
   const handleSubmit = async () => {
     try {
-      let name;
-      if (rooms)
-        name = await rooms.find(({ _id }) => _id === roomChosen).Faculty;
+      let code;
+      if (faculties)
+        code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
       const body = {
-        Faculty: name,
+        code: code,
       };
 
-      const res = await axiosCall("delete", "Facultys/Faculty", body);
+      const res = await axiosCall("delete", "faculties/Faculty", body);
 
       if (res.data.data) {
         addToast(res.data.data, {
@@ -54,9 +42,7 @@ function DeleteFaculty() {
           autoDismiss: true,
         });
 
-        setRoomChosen("");
-        setRoomCapacity("");
-        setRoomType("");
+        setFacultyChosen("");
       }
 
       if (res.data.error) {
@@ -77,19 +63,19 @@ function DeleteFaculty() {
           <InputLabel className="crud-inputLabel">Faculty</InputLabel>
           <Select
             className="crud-select"
-            value={roomChosen}
+            value={facultyChosen}
             onChange={(event) => {
-              handleOnChange(event.target);
+              setFacultyChosen(event.target.value);
             }}
           >
-            {rooms.length > 0 &&
-              rooms.map((room) => (
+            {faculties.length > 0 &&
+              faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={room._id}
-                  key={room._id}
+                  value={faculty._id}
+                  key={faculty._id}
                 >
-                  {room.type} - {room.Faculty}
+                  {faculty.code} - {faculty.name}
                 </MenuItem>
               ))}
           </Select>
@@ -97,28 +83,12 @@ function DeleteFaculty() {
             This field is required
           </FormHelperText>
         </FormControl>
-
-        <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">Capacity</InputLabel>
-          <Input
-            className="crud-input"
-            type="number"
-            min="1"
-            value={capacity}
-            disabled={true}
-          />
-        </FormControl>
-
-        <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">Type</InputLabel>
-          <Input className="crud-input" value={type} disabled={true} />
-        </FormControl>
       </div>
 
       <Button
         variant="danger"
         className="crud-submit crud-delete-btn red"
-        disabled={roomChosen === "" ? true : false}
+        disabled={facultyChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Delete Faculty

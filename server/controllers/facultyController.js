@@ -5,6 +5,31 @@ const Department = require('../models/Department');
 
 const validation = require('../helpers/validation');
 
+exports.getFaculty = async function (req, res) {
+    try {
+        if (req.params.num === "all") {
+            const result = await Faculty.find();
+            return res.send({ data: result });
+        }
+        else {
+            const facCode = req.params.code;
+            const result = await Faculty.findOne({ code: facCode });
+            if (result)
+                return res.send({ data: result });
+            else
+                return res.send({ error: "Sorry no faculty with this code" });
+        }
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ error: err.details[0].message });
+        }
+        console.log("~ err", err);
+        return res.send({ error: err })
+    }
+}
+
+
 exports.addFaculty = async function (req, res) {
     try {
         let JOI_Result = await validation.facultySchema.validateAsync(req.body)
@@ -37,10 +62,10 @@ exports.addFaculty = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -67,10 +92,10 @@ exports.updateFaculty = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -100,9 +125,9 @@ exports.deleteFaculty = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }

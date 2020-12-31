@@ -4,8 +4,10 @@ const auth = require('../helpers/auth');
 const facultyController = require('../controllers/facultyController');
 
 //HR 
-router.post("/faculty", auth.HRAuth, facultyController.addFaculty);
-router.put("/faculty", auth.HRAuth, facultyController.updateFaculty);
-router.delete("/faculty", auth.HRAuth, facultyController.deleteFaculty);
+//TODO: return auth
+router.get("/faculty/:code", facultyController.getFaculty) //"all"" gets all rooms or the room number 
+router.post("/faculty", facultyController.addFaculty);
+router.put("/faculty", facultyController.updateFaculty);
+router.delete("/faculty", facultyController.deleteFaculty);
 
 module.exports = router;  
