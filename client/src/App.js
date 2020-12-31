@@ -1,5 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Login from "./pages/Login";
+// import '../styles/Login.css'
+// import '../styles/util.css'
+import '../src/styles/Login.css'
+import '../src/styles/util.css'
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +13,7 @@ import 'react-pro-sidebar/dist/scss/styles.scss';
 import './styles/home.scss'
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
+import { ToastProvider } from 'react-toast-notifications'
 
 
 //Import the pages
@@ -28,11 +34,12 @@ function App() {
       <Router>
         <div className="myApp">
           <Switch>
-            {/* <Route
+          <ToastProvider>
+          <Route
               exact
               path="/login"
               render={(props) => <Login {...props} />}
-            /> */}
+            />
             {/* 
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
@@ -42,6 +49,7 @@ function App() {
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
             />
+          </ToastProvider>
           </Switch>
 
           {currentLocation === "/login" ||
