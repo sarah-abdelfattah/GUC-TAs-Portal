@@ -2,7 +2,6 @@ import axios from 'axios';
 
 
 export async function axiosCall(requestType, url, body) {
-    console.log("🚀 ~ file: axiosCall.js ~ line 5 ~ axiosCall ~ body", body);
     try {
         var tmp;
         //TODO: when deployed

@@ -37,28 +37,36 @@ function DeleteLocation() {
   };
 
   const handleSubmit = async () => {
-    const name = await rooms.find(({ _id }) => _id === roomChosen).location;
+    try {
+      let name;
+      if (rooms)
+        name = await rooms.find(({ _id }) => _id === roomChosen).location;
 
-    const body = {
-      location: name,
-    };
+      const body = {
+        location: name,
+      };
 
-    const res = await axiosCall("delete", "locations/location", body);
+      const res = await axiosCall("delete", "locations/location", body);
 
-    if (res.data.data) {
-      addToast(res.data.data, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      if (res.data.data) {
+        addToast(res.data.data, {
+          appearance: "success",
+          autoDismiss: true,
+        });
 
-      setRoomChosen("");
-      setRoomCapacity("");
-      setRoomType("");
-    } else {
-      addToast(res.data.error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
+        setRoomChosen("");
+        setRoomCapacity("");
+        setRoomType("");
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (err) {
+      console.log("~err: ", err);
     }
   };
 

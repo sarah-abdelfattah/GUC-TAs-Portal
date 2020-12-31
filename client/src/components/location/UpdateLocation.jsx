@@ -35,31 +35,37 @@ function UpdateLocation() {
   };
 
   const handleSubmit = async () => {
-    const name = rooms.find(({ _id }) => _id === roomChosen).location;
+    try {
+      let name;
+      if (rooms) name = rooms.find(({ _id }) => _id === roomChosen).location;
 
-    const body = {
-      type: newType !== "" ? newType : undefined,
-      location: name,
-      capacity: newCapacity !== "" ? newCapacity : undefined,
-    };
+      const body = {
+        type: newType !== "" ? newType : undefined,
+        location: name,
+        capacity: newCapacity !== "" ? newCapacity : undefined,
+      };
 
-    if (newCapacity !== "") setRoomCapacity(newCapacity);
+      if (newCapacity !== "") setRoomCapacity(newCapacity);
 
-    const res = await axiosCall("put", "locations/location", body);
+      const res = await axiosCall("put", "locations/location", body);
 
-    if (res.data.data) {
-      addToast(res.data.data, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      if (res.data.data) {
+        addToast(res.data.data, {
+          appearance: "success",
+          autoDismiss: true,
+        });
 
-      setNewType("");
-      setNewCapacity("");
-    } else {
-      addToast(res.data.error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
+        setNewType("");
+        setNewCapacity("");
+      }
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (err) {
+      console.log("~err: ", err);
     }
   };
 

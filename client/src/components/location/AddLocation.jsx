@@ -18,30 +18,33 @@ function AddLocation() {
   const { addToast } = useToasts();
 
   const handleSubmit = async () => {
-    const body = {
-      type: type,
-      location: location.toUpperCase(),
-      capacity: capacity,
-    };
+    try {
+      const body = {
+        type: type,
+        location: location.toUpperCase(),
+        capacity: capacity,
+      };
 
-    const res = await axiosCall("post", "locations/location", body);
-    console.log(
-      "🚀 ~ file: addLocation.jsx ~ line 28 ~ handleSubmit ~ res",
-      res
-    );
-    if (res.data.error) {
-      addToast(res.data.error, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    } else {
-      addToast("Location created successfully", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-      setRoomType("");
-      setRoomLocation("");
-      setRoomCapacity("");
+      const res = await axiosCall("post", "locations/location", body);
+
+      if (res.data.data) {
+        addToast("Location created successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        setRoomType("");
+        setRoomLocation("");
+        setRoomCapacity("");
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (err) {
+      console.log("~err: ", err);
     }
   };
 
