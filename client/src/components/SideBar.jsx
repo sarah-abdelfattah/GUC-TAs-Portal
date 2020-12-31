@@ -4,7 +4,6 @@ import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 //icons
 import { FaUserAlt } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
-import { MdLocationOn } from "react-icons/md";
 
 //users
 import HRMenuItems from "./sidebar/HRMenuItems";
@@ -12,7 +11,6 @@ import HRMenuItems from "./sidebar/HRMenuItems";
 function SideBar() {
   const [showHome, setHome] = useState(false);
   const [showProfile, setProfile] = useState(false);
-  const [showLocation, setLocation] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = path;

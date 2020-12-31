@@ -25,7 +25,7 @@ function UpdateFaculty() {
       setfaculties(result.data.data);
     }
     fetchData();
-  }, []);
+  }, [newName]);
 
   const handleOnChange = (target) => {
     setFacultyChosen(target.value);
@@ -95,12 +95,12 @@ function UpdateFaculty() {
         </FormControl>
 
         <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">Capacity</InputLabel>
+          <InputLabel className="crud-inputLabel">Name</InputLabel>
           <Input className="crud-input" value={name} disabled={true} />
         </FormControl>
 
         <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">New Capacity</InputLabel>
+          <InputLabel className="crud-inputLabel">New Name</InputLabel>
           <Input
             className="crud-input"
             value={newName}

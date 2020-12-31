@@ -3,13 +3,7 @@ import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 
-import {
-  FormControl,
-  InputLabel,
-  Input,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
+import { FormControl, InputLabel, Input } from "@material-ui/core";
 
 function AddFaculty() {
   const [code, setCode] = useState("");

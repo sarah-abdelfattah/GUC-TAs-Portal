@@ -7,7 +7,7 @@ const validation = require('../helpers/validation');
 
 exports.getFaculty = async function (req, res) {
     try {
-        if (req.params.num === "all") {
+        if (req.params.code === "all") {
             const result = await Faculty.find();
             return res.send({ data: result });
         }
