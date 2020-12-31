@@ -31,8 +31,8 @@ router.post("", async function (req, res) {
         if (!staff)
             return res.status(400).json({ error: 'Wrong Id or password' });
 
-       // const match = bcrypt.compareSync(password, staff.password);
-        const match = true
+        const match = bcrypt.compareSync(password, staff.password);
+        //const match = true
 
         if (match) {
             let payload;
