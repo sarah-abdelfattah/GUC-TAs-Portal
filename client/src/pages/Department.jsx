@@ -62,11 +62,9 @@ function Department() {
         <AddDepartment />
       ) : crudBtns.update ? (
         <UpdateDepartment />
-      ) : //     crudBtns.delete ? (
-      //   <DeleteDepartment />
-      // )
-      //       :
-      null}
+      ) : crudBtns.delete ? (
+        <DeleteDepartment />
+      ) : null}
     </div>
   );
 }

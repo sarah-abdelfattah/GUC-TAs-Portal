@@ -14,15 +14,25 @@ import {
 function DeleteFaculty() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
+  const [departments, setDepartments] = useState({ departments: [] });
+  const [depChosen, setDepChosen] = useState("");
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axiosCall("get", "faculties/faculty/all");
-      setFaculties(result.data.data);
+      const facResult = await axiosCall("get", "faculties/faculty/all");
+      setFaculties(facResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
+
+  const handleOnChange = async (target) => {
+    setFacultyChosen(target.value);
+    const facCode = faculties.find(({ _id }) => _id === target.value).code;
+
+    const depResult = await axiosCall("get", `departments/${facCode}/all`);
+    setDepartments(depResult.data.data);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -30,11 +40,16 @@ function DeleteFaculty() {
       if (faculties)
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
+      let dep;
+      if (departments)
+        dep = await departments.find(({ _id }) => _id === depChosen).name;
+
       const body = {
-        code: code.toUpperCase(),
+        facultyCode: code.toUpperCase(),
+        depName: dep,
       };
 
-      const res = await axiosCall("delete", "faculties/Faculty", body);
+      const res = await axiosCall("delete", "departments/department", body);
 
       if (res.data.data) {
         addToast(res.data.data, {
@@ -43,6 +58,7 @@ function DeleteFaculty() {
         });
 
         setFacultyChosen("");
+        setDepartments("");
       }
 
       if (res.data.error) {
@@ -65,7 +81,7 @@ function DeleteFaculty() {
             className="crud-select"
             value={facultyChosen}
             onChange={(event) => {
-              setFacultyChosen(event.target.value);
+              handleOnChange(event.target);
             }}
           >
             {faculties.length > 0 &&
@@ -83,6 +99,31 @@ function DeleteFaculty() {
             This field is required
           </FormHelperText>
         </FormControl>
+
+        <FormControl className="crud-formControl" required>
+          <InputLabel className="crud-inputLabel">Department</InputLabel>
+          <Select
+            className="crud-select"
+            value={depChosen}
+            onChange={(event) => {
+              setDepChosen(event.target.value);
+            }}
+          >
+            {departments.length > 0 &&
+              departments.map((department) => (
+                <MenuItem
+                  className="crud-menuItem"
+                  value={department._id}
+                  key={department._id}
+                >
+                  {department.name}
+                </MenuItem>
+              ))}
+          </Select>
+          <FormHelperText className="crud-helperText">
+            This field is required
+          </FormHelperText>
+        </FormControl>
       </div>
 
       <Button
@@ -91,7 +132,7 @@ function DeleteFaculty() {
         disabled={facultyChosen === "" ? true : false}
         onClick={handleSubmit}
       >
-        Delete Faculty
+        Delete Department
       </Button>
     </div>
   );
