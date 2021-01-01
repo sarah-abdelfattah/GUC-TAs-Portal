@@ -8,6 +8,8 @@ import 'react-pro-sidebar/dist/scss/styles.scss';
 import '../src/styles/Login.css';
 import '../src/styles/util.css';
 import './styles/home.scss';
+import "./styles/Homepage.scss";
+import "./styles/UnauthorizedPage.scss";
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
 import './styles/crudButtons.scss';
@@ -15,6 +17,7 @@ import './styles/crudButtons.scss';
 //Import the pages
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
+import Homepage from './pages/Homepage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import Login from './pages/Login';
 import Location from './pages/Location';
@@ -43,9 +46,11 @@ function App() {
                 <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
               </div> :
               <div className='myApp'>
+                <Route path='/home' render={(props) => <Homepage {...props} />} />
                 <Route path='/location' render={(props) => <Location {...props} />} />
                 <Route path='/faculty' render={(props) => <Faculty {...props} />} />
                 <Route path='/department' render={(props) => <Department {...props} />} />
+
               </div>
             }
           </ToastProvider>

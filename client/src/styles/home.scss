@@ -10,7 +10,7 @@ body,
 
 .myApp {
     min-height: 100%;
-    width: 100%;
+    width: calc(100%-68px);
     margin-top: 60px;
     margin-left: 67px;
     background: #eee;

@@ -102,7 +102,7 @@ Functionality: View if they have missing days.
 Route: /attendance/viewMissingDays
 Request type: GET
 
-Response: "Number of missing days: 3"
+Response: "3 days"
 
 ### 10.
 Functionality: View if they are having missing hours or extra hours.

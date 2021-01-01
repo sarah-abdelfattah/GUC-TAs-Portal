@@ -7,9 +7,9 @@ const attendanceController = require('../controllers/attendanceController');
 router.get('/viewAttendance', attendanceController.viewAttendance);
 router.get('/viewMissingDays', attendanceController.viewMissingDays);
 router.get('/viewHours', attendanceController.viewMissingHours);
-router.put('/addMissingSignInOut', auth.HRAuth, attendanceController.addMissingSignInOut);
 
 //hr
+router.put('/addMissingSignInOut', auth.HRAuth, attendanceController.addMissingSignInOut);
 router.get('/viewStaffAttendance', auth.HRAuth, attendanceController.viewAttendanceHR);
 router.get('/viewStaffMissing', auth.HRAuth, attendanceController.viewStaffWithMissingHoursDays);
 

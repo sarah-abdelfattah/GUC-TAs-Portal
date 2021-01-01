@@ -1,8 +1,6 @@
 import React from "react";
 import brokenSVG from "../assets/brokenSVG.svg";
 
-import "../styles/UnauthorizedPage.scss";
-
 function UnauthorizedPage() {
   return (
     <div id="notfound">
@@ -19,7 +17,7 @@ function UnauthorizedPage() {
           Maybe the page is deleted, changed, or you are not authorized to go
           through this page
         </p>
-        <a href="/">Home</a>
+        <a href="/home">Home</a>
       </div>
     </div>
   );
