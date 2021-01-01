@@ -90,7 +90,6 @@ router.post("", async function (req, res) {
             staff.lastLogIn = new Date();
             await staff.save();
             return res.header("auth-token", token).send({ token: token, fistLogIn: false, lastLogIn: staff.lastLogIn });
-            // return res.json({ data: `Bearer ${token}` })
         }
         else
             return res.status(400).send({ error: "Wrong Id or password" });

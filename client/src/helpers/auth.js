@@ -1,6 +1,12 @@
+const jwt = require('jsonwebtoken');
+const tokenKey = require('../config/keys').secretOrKey;
 
 async function auth(types) {
-    const user = localStorage.getItem("user");
+    const token = localStorage.getItem("user");
+
+    let user
+    if (token)
+        user = jwt.verify(token, tokenKey);
 
     let found;
     if (user.type === "Academic Member")

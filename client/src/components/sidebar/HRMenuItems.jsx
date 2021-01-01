@@ -3,6 +3,7 @@ import { Menu, MenuItem } from "react-pro-sidebar";
 
 //icons
 import { MdLocationOn } from "react-icons/md";
+import { FaUniversity } from "react-icons/fa";
 
 function HRMenuItems() {
   const [showLocation, setLocation] = useState(false);
@@ -24,7 +25,7 @@ function HRMenuItems() {
       </MenuItem>
 
       <MenuItem
-        icon={<MdLocationOn />}
+        icon={<FaUniversity />}
         onMouseEnter={() => setFaculty(true)}
         onMouseLeave={() => setFaculty(false)}
         onClick={() => routeChange("faculty")}

@@ -43,6 +43,7 @@ function App() {
               </div> :
               <div className='myApp'>
                 <Route path='/location' render={(props) => <Location {...props} />} />
+                <Route path='/faculty' render={(props) => <Faculty {...props} />} />
               </div>
             }
           </ToastProvider>
