@@ -31,14 +31,16 @@ function App() {
         <Switch>
           <ToastProvider>
             {currentLocation === '/login' || currentLocation === '/unauthorized' ?
-              <Route
-                exact
-                path="/login"
-                render={(props) => <Login {...props} />}
-              /> :
+              <div>
+                <Route
+                  exact
+                  path="/login"
+                  render={(props) => <Login {...props} />}
+                />
+                <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
+              </div> :
               <div className='myApp'>
                 <Route path='/location' render={(props) => <Location {...props} />} />
-                <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
               </div>
             }
           </ToastProvider>

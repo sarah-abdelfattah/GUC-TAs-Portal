@@ -20,7 +20,7 @@ function SideBar() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await checkLogin();
+      const res = (await checkLogin()).type;
       setUser(res);
     }
     fetchData();

@@ -3,13 +3,19 @@ const tokenKey = require('../config/keys').secretOrKey;
 
 
 async function checkLogin() {
-    const token = localStorage.getItem("user");
-    if (token) {
-        const userData = jwt.verify(token, tokenKey);
-        return userData;
-    }
-    else {
-        document.location.href = '/login'
+    try {
+        const token = localStorage.getItem("user");
+        if (token) {
+            const userData = jwt.verify(token, tokenKey);
+            return userData;
+        }
+        else {
+            document.location.href = '/login'
+        }
+    } catch (err) {
+        localStorage.removeItem("user");
+        document.location.href = "/login";
+        console.log("~ err", err);
     }
 }
 
