@@ -16,29 +16,21 @@ import {
 function AddFaculty() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
+  const [staff, setStaff] = useState({ staff: [] });
+  const [HODChosen, setHODChosen] = useState("");
   const [name, setName] = useState("");
-  const [HOD, setHOD] = useState("");
 
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axiosCall("get", "faculties/faculty/all");
-      // const result = await axios.get(
-      //   "http://localhost:5000/faculties/faculty/all",
-      //   "",
-      //   {
-      //     headers: {
-      //       Authorization: localStorage.getItem("user"),
-      //     },
-      //   }
-      // );
-
-      // console.log(
-      //   "🚀 ~ file: AddDepartment.jsx ~ line 26 ~ fetchData ~ result",
-      //   result
-      // );
-      setFaculties(result.data.data);
+      const facResult = await axiosCall("get", "faculties/faculty/all");
+      const staffResult = await axiosCall(
+        "get",
+        "staffMembers/AC/Course Instructor/all"
+      );
+      setFaculties(facResult.data.data);
+      setStaff(staffResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
@@ -49,20 +41,29 @@ function AddFaculty() {
       if (faculties)
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
+      let HOD;
+      if (HODChosen)
+        HOD = await staff.find(({ _id }) => _id === HODChosen).gucId;
+
       const body = {
         facultyCode: code.toUpperCase(),
-        name: name,
-        HOD: HOD ? HOD : undefined,
+        depName: name,
+        HOD: HODChosen ? HOD : undefined,
       };
 
       const res = await axiosCall("post", "departments/department", body);
+      console.log(
+        "🚀 ~ file: AddDepartment.jsx ~ line 51 ~ handleSubmit ~ res",
+        res
+      );
 
       if (res.data.data) {
         addToast("Department created successfully", {
           appearance: "success",
           autoDismiss: true,
         });
-        setHOD("");
+        setFacultyChosen("");
+        setHODChosen("");
         setName("");
       }
 
@@ -117,15 +118,28 @@ function AddFaculty() {
           </FormHelperText>
         </FormControl>
 
-        <FormControl className="crud-formControl" required>
+        <FormControl className="crud-formControl">
           <InputLabel className="crud-inputLabel">
             Head of Department
           </InputLabel>
-          <Input
-            className="crud-input"
-            value={HOD}
-            onChange={(event) => setHOD(event.target.value)}
-          />
+          <Select
+            className="crud-select"
+            value={HODChosen}
+            onChange={(event) => {
+              setHODChosen(event.target.value);
+            }}
+          >
+            {staff.length > 0 &&
+              staff.map((member) => (
+                <MenuItem
+                  className="crud-menuItem"
+                  value={member._id}
+                  key={member._id}
+                >
+                  {member.gucId} {member.name}
+                </MenuItem>
+              ))}
+          </Select>
         </FormControl>
       </div>
 

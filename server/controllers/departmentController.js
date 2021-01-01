@@ -66,10 +66,10 @@ exports.addDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     console.log('~ err', err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 }
 
@@ -130,10 +130,10 @@ exports.updateDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     console.log('~ err', err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 }
 
@@ -169,10 +169,10 @@ exports.deleteDepartment = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     console.log('~ err', err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 }
 
@@ -213,9 +213,9 @@ exports.getAllStaffMembers = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
-    return res.status(500).send({ err: `Internal Server Error: ${err}` });
+    return res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 
@@ -267,7 +267,7 @@ exports.getStaffMembersPerCourse = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     return res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
@@ -312,9 +312,9 @@ exports.viewDayOff = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
-    return res.status(500).send({ err: `Internal Server Error: ${err}` });
+    return res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 
@@ -359,9 +359,9 @@ exports.viewDayOffStaff = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
-    return res.status(500).send({ err: `Internal Server Error: ${err}` });
+    return res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 
@@ -408,9 +408,9 @@ exports.viewCourseCoverage = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
-    res.status(500).send({ err: `Internal Server Error: ${err}` });
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 
@@ -419,7 +419,7 @@ exports.assignInstructor = async (req, res) => {
   try {
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
-    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName})
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({ instructorId, courseName })
 
     if (!instructorId || !courseName)
       return res.send({ error: "Please enter all the details" });
@@ -517,9 +517,9 @@ exports.assignInstructor = async (req, res) => {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
-    res.status(500).send({ err: `Internal Server Error: ${err}` });
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 }
 
@@ -528,7 +528,7 @@ exports.updateInstructor = async function (req, res) {
     let instructorId = req.body.gucId;
     let newCourseName = req.body.newName;
     let courseName = req.body.oldName;
-    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName,newCourseName})
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({ instructorId, courseName, newCourseName })
 
     if (!instructorId || !newCourseName || !courseName)
       return res.send({ error: "Please enter new course name" });
@@ -602,7 +602,7 @@ exports.updateInstructor = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
@@ -612,7 +612,7 @@ exports.deleteInstructor = async function (req, res) {
   try {
     let instructorId = req.body.gucId;
     let courseName = req.body.name;
-    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({instructorId,courseName}) //departmentAssignmentSchema
+    let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({ instructorId, courseName }) //departmentAssignmentSchema
 
     if (!instructorId || !courseName)
       return res.send({ error: "Please enter all the details" });
@@ -688,7 +688,7 @@ exports.deleteInstructor = async function (req, res) {
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+      return res.send({ error: err.details[0].message });
     }
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
@@ -782,6 +782,6 @@ exports.viewTeachingAssignments = async (req, res) => {
       });
     }
   } catch (err) {
-    res.status(500).send({ err: `Internal Server Error: ${err}` });
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
