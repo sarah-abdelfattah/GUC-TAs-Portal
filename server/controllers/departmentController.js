@@ -7,6 +7,42 @@ const Course = require('../models/Course');
 
 const validation = require('../helpers/validation');
 
+exports.getDepartment = async function (req, res) {
+  try {
+    if (req.params.faculty === 'all') {
+      //get all departments of all faculties
+      if (req.params.department === 'all') {
+        const result = Department.find();
+        return res.send({ data: result });
+      }
+      // search for a specific department under all faculties
+      else {
+        const result = Department.findOne({ name: req.params.department });
+        if (result) return res.send({ data: result });
+        else return res.send({ error: "Sorry no department with this name" });
+      }
+    }
+    else {
+      const fac = await Faculty.findOne({ code: req.params.faculty })
+
+      //get all departments of specific faculties
+      if (req.params.department === 'all') {
+        const result = await Department.find({ faculty: fac });
+        return res.send({ data: result });
+      }
+      // search for a specific department under a specific faculty faculties
+      else {
+        const result = Department.findOne({ faculty: fac, name: req.params.department });
+        if (result) return res.send({ data: result });
+        else return res.send({ error: "Sorry no department with this name under this faculty" });
+      }
+    }
+  } catch (err) {
+    console.log('~ err', err);
+    return res.send({ error: err });
+  }
+}
+
 exports.addDepartment = async function (req, res) {
   try {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
@@ -92,9 +128,9 @@ exports.updateDepartment = async function (req, res) {
     if (!facultyFound)
       return res.send({ error: "No faculty with this name" });
 
-    const depFound = await Department.findOne({ name: depName }).populate('department');
+    const depFound = await Department.findOne({ faculty: facultyFound, name: depName }).populate('department');
     if (!depFound)
-      return res.send({ error: "No department with this name" });
+      return res.send({ error: "No department with this name under this faculty" });
 
     if (HOD) {// staff found? 
       const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
@@ -117,15 +153,20 @@ exports.updateDepartment = async function (req, res) {
     }
 
     if (newFacultyCode) {
-      const newFacultyFound = await Faculty.findOne({ code: newFacultyCode }).populate();
+      const newFacultyFound = await Faculty.findOne({ code: newFacultyCode });
       if (!newFacultyFound)
         return res.send({ error: "No faculty with this new name" });
+
+      const depNewFound = await Department.findOne({ faculty: newFacultyFound, name: depName }).populate('department');
+      if (depNewFound)
+        return res.send({ error: "There is a department with this name under this faculty you want to change to" });
 
       depFound.faculty = newFacultyFound;
       depFound.HOD = undefined;
     }
 
     const updatedDep = await depFound.save();
+
     return res.send({ data: "Department Updated Successfully" });
   } catch (err) {
     if (err.isJoi) {

@@ -58,15 +58,15 @@ function Department() {
           }
         />
       </div>
-      {/* {crudBtns.add === true ? (
+      {crudBtns.add ? (
         <AddDepartment />
       ) : crudBtns.update ? (
         <UpdateDepartment />
-      ) : crudBtns.delete ? (
-        <DeleteDepartment />
-      ) : null} */}
-
-      {crudBtns.add === true ? <AddDepartment /> : null}
+      ) : //     crudBtns.delete ? (
+      //   <DeleteDepartment />
+      // )
+      //       :
+      null}
     </div>
   );
 }

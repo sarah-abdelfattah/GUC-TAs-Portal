@@ -52,10 +52,6 @@ function AddFaculty() {
       };
 
       const res = await axiosCall("post", "departments/department", body);
-      console.log(
-        "🚀 ~ file: AddDepartment.jsx ~ line 51 ~ handleSubmit ~ res",
-        res
-      );
 
       if (res.data.data) {
         addToast("Department created successfully", {
@@ -149,7 +145,7 @@ function AddFaculty() {
         disabled={facultyChosen === "" || name === "" ? true : false}
         onClick={handleSubmit}
       >
-        Add Faculty
+        Add Department
       </Button>
     </div>
   );
