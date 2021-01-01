@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./pages/Login";
+import ViewAllStaff from "./pages/HOD/ViewAllStaff";
 // import '../styles/Login.css'
 // import '../styles/util.css'
 import '../src/styles/Login.css'
@@ -40,6 +41,11 @@ function App() {
               path="/login"
               render={(props) => <Login {...props} />}
             />
+          <Route
+              exact
+              path="/department/viewStaff"
+              render={(props) => <ViewAllStaff {...props} />}
+          />
             {/* 
             <Route exact path="/home" render={(props) => <Home {...props} />} />
 
