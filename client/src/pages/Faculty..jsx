@@ -1,34 +1,26 @@
-import React, { useState, useEffect } from "react";
-import auth from "../helpers/auth";
+import React, { useState } from "react";
 
 //components
 import Add from "../components/Add";
 import Update from "../components/Update";
 import Delete from "../components/Delete";
 
-import AddLocation from "../components/location/AddLocation";
-import UpdateLocation from "../components/location/UpdateLocation";
-import DeleteLocation from "../components/location/DeleteLocation";
+import AddFaculty from "../components/faculty/AddFaculty";
+import UpdateFaculty from "../components/faculty/UpdateFaculty";
+import DeleteFaculty from "../components/faculty/DeleteFaculty";
 
-function Location() {
+function Faculty() {
   const [crudBtns, setBtns] = useState({
     add: false,
     update: false,
     delete: false,
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      await auth(["HR"]);
-    }
-    fetchData();
-  }, []);
-
   return (
     <div className="crud-outer-container">
       <div className="crud-container">
         <Add
-          text="location"
+          text="Faculty"
           onClick={() =>
             setBtns({
               add: true,
@@ -38,7 +30,7 @@ function Location() {
           }
         />
         <Update
-          text="location"
+          text="Faculty"
           onClick={() =>
             setBtns({
               add: false,
@@ -48,7 +40,7 @@ function Location() {
           }
         />
         <Delete
-          text="location"
+          text="Faculty"
           onClick={() =>
             setBtns({
               add: false,
@@ -59,14 +51,14 @@ function Location() {
         />
       </div>
       {crudBtns.add === true ? (
-        <AddLocation />
+        <AddFaculty />
       ) : crudBtns.update ? (
-        <UpdateLocation />
-      ) : crudBtns.delete ? (
-        <DeleteLocation />
-      ) : null}
+        <UpdateFaculty />
+      ) : (
+        <DeleteFaculty />
+      )}
     </div>
   );
 }
 
-export default Location;
+export default Faculty;

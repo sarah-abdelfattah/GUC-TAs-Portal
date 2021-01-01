@@ -6,6 +6,7 @@ import { MdLocationOn } from "react-icons/md";
 
 function HRMenuItems() {
   const [showLocation, setLocation] = useState(false);
+  const [showFaculty, setFaculty] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = path;
@@ -20,6 +21,15 @@ function HRMenuItems() {
         onClick={() => routeChange("location")}
       >
         {showLocation ? "Location" : ""}
+      </MenuItem>
+
+      <MenuItem
+        icon={<MdLocationOn />}
+        onMouseEnter={() => setFaculty(true)}
+        onMouseLeave={() => setFaculty(false)}
+        onClick={() => routeChange("faculty")}
+      >
+        {showFaculty ? "Faculty" : ""}
       </MenuItem>
     </Menu>
   );

@@ -15,9 +15,11 @@ import './styles/crudButtons.scss';
 //Import the pages
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
-import Location from './pages/Location';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import Login from './pages/Login';
+import Location from './pages/Location';
+import Faculty from "./pages/Faculty.";
+
 
 function App() {
   // eslint-disable-next-line
