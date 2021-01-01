@@ -1,6 +1,7 @@
 const axiosReq = require('axios');
 
 var tmp;
+//TODO: when deployed
 // if (process.env.NODE_ENV === "production")
 //     tmp = 'https://BASE_URL.herokuapp.com/api/';
 // else
@@ -10,8 +11,6 @@ export const link = tmp;
 export const axios = axiosReq.create({
     baseURL: tmp,
     headers: {
-        "Content-type": "application/json"
+        'auth-token': localStorage.getItem('user')
     }
 });
-
-//result = await axios.get(url, body);

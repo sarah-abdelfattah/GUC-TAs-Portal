@@ -1,29 +1,22 @@
-import axios from 'axios';
-
+import { axios } from "./axios";
 
 export async function axiosCall(requestType, url, body) {
     try {
-        var tmp;
-        //TODO: when deployed
-        // if (process.env.NODE_ENV === "production")
-        //     tmp = 'https://BASE_URL.herokuapp.com/api/';
-        // else
-        tmp = `http://localhost:5000/`;
-
-        const fullURL = tmp + url;
+        const token = localStorage.getItem("user");
         let config = {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'auth-token': token
             }
         }
 
         let result;
         switch (requestType) {
-            case "get": { result = await axios.get(fullURL, body); break; }
-            case "post": { result = await axios.post(fullURL, body); break; }
-            case "put": { result = await axios.put(fullURL, body); break; }
-            case "delete": { result = await axios.delete(fullURL, { data: body }, config); break; }
-            case "patch": { result = await axios.patch(fullURL, body); break; }
+            case "get": { result = await axios.get(url, body); break; }
+            case "post": { result = await axios.post(url, body); break; }
+            case "put": { result = await axios.put(url, body); break; }
+            case "delete": { result = await axios.delete(url, { data: body }, config); break; }
+            case "patch": { result = await axios.patch(url, body); break; }
             default: { return "Wrong request type: can either be get, post, put, delete or patch"; }
         }
         return result;

@@ -58,29 +58,29 @@ const dummy = require('./helpers/seeding');
 //All routes should be tested for auth except login
 app.use('/logIn', logIn);
 
-// app.all('*', async (req, res, next) => {
-//   try {
-//     const token = req.header('auth-token');
-//     // const token = req.headers.token;
+app.all('*', async (req, res, next) => {
+  try {
+    const token = req.header('auth-token');
+    // const token = req.headers.token;
 
-//     if (token == null) return res.sendStatus(401); // there isn't any token
+    if (token == null) return res.sendStatus(401); // there isn't any token
 
-//     const tokenFound = await Token.findOne({ tokenId: token });
-//     if (tokenFound) {
-//       if (!tokenFound.valid) {
-//         return res.sendStatus(401);
-//       }
-//     } else {
-//       return res.send('Sorry no token');
-//     }
+    const tokenFound = await Token.findOne({ tokenId: token });
+    if (tokenFound) {
+      if (!tokenFound.valid) {
+        return res.sendStatus(401);
+      }
+    } else {
+      return res.send('Sorry no token');
+    }
 
-//     req.user = jwt.verify(token, tokenKey);
-//     next();
-//   } catch (err) {
-//     console.log('~ err', err);
-//     res.send({ err: err });
-//   }
-// });
+    req.user = jwt.verify(token, tokenKey);
+    next();
+  } catch (err) {
+    console.log('~ err', err);
+    res.send({ err: err });
+  }
+});
 
 app.use('/attendance', attendances);
 app.use('/courses', courses);

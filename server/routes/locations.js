@@ -6,8 +6,8 @@ const locationController = require('../controllers/locationController');
 //HR only
 //TODO: return auth
 router.get("/room/:num", locationController.getRoom) //"all"" gets all rooms or the room number 
-router.post("/location", locationController.createRoom);
-router.put("/location", locationController.updateRoom);
-router.delete("/location", locationController.deleteRoom);
+router.post("/location", auth.HRAuth, locationController.createRoom);
+router.put("/location", auth.HRAuth, locationController.updateRoom);
+router.delete("/location", auth.HRAuth, locationController.deleteRoom);
 
 module.exports = router;  
