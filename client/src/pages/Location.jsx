@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import auth from "../helpers/auth";
 
 //components
 import Add from "../components/Add";
@@ -15,6 +16,13 @@ function Location() {
     update: false,
     delete: false,
   });
+
+  useEffect(() => {
+    async function fetchData() {
+      await auth(["HR"]);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="crud-outer-container">
@@ -54,9 +62,9 @@ function Location() {
         <AddLocation />
       ) : crudBtns.update ? (
         <UpdateLocation />
-      ) : (
+      ) : crudBtns.delete ? (
         <DeleteLocation />
-      )}
+      ) : null}
     </div>
   );
 }
