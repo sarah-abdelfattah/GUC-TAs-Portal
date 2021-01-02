@@ -13,6 +13,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
+  //const [selectedCourse, setSelectedCourse] = useState([]); //table data
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -34,7 +35,6 @@ function ViewAllStaff() {
             "get",
             `${link}/departments/courses`
           );
-          //console.log(courses.data.data);
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
@@ -72,6 +72,47 @@ function ViewAllStaff() {
       fetchData();
     }
   }, []);
+
+  async function handleOnChange(event){
+    try{
+      const res = await axiosCall(
+        "get",
+        `${link}/departments/getAllStaffMembers/${event.course}`
+      );
+      const locations = await axiosCall(
+        "get",
+        `${link}/locations/room/all`
+      );
+
+      let data = res.data.data.map((staff) => {
+        return {
+          name: staff.name,
+          gucId: staff.gucId,
+          gender: staff.gender,
+          email: staff.email,
+          role: staff.role,
+          salary: staff.salary,
+          dayOff: staff.dayOff,
+          id: staff._id,
+          location: locations.data.data
+            .map((location) => {
+              if (staff.officeLocation === location._id) {
+                return location.location;
+              } else return null;
+            })
+            .filter((location) => location !== null),
+        };
+      });
+
+      setData(data);
+      //setSelectedCourse(event.course);
+      console.log(res)
+    }
+    catch (err) {
+      console.log("~err", err);
+    }
+    console.log(event.course)
+  }
 
   return (
     // styling
@@ -130,8 +171,12 @@ function ViewAllStaff() {
               ),
               Toolbar: (props) => (
                 <Autocomplete
+                  size="small"
                   id="debug"
                   options={courses}
+                  onChange={(event, newValue) =>{
+                    handleOnChange(newValue);
+                  }}
                   getOptionLabel={(option) => option.course}
                   style={{ width: 300,  margin: "auto" }}
                   renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
