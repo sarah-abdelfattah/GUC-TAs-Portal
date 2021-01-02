@@ -1,0 +1,75 @@
+@import "./colorSchema";
+
+.slots-title{
+    color: $secondary-blue;
+    font-size: 40px;
+    position:relative;
+    top:40px;
+    left:60px;
+}
+
+.slots-line{
+    border-bottom: 1px solid $secondary-blue;
+    position: relative;
+    top:40px;
+    width: 96%;
+    left:60px;
+    height: 10px;
+}
+
+.table-page-slots-style{
+    border-radius: 15px;
+    width: 95.99%; //96%
+    height: 91.2%;
+    // // min-width:25%;
+    position:relative;
+    top:61px;
+    left:60px;
+    background-color: #f3fdff;
+}
+
+.table-slots-container{
+    background-color:white;
+    border-radius: 10px;
+    border: 2px solid #e3fbff;
+    // width: 500px;
+    // height: 180px;
+    width: 70%;
+    height:60%;
+    position:relative;
+    top:80px;
+    left:60px;
+}
+
+.table-slots-style {
+    background-color: white;
+    // min-width:100%;
+    // border-radius: 5px;
+    height: 70%;
+    top: 7.5px;
+    left: 10px;
+    width:97.5%;
+    position: relative;
+}
+
+// .head{
+//     // background-color: $primary-blue;
+//    color: white;
+// }
+
+.MuiTableCell-root.MuiTableCell-head{
+    color:white;
+}
+
+.MuiTableCell-root.MuiTableCell-body.dark-blue{
+    color: white;
+}
+
+.occupied{
+    background-color: #f3fdff;
+    // border: 1px solid #dfdfdf;
+}
+
+.border{
+    border: 1px solid #dfdfdf;
+}

@@ -5,7 +5,9 @@ import Login from "./pages/Login";
 // import '../styles/util.css'
 import '../src/styles/Login.css'
 import '../src/styles/util.css'
+
 import '../src/styles/courseCoverageTable.scss'
+import '../src/styles/slotsAssignedTable.scss'
 
 
 //Import the styles
@@ -22,7 +24,9 @@ import { ToastProvider } from 'react-toast-notifications'
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+
 import CourseCoverage from './pages/InstCourseCoverage';
+import SlotsAssigned from './pages/InstructorSlotsAssigned';
 
 
 function App() {
@@ -54,6 +58,7 @@ function App() {
             />
 
             <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
+            <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
           </ToastProvider>
           </Switch>
 
