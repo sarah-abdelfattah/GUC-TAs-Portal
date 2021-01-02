@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
+import DetailPanel from "../../components/DetailPanel"
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
@@ -41,8 +42,8 @@ function ViewAllStaff() {
   return (
     // styling
     <Grid container spacing={3}>
-      <Grid item xs={3}></Grid>
-      <Grid item xs={7}>
+      <Grid item xs={2}></Grid>
+      <Grid item xs={9}>
         <br />
         <br />
         <br />
@@ -63,14 +64,28 @@ function ViewAllStaff() {
               ),
             },
             { title: "Name", field: "name" },
-            { title: "GUC ID", field: "gucId" },
+            { title: "Gender", field: "gender" },
+            { title: "ID", field: "gucId" },
             { title: "Role", field: "role" },
             { title: "Email", field: "email" },
+            { title: "Salary", field: "salary" },
+            { title: "office location", field: "officeLocation" },
           ]}
           data={data}
+          detailPanel={rowData => {
+            {console.log(rowData)}
+            return (
+              <div>
+              <DetailPanel 
+                data = {rowData.name}
+              />
+              </div>
+            )
+          }}
+          onRowClick={(event, rowData, togglePanel) => togglePanel()}
         />
       </Grid>
-      <Grid item xs={3}></Grid>
+      <Grid item xs={1}></Grid>
     </Grid>
   );
 }
