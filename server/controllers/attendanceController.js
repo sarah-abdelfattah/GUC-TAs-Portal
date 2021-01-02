@@ -60,7 +60,7 @@ exports.viewMissingDays = async function (req, res) {
         if (typeof (mDays) === 'string') {
             res.send(mDays);
         } else
-            res.send(mDays + "days");
+            res.send(mDays + " days");
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
@@ -84,7 +84,7 @@ exports.viewMissingHours = async function (req, res) {
         const hoursSpentPrinted = Math.floor(Math.abs(minutesSpent) / 60);
         const minutesSpentPrinted = Math.abs(minutesSpent) % 60;
         const sign = minutesSpent < 0 ? "-" : "";
-        const sentRes = sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
+        const sentRes = sign + hoursSpentPrinted + " hrs & " + minutesSpentPrinted + " min";
         res.send(sentRes);
     } catch (err) {
         if (err.isJoi) {
