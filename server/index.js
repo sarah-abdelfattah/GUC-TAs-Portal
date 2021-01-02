@@ -47,7 +47,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // Init middleware
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //seeding
