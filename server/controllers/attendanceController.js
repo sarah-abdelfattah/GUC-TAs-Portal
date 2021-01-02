@@ -45,10 +45,10 @@ exports.viewAttendance = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -60,14 +60,14 @@ exports.viewMissingDays = async function (req, res) {
         if (typeof (mDays) === 'string') {
             res.send(mDays);
         } else
-            res.send("Number of missing days: " + mDays);
+            res.send(mDays + " days");
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -84,15 +84,15 @@ exports.viewMissingHours = async function (req, res) {
         const hoursSpentPrinted = Math.floor(Math.abs(minutesSpent) / 60);
         const minutesSpentPrinted = Math.abs(minutesSpent) % 60;
         const sign = minutesSpent < 0 ? "-" : "";
-        const sentRes = "Missing/extra hours: " + sign + hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min.";
+        const sentRes = sign + hoursSpentPrinted + " hrs & " + minutesSpentPrinted + " min";
         res.send(sentRes);
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.status(500).send({ err: `Internal Server Error: ${err}` });
+        return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -291,10 +291,10 @@ exports.addMissingSignInOut = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -331,7 +331,7 @@ exports.viewAttendanceHR = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
@@ -365,10 +365,10 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.status(500).send({ err: `Internal Server Error: ${err}` });
+        return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
