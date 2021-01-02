@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import checkLogin from "../helpers/checkLogin";
 import axiosCall from "../helpers/axiosCall";
+import { useToasts } from "react-toast-notifications";
 
-import id from "../assets/id.svg";
+import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
 
@@ -19,6 +20,7 @@ function Homepage() {
   const [department, setDepartment] = useState("");
   const [days, setDays] = useState("");
   const [hours, setHours] = useState("");
+  const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
@@ -37,21 +39,23 @@ function Homepage() {
         setLocation(office.location);
       }
 
-      //get faculty
-      const facultyRes = await axiosCall("get", "faculties/faculty/all");
-      let fac;
-      if (facultyRes.data.data) {
-        fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
-        setFaculty(fac.code);
-      }
+      if (user.type === "Academic Member") {
+        //get faculty
+        const facultyRes = await axiosCall("get", "faculties/faculty/all");
+        let fac;
+        if (facultyRes.data.data) {
+          fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
+          setFaculty(fac.code);
+        }
 
-      //get department
-      const depRes = await axiosCall("get", "departments/all/all");
-      let dep;
-      if (depRes.data.data) {
-        //TODO:fix backend
-        dep = depRes.data.data.find(({ _id }) => _id === user.department);
-        setDepartment(dep.name);
+        //get department
+        const depRes = await axiosCall("get", "departments/all/all");
+        let dep;
+        if (depRes.data.data) {
+          //TODO:fix backend
+          dep = depRes.data.data.find(({ _id }) => _id === user.department);
+          setDepartment(dep.name);
+        }
       }
 
       //get days
@@ -64,6 +68,56 @@ function Homepage() {
     }
     fetchData();
   }, []);
+
+  const handleSignIn = async () => {
+    try {
+      const res = await axiosCall("post", "staffMembers/signIn");
+
+      if (res.data.data) {
+        addToast("Signed in successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const res = await axiosCall("post", "staffMembers/signOut");
+
+      if (res.data.data) {
+        addToast("Signed out successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  };
 
   return (
     <div id="homepage">
@@ -123,11 +177,19 @@ function Homepage() {
       </div>
       <div className="right-hp">
         <img alt="" src={id} className="profile-icon" />
-        <Button variant="success" className="sign-btn green">
+        <Button
+          variant="success"
+          className="sign-btn green"
+          onClick={handleSignIn}
+        >
           <img alt="" src={signIn} className="sign-btn-icon" />
           <h6> Sign in</h6>
         </Button>
-        <Button variant="danger" className="sign-btn red">
+        <Button
+          variant="danger"
+          className="sign-btn red"
+          onClick={handleSignOut}
+        >
           <img alt="" src={signOut} className="sign-btn-icon" />
           <h6> Sign Out</h6>
         </Button>

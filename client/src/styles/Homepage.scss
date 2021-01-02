@@ -3,7 +3,7 @@
 #homepage {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     flex-wrap: wrap;
 
     .left-hp {
@@ -60,13 +60,18 @@
 
     .right-hp {
         width: 30%;
-        align-self: center;
+        margin: 70px 0 0 0;
+        // align-self: center;
+        transform: translateX(-70px);
+        // background-color: blue;
+
 
         img {
             display: block;
             margin: 0px auto;
             width: 90%;
             height: 60%;
+            // border: 1px solid black;
         }
 
         button {
