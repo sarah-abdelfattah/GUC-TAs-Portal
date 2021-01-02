@@ -33,4 +33,7 @@ router.delete('/assignInstructor', auth.HODAuth, departmentController.deleteInst
 // view View teaching assignments (which staff members teach which slots) of course offered by his department.
 router.get('/viewTeachingAssignments/:course', auth.HODAuth, departmentController.viewTeachingAssignments);
 
+// to get all courses for that department
+router.get('/courses', departmentController.viewCourses);
+
 module.exports = router;  

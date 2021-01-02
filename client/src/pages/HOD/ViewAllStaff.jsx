@@ -6,6 +6,9 @@ import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
 import { Button } from "@material-ui/core";
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
@@ -26,7 +29,11 @@ function ViewAllStaff() {
             "get",
             `${link}/locations/room/all`
           );
-          console.log(locations.data.data);
+          const courses = await axiosCall(
+            "get",
+            `${link}/departments/courses`
+          );
+          console.log(response.data.data);
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
@@ -42,6 +49,7 @@ function ViewAllStaff() {
                 email: staff.email,
                 role: staff.role,
                 salary: staff.salary,
+                dayOff: staff.dayOff,
                 id: staff._id,
                 location: locations.data.data
                   .map((location) => {
@@ -62,7 +70,7 @@ function ViewAllStaff() {
       fetchData();
     }
   }, []);
-  
+
   return (
     // styling
     <div>
@@ -90,6 +98,7 @@ function ViewAllStaff() {
               { title: "ID", field: "gucId" },
               { title: "Role", field: "role" },
               { title: "Email", field: "email" },
+              { title: "Day off", field: "dayOff" },
               { title: "office", field: "location" },
             ]}
             data={data}
@@ -116,6 +125,15 @@ function ViewAllStaff() {
                 >
                   View schedule
                 </Button>
+              ),
+              Toolbar: (props) => (
+                <Autocomplete
+                  id="debug"
+                  //options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  style={{ width: 300,   margin: "auto" }}
+                  renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
+                />
               ),
             }}
             //onRowClick={(event, rowData, togglePanel) => togglePanel()}
