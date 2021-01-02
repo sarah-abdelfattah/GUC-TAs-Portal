@@ -8,9 +8,7 @@ import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
 
-//TODO: integrate button of attendance records
 //TODO: responsiveness
-//TODO: design
 //TODO: department
 
 function Homepage() {
@@ -170,7 +168,10 @@ function Homepage() {
               <h6> {hours}</h6>
             </li>
           </ul>
-          <button className="attendanceRecord-btn">
+          <button
+            className="attendanceRecord-btn"
+            onClick={() => (document.location.href = "/myAttendanceRecord")}
+          >
             View Attendance Record
           </button>
         </div>
