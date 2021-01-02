@@ -204,7 +204,7 @@ function UpdateFaculty() {
       <Button
         variant="primary"
         className="crud-submit crud-update-btn blue"
-        disabled={facultyChosen === "" ? true : false}
+        disabled={facultyChosen === "" || depChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Update Department

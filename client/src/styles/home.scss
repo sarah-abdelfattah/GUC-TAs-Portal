@@ -5,6 +5,7 @@ body,
 #root,
 .App {
     height: 100%;
+    width: 100%;
     background: #fefeff;
 }
 
@@ -17,10 +18,12 @@ body,
     padding-bottom: 50px;
 }
 
-@media only screen and (max-width: 380px) {
+
+@media all and (max-width: 380px) {
     .myApp {
         margin-top: 50px;
         margin-left: 54px;
+        width: calc(100%-55px);
     }
 }
 

@@ -129,7 +129,7 @@ function DeleteFaculty() {
       <Button
         variant="danger"
         className="crud-submit crud-delete-btn red"
-        disabled={facultyChosen === "" ? true : false}
+        disabled={facultyChosen === "" || depChosen === "" ? true : false}
         onClick={handleSubmit}
       >
         Delete Department
