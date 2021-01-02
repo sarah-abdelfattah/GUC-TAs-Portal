@@ -12,6 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
+  const [courses, setCourses] = useState([]); //table data
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ function ViewAllStaff() {
             "get",
             `${link}/departments/courses`
           );
-          console.log(response.data.data);
+          //console.log(courses.data.data);
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
@@ -61,6 +62,7 @@ function ViewAllStaff() {
               };
             });
             setData(data);
+            setCourses(courses.data.data);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -129,9 +131,9 @@ function ViewAllStaff() {
               Toolbar: (props) => (
                 <Autocomplete
                   id="debug"
-                  //options={top100Films}
-                  getOptionLabel={(option) => option.title}
-                  style={{ width: 300,   margin: "auto" }}
+                  options={courses}
+                  getOptionLabel={(option) => option.course}
+                  style={{ width: 300,  margin: "auto" }}
                   renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
                 />
               ),
