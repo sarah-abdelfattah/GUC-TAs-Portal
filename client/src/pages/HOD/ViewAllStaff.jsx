@@ -22,13 +22,35 @@ function ViewAllStaff() {
             "get",
             `${link}/departments/getAllStaffMembers`
           );
+          const locations = await axiosCall(
+            "get",
+            `${link}/locations/room/all`
+          );
+          console.log(locations.data.data);
+          
           if (response.data.data.error) {
             addToast(response.data.data.error, {
               appearance: "warning",
               autoDismiss: true,
             });
           } else {
-            setData(response.data.data);
+            let data = response.data.data.map((staff) =>{
+              return {
+                name: staff.name,
+                gucId: staff.gucId,
+                gender: staff.gender,
+                email: staff.email,
+                role: staff.role,
+                salary: staff.salary,
+                location: locations.data.data.map((location) =>{
+                  if(staff.officeLocation === location._id){
+                    return location.location;
+                  }
+                  else return null;
+                }).filter((location) => location !== null)
+              }
+            })
+            setData(data);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -68,8 +90,7 @@ function ViewAllStaff() {
             { title: "ID", field: "gucId" },
             { title: "Role", field: "role" },
             { title: "Email", field: "email" },
-            { title: "Salary", field: "salary" },
-            { title: "office location", field: "officeLocation" },
+            { title: "office", field: "location" },
           ]}
           data={data}
           detailPanel={rowData => {
