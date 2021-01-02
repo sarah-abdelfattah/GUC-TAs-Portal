@@ -22,10 +22,10 @@ exports.getRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -39,6 +39,9 @@ exports.createRoom = async function (req, res) {
         if (!type || !location || !capacity)
             return res.send({ error: "Missing details" })
 
+        if (capacity <= 0)
+            return res.send({ error: "Sorry capacity cannot be zero or less" })
+
         const roomFound = await Location.findOne({ location: location });
         if (roomFound)
             return res.send({ error: "Sorry there is already a room with that location" })
@@ -48,10 +51,10 @@ exports.createRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 };
 
@@ -88,10 +91,10 @@ exports.updateRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -123,9 +126,9 @@ exports.deleteRoom = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log("~ err", err);
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
