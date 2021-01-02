@@ -56,7 +56,6 @@ function Login() {
 					// store the user in the localStorage
 					const token = response.data.token
 					localStorage.setItem('user', token);
-					setAuthToken(token);
 					// go to the home page after login is successful
 					document.location.href = '/home'
 				}

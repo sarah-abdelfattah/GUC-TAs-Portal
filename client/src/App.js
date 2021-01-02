@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 // import '../styles/util.css'
 import '../src/styles/Login.css'
 import '../src/styles/util.css'
+import '../src/styles/courseCoverageTable.scss'
+
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,6 +22,7 @@ import { ToastProvider } from 'react-toast-notifications'
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
 import UnauthorizedPage from './pages/UnauthorizedPage';
+import CourseCoverage from './pages/InstCourseCoverage';
 
 
 function App() {
@@ -49,6 +52,8 @@ function App() {
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
             />
+
+            <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
           </ToastProvider>
           </Switch>
 

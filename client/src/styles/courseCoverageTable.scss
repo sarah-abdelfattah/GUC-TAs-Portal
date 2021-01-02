@@ -1,0 +1,62 @@
+@import "./colorSchema";
+
+.coverage-title{
+    color: $secondary-blue;
+    font-size: 40px;
+    position:relative;
+    top:55px;
+    left:60px;
+}
+
+.line{
+    border-bottom: 1px solid $secondary-blue;
+    position: relative;
+    top:55px;
+    width: 96%;
+    left:60px;
+    height: 10px;
+}
+
+.table-page-style{
+    border-radius: 15px;
+    width: 96%;
+    height: 91.2%;
+    // // min-width:25%;
+    position:relative;
+    top:61px;
+    left:60px;
+    background-color: #f3fdff;
+}
+
+.table-container{
+    background-color:white;
+    border-radius: 10px;
+    border: 2px solid #e3fbff;
+    // width: 500px;
+    // height: 180px;
+    width: 40%;
+    height:40%;
+    position:relative;
+    top:125px;
+    left:60px;
+}
+
+.table-style {
+    background-color: white;
+    // min-width:100%;
+    // border-radius: 5px;
+    height: 95%;
+    top: 7.5px;
+    left: 10px;
+    width:97.5%;
+    position: relative;
+}
+
+// .head{
+//     // background-color: $primary-blue;
+//    color: white;
+// }
+
+.MuiTableCell-root.MuiTableCell-head{
+    color:white;
+}
