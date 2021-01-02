@@ -1,64 +1,57 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import MaterialTable from "material-table";
+import Avatar from 'react-avatar';
+import Grid from '@material-ui/core/Grid'
+import axiosCall from '../../helpers/axiosCall'
+import { link } from '../../helpers/constants.js';
 
 function ViewAllStaff() {
+  const [data, setData] = useState([]); //table data
+
+  useEffect(() => { 
+    const loggedInUser = localStorage.getItem("user");
+    if (!loggedInUser) {
+      document.location.href = "/login";
+    }
+    else{
+      async function fetchData(){
+        try{
+          const response = await axiosCall("get", `${link}/departments/getAllStaffMembers`);
+          setData(response.data.data);
+        }
+        catch(err){
+          console.log(err);
+        }
+      }
+      fetchData();
+    }
+  }, [])
+
   return (
     // styling
-    <div
-      className="container"
-      style={{
-        position: "relative",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50% , -50%)",
-          width: "100%",
-          height: "100%",
-          background: "#F8F8F8",
-        }}
-      >
+    <Grid container spacing={3}>
+    <Grid item xs={3}></Grid>
+    <Grid item xs={7}>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
         {" "}
         <MaterialTable
-          title="Free Action Preview"
+          title=""
           columns={[
+            {title: "Avatar", render: rowData => <Avatar maxInitials={1} size={40} round={true} name={rowData === undefined ? " " : rowData.name} />  },
             { title: "Name", field: "name" },
-            { title: "Surname", field: "surname" },
-            { title: "Birth Year", field: "birthYear", type: "numeric" },
-            {
-              title: "Birth Place",
-              field: "birthCity",
-              lookup: { 34: "İstanbul", 63: "Şanlıurfa" },
-            },
+            { title: "GUC ID", field: "gucId" },
+            { title: "Role", field: "role"},
+            { title: "Email", field: "email"},
           ]}
-          data={[
-            {
-              name: "Mehmet",
-              surname: "Baran",
-              birthYear: 1987,
-              birthCity: 63,
-            },
-            {
-              name: "Zerya Betül",
-              surname: "Baran",
-              birthYear: 2017,
-              birthCity: 34,
-            },
-          ]}
-          actions={[
-            {
-              icon: "add",
-              tooltip: "Add User",
-              isFreeAction: true,
-              onClick: (event) => alert("You want to add a new row"),
-            },
-          ]}
+          data= {data}
         />
-      </div>
-    </div>
+    </Grid>
+    <Grid item xs={3}></Grid>
+    </Grid>
   );
 }
 
