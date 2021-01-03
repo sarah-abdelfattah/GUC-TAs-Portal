@@ -61,6 +61,7 @@ async function updateInfoHelper(user) {
     let JOI_Result = await validation.updateSchema.validateAsync(user)
 
     const gucId = user.gucId;
+    const name = user.name;
     const role = user.role;
     const officeLocation = user.officeLocation;
     const gender = user.gender;
@@ -70,6 +71,10 @@ async function updateInfoHelper(user) {
         return { error: 'No staff with this id' };
 
     else {
+        if (name) {
+            newStaff.name = name;
+        }
+
         if (gender) {
             newStaff.gender = gender;
         }

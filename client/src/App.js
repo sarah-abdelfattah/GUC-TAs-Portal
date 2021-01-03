@@ -14,6 +14,7 @@ import './styles/NavBar.scss';
 import './styles/SideBar.scss';
 import './styles/crudButtons.scss';
 import './styles/attendanceRecord.scss';
+import './styles/profile.scss';
 
 
 //Import the pages
@@ -26,7 +27,7 @@ import Location from './pages/Location';
 import Faculty from "./pages/Faculty";
 import Department from "./pages/Department";
 import MyAttendanceRecord from "./pages/MyAttendanceRecord";
-
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -50,11 +51,13 @@ function App() {
                 <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
               </div> :
               <div className='myApp'>
-                <Route path='/home' render={(props) => <Homepage {...props} />} />
-                <Route path='/location' render={(props) => <Location {...props} />} />
-                <Route path='/faculty' render={(props) => <Faculty {...props} />} />
-                <Route path='/department' render={(props) => <Department {...props} />} />
-                <Route path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
+                <Route exact path='/home' render={(props) => <Homepage {...props} />} />
+                <Route exact path='/location' render={(props) => <Location {...props} />} />
+                <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
+                <Route exact path='/department' render={(props) => <Department {...props} />} />
+                <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
+                <Route exact path='/profile' render={(props) => <Profile {...props} />} />
+
               </div>
             }
           </ToastProvider>

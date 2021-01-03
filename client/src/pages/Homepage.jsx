@@ -8,7 +8,6 @@ import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
 
-//TODO: responsiveness
 //TODO: department
 
 function Homepage() {
