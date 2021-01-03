@@ -115,9 +115,9 @@ function ViewAllStaff() {
   return (
     // styling
     <div>
-      <Grid container spacing={3}>
-        <Grid item xs={2}></Grid>
-        <Grid item xs={9}>
+      <Grid container spacing={1}>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={10}>
           <br />
           <br />
           <MaterialTable
