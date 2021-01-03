@@ -1,11 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
-// import '../styles/Login.css'
-// import '../styles/util.css'
-import '../src/styles/Login.css';
-import '../src/styles/util.css';
-import '../src/styles/courseCoverageTable.scss';
+
+import '../src/styles/courseCoverageTable.scss'
+import '../src/styles/slotsAssignedTable.scss'
+
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -26,9 +25,13 @@ import Homepage from './pages/Homepage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import Login from './pages/Login';
 import Location from './pages/Location';
-import Faculty from './pages/Faculty';
-import Department from './pages/Department';
+import Faculty from "./pages/Faculty";
+import Department from "./pages/Department";
+
 import CourseCoverage from './pages/InstCourseCoverage';
+import SlotsAssigned from './pages/InstructorSlotsAssigned';
+import Schedule from './pages/AcademicMemberSchedule';
+
 
 function App() {
   // eslint-disable-next-line
@@ -52,9 +55,14 @@ function App() {
                 <Route path='/location' render={(props) => <Location {...props} />} />
                 <Route path='/faculty' render={(props) => <Faculty {...props} />} />
                 <Route path='/department' render={(props) => <Department {...props} />} />
-                {/* <Route exact path='/' render={(props) => <Home {...props} />} /> } */}
-                <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
-                <Route exact path='/CourseCoverage' render={(props) => <CourseCoverage {...props} />} />
+                <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
+                <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
+                <Route exact path = "/viewMySchedule" render = {(props)=> <Schedule {...props}/>} />
+
+            <Route
+              path="/unauthorized"
+              render={(props) => <UnauthorizedPage {...props} />}
+            />
               </div>
             )}
           </ToastProvider>

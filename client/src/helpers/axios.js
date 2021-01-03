@@ -1,5 +1,4 @@
 const axiosReq = require('axios');
-//result = await axios.get(url, body);
 var tmp;
 //TODO: when deployed
 // if (process.env.NODE_ENV === "production")
