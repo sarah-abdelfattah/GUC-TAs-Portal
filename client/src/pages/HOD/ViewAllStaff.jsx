@@ -157,6 +157,10 @@ function ViewAllStaff() {
             ]}
             options={{
               actionsColumnIndex: -1,
+              headerStyle: {
+                backgroundColor: '#FFFFFF',
+                color: '#000000'
+              },
             }}
             components={{
               Action: (props) => (
