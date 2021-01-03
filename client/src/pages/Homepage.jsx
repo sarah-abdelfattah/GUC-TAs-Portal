@@ -47,7 +47,7 @@ function Homepage() {
         }
 
         //get department
-        const depRes = await axiosCall("get", "departments/all/all");
+        const depRes = await axiosCall("get", "departments/department/all/all");
         let dep;
         if (depRes.data.data) {
           //TODO:fix backend
@@ -137,6 +137,10 @@ function Homepage() {
             <li>
               <h5>Email: </h5>
               <h6> {user.email}</h6>
+            </li>
+            <li>
+              <h5>Day off: </h5>
+              <h6> {user.dayOff}</h6>
             </li>
             <li>
               <h5>Office Location: </h5>

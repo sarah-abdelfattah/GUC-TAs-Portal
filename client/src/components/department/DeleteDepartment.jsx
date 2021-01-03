@@ -30,7 +30,10 @@ function DeleteFaculty() {
     setFacultyChosen(target.value);
     const facCode = faculties.find(({ _id }) => _id === target.value).code;
 
-    const depResult = await axiosCall("get", `departments/${facCode}/all`);
+    const depResult = await axiosCall(
+      "get",
+      `departments/department/${facCode}/all`
+    );
     setDepartments(depResult.data.data);
   };
 

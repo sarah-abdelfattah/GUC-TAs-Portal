@@ -13,6 +13,8 @@ import "./styles/UnauthorizedPage.scss";
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
 import './styles/crudButtons.scss';
+import './styles/attendanceRecord.scss';
+
 
 //Import the pages
 import NavBar from './components/NavBar';
@@ -23,6 +25,8 @@ import Login from './pages/Login';
 import Location from './pages/Location';
 import Faculty from "./pages/Faculty";
 import Department from "./pages/Department";
+import MyAttendanceRecord from "./pages/MyAttendanceRecord";
+
 
 
 function App() {
@@ -50,7 +54,7 @@ function App() {
                 <Route path='/location' render={(props) => <Location {...props} />} />
                 <Route path='/faculty' render={(props) => <Faculty {...props} />} />
                 <Route path='/department' render={(props) => <Department {...props} />} />
-
+                <Route path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
               </div>
             }
           </ToastProvider>

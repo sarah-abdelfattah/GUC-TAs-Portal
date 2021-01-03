@@ -8,7 +8,6 @@ function Login() {
   // defining the variables and states
   const [gucId, setId] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState();
   const { addToast } = useToasts();
 
   // => used in the header to greet the user <=
@@ -52,7 +51,6 @@ function Login() {
             autoDismiss: true,
           });
         } else {
-          setUser(response.data.token);
           // store the user in the localStorage
           const token = response.data.token;
           localStorage.setItem("user", token);

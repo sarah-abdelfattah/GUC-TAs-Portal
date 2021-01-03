@@ -40,6 +40,7 @@ router.post("", async function (req, res) {
                 gender: staff.gender,
                 name: staff.name,
                 email: staff.email,
+                dayOff: staff.dayOff,
                 type: staff.type,
                 role: staff.role,
                 officeLocation: staff.officeLocation,
