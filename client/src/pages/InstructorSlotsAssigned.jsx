@@ -83,7 +83,6 @@ function InstructorSlotsAssigned() {
                     addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
                 }else{
                     const slotsDisplay = response.data.data;
-                    console.log(slotsDisplay);
                     var sat = [];
                     var sun = [];
                     var mon = [];
@@ -135,7 +134,7 @@ function InstructorSlotsAssigned() {
                             <TableCell className = "border" align = "center">&nbsp;&nbsp;2nd Slot <br/> (10:00 - 11:30)</TableCell>
                             <TableCell className = "border" align = "center">&nbsp;&nbsp;3rd Slot <br/> (11:45 - 13:15)</TableCell>
                             <TableCell className = "border" align = "center">&nbsp;&nbsp;4th Slot <br/> (13:45 - 15:15)</TableCell>
-                            <TableCell className = "border" align = "center">&nbsp;&nbsp;5th Slot <br/> (15:45 - 17:15)</TableCell>
+                            <TableCell className = "border"align = "center">&nbsp;&nbsp;5th Slot <br/> (15:45 - 17:15)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

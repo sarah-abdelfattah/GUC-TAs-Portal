@@ -57,15 +57,15 @@ function App() {
                 <Route path='/location' render={(props) => <Location {...props} />} />
                 <Route path='/faculty' render={(props) => <Faculty {...props} />} />
                 <Route path='/department' render={(props) => <Department {...props} />} />
+                <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
+                <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
 
             <Route
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
             />
-
-            <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
-            <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
               </div>
+              
             }
           </ToastProvider>
         </Switch>
