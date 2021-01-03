@@ -12,11 +12,11 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-function AddDepartment() {
+function AddCourse() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
-  const [staff, setStaff] = useState({ staff: [] });
-  const [HODChosen, setHODChosen] = useState("");
+  const [departments, setDepartments] = useState({ departments: [] });
+  const [depChosen, setDepChosen] = useState("");
   const [name, setName] = useState("");
 
   const { addToast } = useToasts();
@@ -24,15 +24,21 @@ function AddDepartment() {
   useEffect(() => {
     async function fetchData() {
       const facResult = await axiosCall("get", "faculties/faculty/all");
-      const staffResult = await axiosCall(
-        "get",
-        "staffMembers/AC/Course Instructor/all"
-      );
       setFaculties(facResult.data.data);
-      setStaff(staffResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
+
+  const handleOnChange = async (target) => {
+    setFacultyChosen(target.value);
+    const facCode = faculties.find(({ _id }) => _id === target.value).code;
+
+    const depResult = await axiosCall(
+      "get",
+      `departments/department/${facCode}/all`
+    );
+    setDepartments(depResult.data.data);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -40,25 +46,25 @@ function AddDepartment() {
       if (faculties)
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
-      let HOD;
-      if (HODChosen)
-        HOD = await staff.find(({ _id }) => _id === HODChosen).gucId;
+      let depName;
+      if (departments)
+        depName = await departments.find(({ _id }) => _id === depChosen).name;
 
       const body = {
         facultyCode: code.toUpperCase(),
-        depName: name,
-        HOD: HODChosen ? HOD : undefined,
+        departmentName: depName,
+        courseName: name.toUpperCase(),
       };
 
-      const res = await axiosCall("post", "departments/department", body);
+      const res = await axiosCall("post", "courses/course", body);
 
       if (res.data.data) {
-        addToast("Department created successfully", {
+        addToast("Course created successfully", {
           appearance: "success",
           autoDismiss: true,
         });
         setFacultyChosen("");
-        setHODChosen("");
+        setDepChosen("");
         setName("");
       }
 
@@ -82,7 +88,7 @@ function AddDepartment() {
             className="crud-select"
             value={facultyChosen}
             onChange={(event) => {
-              setFacultyChosen(event.target.value);
+              handleOnChange(event.target);
             }}
           >
             {faculties.length > 0 &&
@@ -102,7 +108,32 @@ function AddDepartment() {
         </FormControl>
 
         <FormControl className="crud-formControl" required>
-          <InputLabel className="crud-inputLabel">Department Name</InputLabel>
+          <InputLabel className="crud-inputLabel">Department</InputLabel>
+          <Select
+            className="crud-select"
+            value={depChosen}
+            onChange={(event) => {
+              setDepChosen(event.target.value);
+            }}
+          >
+            {departments.length > 0 &&
+              departments.map((department) => (
+                <MenuItem
+                  className="crud-menuItem"
+                  value={department._id}
+                  key={department._id}
+                >
+                  {department.name}
+                </MenuItem>
+              ))}
+          </Select>
+          <FormHelperText className="crud-helperText">
+            This field is required
+          </FormHelperText>
+        </FormControl>
+
+        <FormControl className="crud-formControl" required>
+          <InputLabel className="crud-inputLabel">Course Name</InputLabel>
           <Input
             className="crud-input"
             value={name}
@@ -111,30 +142,6 @@ function AddDepartment() {
           <FormHelperText className="crud-helperText">
             This field is required
           </FormHelperText>
-        </FormControl>
-
-        <FormControl className="crud-formControl">
-          <InputLabel className="crud-inputLabel">
-            Head of Department
-          </InputLabel>
-          <Select
-            className="crud-select"
-            value={HODChosen}
-            onChange={(event) => {
-              setHODChosen(event.target.value);
-            }}
-          >
-            {staff.length > 0 &&
-              staff.map((member) => (
-                <MenuItem
-                  className="crud-menuItem"
-                  value={member._id}
-                  key={member._id}
-                >
-                  {member.gucId} {member.name}
-                </MenuItem>
-              ))}
-          </Select>
         </FormControl>
       </div>
 
@@ -150,4 +157,4 @@ function AddDepartment() {
   );
 }
 
-export default AddDepartment;
+export default AddCourse;

@@ -31,7 +31,7 @@ exports.addCourse = async function (req, res) {
         //course found in department?
         const courseFound = await Course.findOne({ department: depFound._id, name: courseName });
         if (courseFound)
-            return res.send({ error: "There is another course with this name under the same department" });
+            return res.send({ error: "There is another course with this name under this department" });
 
         const newCourse = {
             department: depFound,

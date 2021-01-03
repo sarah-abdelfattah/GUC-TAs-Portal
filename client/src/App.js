@@ -27,6 +27,7 @@ import Login from './pages/Login';
 import Location from './pages/Location';
 import Faculty from "./pages/Faculty";
 import Department from "./pages/Department";
+import Course from "./pages/Course";
 import MyAttendanceRecord from "./pages/MyAttendanceRecord";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
@@ -57,6 +58,7 @@ function App() {
                 <Route exact path='/location' render={(props) => <Location {...props} />} />
                 <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                 <Route exact path='/department' render={(props) => <Department {...props} />} />
+                <Route exact path='/course' render={(props) => <Course {...props} />} />
                 <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                 <Route exact path='/profile' render={(props) => <Profile {...props} />} />
                 <Route exact path='/changePassword' render={(props) => <ChangePassword {...props} />} />

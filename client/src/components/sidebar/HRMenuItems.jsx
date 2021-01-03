@@ -3,12 +3,13 @@ import { Menu, MenuItem } from "react-pro-sidebar";
 
 //icons
 import { MdLocationOn } from "react-icons/md";
-import { FaUniversity, FaClipboardList } from "react-icons/fa";
+import { FaUniversity, FaClipboardList, FaBook } from "react-icons/fa";
 
 function HRMenuItems() {
   const [showLocation, setLocation] = useState(false);
   const [showFaculty, setFaculty] = useState(false);
   const [showDepartment, setDepartment] = useState(false);
+  const [showCourse, setCourse] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = path;
@@ -40,7 +41,16 @@ function HRMenuItems() {
         onMouseLeave={() => setDepartment(false)}
         onClick={() => routeChange("department")}
       >
-        {showDepartment ? "department" : ""}
+        {showDepartment ? "Department" : ""}
+      </MenuItem>
+
+      <MenuItem
+        icon={<FaBook />}
+        onMouseEnter={() => setCourse(true)}
+        onMouseLeave={() => setCourse(false)}
+        onClick={() => routeChange("course")}
+      >
+        {showCourse ? "Course" : ""}
       </MenuItem>
     </Menu>
   );
