@@ -35,26 +35,16 @@ router.post("", async function (req, res) {
         //const match = true
 
         if (match) {
-            let payload;
-            if (staff.type === 'HR') {
-                payload = {
-                    gucId: staff.gucId,
-                    password: staff.password,
-                    name: staff.name,
-                    email: staff.email,
-                    type: staff.type
-                }
-            } else {
-                payload = {
-                    gucId: staff.gucId,
-                    password: staff.password,
-                    name: staff.name,
-                    email: staff.email,
-                    type: staff.type,
-                    role: staff.role,
-                    faculty: staff.faculty,
-                    department: staff.department
-                }
+            let payload = {
+                gucId: staff.gucId,
+                gender: staff.gender,
+                name: staff.name,
+                email: staff.email,
+                type: staff.type,
+                role: staff.role,
+                officeLocation: staff.officeLocation,
+                faculty: staff.type === 'Academic Member' ? staff.faculty : undefined,
+                department: staff.type === 'Academic Member' ? staff.department : undefined
             }
 
             const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
@@ -90,7 +80,6 @@ router.post("", async function (req, res) {
             staff.lastLogIn = new Date();
             await staff.save();
             return res.header("auth-token", token).send({ token: token, fistLogIn: false, lastLogIn: staff.lastLogIn });
-            // return res.json({ data: `Bearer ${token}` })
         }
         else
             return res.status(400).send({ error: "Wrong Id or password" });

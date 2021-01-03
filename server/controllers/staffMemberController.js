@@ -86,6 +86,72 @@ async function updateInfoHelper(user) {
     }
 }
 
+exports.getStaff = async function (req, res) {
+    try {
+        if (req.params.type === "all") {
+            if (req.params.staff === "all") {
+                const result = await StaffMember.find();
+                return res.send({ data: result });
+            } else {
+                const gucId = req.params.staff;
+                const result = await StaffMember.findOne({ gucId: gucId });
+                if (result) return res.send({ data: result });
+                else return res.send({ error: "Sorry, no user with that id in the GUC" });
+            }
+        } else {
+            const type = req.params.type;
+            if (req.params.staff === "all") {
+                const result = await StaffMember.find({ type: type });
+                return res.send({ data: result });
+            } else {
+                const gucId = req.params.staff;
+                const result = await StaffMember.findOne({ type: type, gucId: gucId });
+                if (result) return res.send({ data: result });
+                else return res.send({ error: "Sorry, no user with that id with this type " });
+            }
+        }
+    } catch (err) {
+        console.log('~ err', err);
+        return res.send({ error: err });
+    }
+}
+
+exports.getAcademicMembers = async function (req, res) {
+    try {
+        if (req.params.role === "all") {
+            //all academic members
+            if (req.params.staff === "all") {
+                const result = await StaffMember.find({ type: "Academic Member" });
+                return res.send({ data: result });
+            }
+            // search in all academic members with a specific ID 
+            else {
+                const gucId = req.params.staff;
+                const result = await StaffMember.findOne({ type: "Academic Member", gucId: gucId });
+                if (result) return res.send({ data: result });
+                else return res.send({ error: "Sorry, no Academic Member with that id in the GUC" });
+            }
+        } else {
+            const role = req.params.role;
+            //all staff of type role
+            if (req.params.staff === "all") {
+                const result = await StaffMember.find({ role: role });
+                return res.send({ data: result });
+            }
+            // staff of type role with a specific ID 
+            else {
+                const gucId = req.params.staff;
+                const result = await StaffMember.findOne({ type: type, gucId: gucId });
+                if (result) return res.send({ data: result });
+                else return res.send({ error: "Sorry, no user with that id with this type " });
+            }
+        }
+    } catch (err) {
+        console.log('~ err', err);
+        return res.send({ error: err });
+    }
+}
+
 exports.registerStaff = async function (req, res) {
     try {
         let JOI_Result = await validation.registerSchema.validateAsync(req.body)
