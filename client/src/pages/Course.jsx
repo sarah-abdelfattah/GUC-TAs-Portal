@@ -8,7 +8,7 @@ import Delete from "../components/Delete";
 
 import AddCourse from "../components/course/AddCourse";
 // import UpdateCourse from "../components/course/UpdateCourse";
-// import DeleteCourse from "../components/course/DeleteCourse";
+import DeleteCourse from "../components/course/DeleteCourse";
 
 function Course() {
   const [crudBtns, setBtns] = useState({
@@ -60,9 +60,9 @@ function Course() {
       </div>
       {crudBtns.add ? (
         <AddCourse />
-      ) : crudBtns.update ? // <UpdateCourse />
-      null : crudBtns.delete ? // <DeleteCourse />
-      null : null}
+      ) : crudBtns.update ? null : crudBtns.delete ? ( // <UpdateCourse />
+        <DeleteCourse />
+      ) : null}
     </div>
   );
 }

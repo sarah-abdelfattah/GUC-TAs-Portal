@@ -6,6 +6,43 @@ const Course = require('../models/Course');
 
 const validation = require('../helpers/validation');
 
+exports.getCourse = async function (req, res) {
+    try {
+        //faculty found
+        const facultyCode = req.params.faculty.toUpperCase();
+        const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');
+        if (!facultyFound)
+            return res.send({ error: "No faculty with this name" });
+
+        //department found? 
+        const departmentName = req.params.department;
+        const depFound = await Department.findOne({ faculty: facultyFound._id, name: departmentName }).populate('department');
+        if (!depFound)
+            return res.send({ error: "No department with this name" });
+
+        //course found ?
+        const course = req.params.course
+        if (course === 'all') {
+            const coursesFound = await Course.find({ department: depFound._id })
+            return res.send({ data: coursesFound });
+        }
+        else {
+            const courseFound = await Course.findOne({ department: depFound._id, courseName: course })
+            if (!courseFound)
+                return res.send({ error: "No course with this name" });
+
+            return res.send({ data: courseFound });
+        }
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ error: err.details[0].message });
+        }
+        console.log('~ err', err);
+        return res.send({ error: err });
+    }
+}
+
 exports.addCourse = async function (req, res) {
     try {
         let JOI_Result = await validation.courseSchema.validateAsync(req.body)
@@ -44,10 +81,10 @@ exports.addCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -64,22 +101,22 @@ exports.updateCourse = async function (req, res) {
             return res.send({ error: "Please enter newDepartment and/or newName" });
 
         //faculty found? 
-        const facultyFound = await Faculty.findOne({ code: facultyCode }).populate();
+        const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');
         if (!facultyFound)
             return res.send({ error: "No faculty with this name" });
 
         //department found? 
-        const depFound = await Department.findOne({ faculty: facultyFound._id, name: departmentName }).populate();
+        const depFound = await Department.findOne({ faculty: facultyFound._id, name: departmentName }).populate('department');
         if (!depFound)
             return res.send({ error: "No department with this name" });
 
         //course found ?
-        const courseFound = await Course.findOne({ department: depFound._id, name: courseName }).populate();
+        const courseFound = await Course.findOne({ department: depFound._id, name: courseName });
         if (!courseFound)
             return res.send({ error: "No course with this name" });
 
         if (newDepartment) {
-            const newDepFound = await Department.findOne({ faculty: facultyFound._id, name: newDepartment }).populate();
+            const newDepFound = await Department.findOne({ faculty: facultyFound._id, name: newDepartment }).populate('department');
             if (!newDepFound)
                 return res.send({ error: "No department with this new name under this faculty" });
 
@@ -87,7 +124,7 @@ exports.updateCourse = async function (req, res) {
             courseFound.department = newDepFound;
         }
         if (newName) {
-            const nameFound = await Course.findOne({ department: newDepFound, name: courseName }).populate();
+            const nameFound = await Course.findOne({ department: newDepFound, name: courseName });
             if (nameFound)
                 return res.send({ error: "Sorry there is another course with this name" });
 
@@ -100,10 +137,10 @@ exports.updateCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -137,9 +174,9 @@ exports.deleteCourse = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
