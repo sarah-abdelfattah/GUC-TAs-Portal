@@ -283,29 +283,41 @@ exports.getStaffMembersPerCourse = async (req, res) => {
       });
     }
 
-    let courseFound = await Course.findOne({
-      department: departmentFound,
-      name: req.params.course,
-    }).populate();
-    // if no course found
-    if (!courseFound) {
-      return res
-        .status(404)
-        .send({
-          message: `No course found with this name ${req.params.course} under your department`,
+    if(req.params.course === "all"){
+      // case success
+      const staffMembers = await StaffMember.find({
+        type: { $in: ["Academic Member"] },
+        department: departmentFound._id,
+      });
+      return res.status(200).send({
+        data: staffMembers,
+      });
+    } else{
+        let courseFound = await Course.findOne({
+          department: departmentFound,
+          name: req.params.course,
+        }).populate();
+        // if no course found
+        if (!courseFound) {
+          return res
+            .status(404)
+            .send({
+              message: `No course found with this name ${req.params.course} under your department`,
+            });
+        }
+    
+        // case success
+        const staffMembers = await StaffMember.find({
+          type: { $in: ["Academic Member"] },
+          department: departmentFound._id,
+          courses: courseFound,
+        });
+    
+        return res.status(200).send({
+          data: staffMembers,
         });
     }
 
-    // case success
-    const staffMembers = await StaffMember.find({
-      type: { $in: ["Academic Member"] },
-      department: departmentFound._id,
-      courses: courseFound,
-    });
-
-    return res.status(200).send({
-      data: staffMembers,
-    });
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);

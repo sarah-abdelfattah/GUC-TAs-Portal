@@ -13,7 +13,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
-  //const [selectedCourse, setSelectedCourse] = useState([]); //table data
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -62,7 +61,10 @@ function ViewAllStaff() {
               };
             });
             setData(data);
-            setCourses(courses.data.data);
+            let data2 = courses.data.data;
+            let data3 = data2.push({course:"all"});
+            console.log(data3);
+            setCourses(data2);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -103,15 +105,11 @@ function ViewAllStaff() {
             .filter((location) => location !== null),
         };
       });
-
       setData(data);
-      //setSelectedCourse(event.course);
-      console.log(res)
     }
     catch (err) {
       console.log("~err", err);
     }
-    console.log(event.course)
   }
 
   return (
@@ -183,7 +181,6 @@ function ViewAllStaff() {
                 />
               ),
             }}
-            //onRowClick={(event, rowData, togglePanel) => togglePanel()}
           />
         </Grid>
       </Grid>
