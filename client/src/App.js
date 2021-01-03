@@ -30,6 +30,7 @@ import Department from "./pages/Department";
 
 import CourseCoverage from './pages/InstCourseCoverage';
 import SlotsAssigned from './pages/InstructorSlotsAssigned';
+import Schedule from './pages/AcademicMemberSchedule';
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
                 <Route path='/department' render={(props) => <Department {...props} />} />
                 <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
                 <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
+                <Route exact path = "/viewMySchedule" render = {(props)=> <Schedule {...props}/>} />
 
             <Route
               path="/unauthorized"
