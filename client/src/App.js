@@ -15,6 +15,7 @@ import './styles/SideBar.scss';
 import './styles/crudButtons.scss';
 import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
+import './styles/ChangePassword.scss';
 
 
 //Import the pages
@@ -28,6 +29,7 @@ import Faculty from "./pages/Faculty";
 import Department from "./pages/Department";
 import MyAttendanceRecord from "./pages/MyAttendanceRecord";
 import Profile from "./pages/Profile";
+import ChangePassword from "./pages/ChangePassword";
 
 
 function App() {
@@ -57,7 +59,7 @@ function App() {
                 <Route exact path='/department' render={(props) => <Department {...props} />} />
                 <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                 <Route exact path='/profile' render={(props) => <Profile {...props} />} />
-
+                <Route exact path='/changePassword' render={(props) => <ChangePassword {...props} />} />
               </div>
             }
           </ToastProvider>

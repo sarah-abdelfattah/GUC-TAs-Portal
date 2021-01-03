@@ -47,7 +47,6 @@ function Homepage() {
         const depRes = await axiosCall("get", "departments/department/all/all");
         let dep;
         if (depRes.data.data) {
-          //TODO:fix backend
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
           setDepartment(dep.name);
         }

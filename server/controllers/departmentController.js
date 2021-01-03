@@ -12,7 +12,6 @@ exports.getDepartment = async function (req, res) {
     if (req.params.faculty === 'all') {
       //get all departments of all faculties
       if (req.params.department === 'all') {
-        console.log("heere")
         const result = await Department.find({});
         return res.send({ data: result });
       }
