@@ -179,11 +179,12 @@ function ViewAllStaff() {
                   size="small"
                   id="debug"
                   options={courses}
+                  selectOnFocus = "true"
                   onChange={(event, newValue) =>{
                     handleOnChange(newValue);
                   }}
                   getOptionLabel={(option) => option.course}
-                  style={{ width: "30%",  margin: "auto" }}
+                  style={{ width: 300,  margin: "auto" }}
                   renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
                 />
               ),
