@@ -132,7 +132,11 @@ function Profile(props) {
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
 
-          <FormControl className="profile-formControl">
+          <FormControl
+            className={
+              update ? `profile-formControl toUpdate` : `profile-formControl`
+            }
+          >
             <InputLabel className="profile-inputLabel">Name</InputLabel>
             <Input
               className="profile-input"
@@ -142,7 +146,11 @@ function Profile(props) {
             />
           </FormControl>
 
-          <FormControl className="profile-formControl">
+          <FormControl
+            className={
+              update ? `profile-formControl toUpdate` : `profile-formControl`
+            }
+          >
             <InputLabel className="profile-inputLabel">Gender</InputLabel>
             <Input
               className="profile-input"
@@ -172,7 +180,11 @@ function Profile(props) {
             <Input className="profile-input" value={position} disabled={true} />
           </FormControl>
 
-          <FormControl className="profile-formControl">
+          <FormControl
+            className={
+              update ? `profile-formControl toUpdate` : `profile-formControl`
+            }
+          >
             <InputLabel className="profile-inputLabel">
               Office Location
             </InputLabel>
@@ -208,7 +220,13 @@ function Profile(props) {
 
           {position === "Academic Member" ? (
             <div>
-              <FormControl className="profile-formControl">
+              <FormControl
+                className={
+                  update
+                    ? `profile-formControl toUpdate`
+                    : `profile-formControl`
+                }
+              >
                 <InputLabel className="profile-inputLabel">Role</InputLabel>
                 <Input
                   className="profile-input"
