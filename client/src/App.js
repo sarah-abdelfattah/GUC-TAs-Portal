@@ -12,8 +12,8 @@ import 'react-pro-sidebar/dist/scss/styles.scss';
 import '../src/styles/Login.css';
 import '../src/styles/util.css';
 import './styles/home.scss';
-import "./styles/Homepage.scss";
-import "./styles/UnauthorizedPage.scss";
+import './styles/Homepage.scss';
+import './styles/UnauthorizedPage.scss';
 import './styles/NavBar.scss';
 import './styles/SideBar.scss';
 import './styles/crudButtons.scss';
@@ -43,15 +43,12 @@ function App() {
       <Router>
         <Switch>
           <ToastProvider>
-            {currentLocation === '/login' || currentLocation === '/unauthorized' ?
+            {currentLocation === '/login' || currentLocation === '/unauthorized' ? (
               <div>
-                <Route
-                  exact
-                  path="/login"
-                  render={(props) => <Login {...props} />}
-                />
+                <Route exact path='/login' render={(props) => <Login {...props} />} />
                 <Route path='/unauthorized' render={(props) => <UnauthorizedPage {...props} />} />
-              </div> :
+              </div>
+            ) : (
               <div className='myApp'>
                 <Route path='/home' render={(props) => <Homepage {...props} />} />
                 <Route path='/location' render={(props) => <Location {...props} />} />
@@ -65,8 +62,7 @@ function App() {
               render={(props) => <UnauthorizedPage {...props} />}
             />
               </div>
-              
-            }
+            )}
           </ToastProvider>
         </Switch>
       </Router>
