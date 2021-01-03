@@ -14,7 +14,7 @@ import {
 function Profile(props) {
   const [btn, setBtn] = useState("Update profile");
   const [update, setUpdate] = useState(false);
-
+  const [HR, setHr] = useState(false);
   const [gucId, setId] = useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -37,6 +37,7 @@ function Profile(props) {
       if (props.user) {
         const id = props.user;
         user = await axiosCall("get", `locations/all/${id}`);
+        setHr(true);
       } else user = await checkLogin();
 
       setId(user.gucId);
@@ -77,7 +78,6 @@ function Profile(props) {
         const depRes = await axiosCall("get", "departments/department/all/all");
         let dep;
         if (depRes.data.data) {
-          //TODO:fix backend
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
           setDepartment(dep.name);
         }
@@ -93,31 +93,38 @@ function Profile(props) {
 
   const handleSubmit = async () => {
     try {
-      setBtn("Update Profile");
-      setUpdate(false);
+      // const result = await axiosCall("get", "locations/room/all");
+
+      // let name;
+      // if (rooms) name = rooms.find(({ _id }) => _id === roomChosen).location;
       // console.log(roomChosen);
 
-      //   const body = {
-      //     type: type,
-      //     location: location.toUpperCase(),
-      //     capacity: capacity,
-      //   };
-      //   const res = await axiosCall("post", "locations/location", body);
-      //   if (res.data.data) {
-      //     addToast("Location created successfully", {
-      //       appearance: "success",
-      //       autoDismiss: true,
-      //     });
-      //     setRoomType("");
-      //     setRoomLocation("");
-      //     setRoomCapacity("");
-      //   }
-      //   if (res.data.error) {
-      //     addToast(res.data.error, {
-      //       appearance: "error",
-      //       autoDismiss: true,
-      //     });
-      //   }
+      const body = {
+        gucId: gucId,
+        name: name,
+        gender: gender,
+        role: role,
+      };
+
+      const res = await axiosCall("put", "staffMembers/profile", body);
+      console.log(
+        "🚀 ~ file: Profile.jsx ~ line 113 ~ handleSubmit ~ res",
+        res
+      );
+      if (res.data.data) {
+        addToast("Profile updated successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        setBtn("Update Profile");
+        setUpdate(false);
+      }
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
     } catch (err) {
       console.log("~err: ", err);
     }
@@ -182,7 +189,9 @@ function Profile(props) {
 
           <FormControl
             className={
-              update ? `profile-formControl toUpdate` : `profile-formControl`
+              update && HR
+                ? `profile-formControl toUpdate`
+                : `profile-formControl`
             }
           >
             <InputLabel className="profile-inputLabel">
@@ -195,7 +204,7 @@ function Profile(props) {
                 onChange={(event) => {
                   setRoomChosen(event.target.value);
                 }}
-                disabled={update ? false : true}
+                disabled={update && HR ? false : true}
               >
                 {update &&
                   rooms.length > 0 &&

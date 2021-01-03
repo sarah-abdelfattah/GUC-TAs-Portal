@@ -11,7 +11,7 @@ function NavBar() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = (await checkLogin()).name;
+      const res = (await checkLogin()).gucId;
       setName(res);
     }
     fetchData();

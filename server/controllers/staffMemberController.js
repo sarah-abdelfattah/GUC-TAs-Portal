@@ -63,7 +63,6 @@ async function updateInfoHelper(user) {
     const gucId = user.gucId;
     const name = user.name;
     const role = user.role;
-    const officeLocation = user.officeLocation;
     const gender = user.gender;
 
     const newStaff = await StaffMember.findOne({ gucId: gucId });
@@ -79,12 +78,9 @@ async function updateInfoHelper(user) {
             newStaff.gender = gender;
         }
 
-
-
         if (newStaff.type === 'Academic Member') {
             if (role) newStaff.role = role;
         }
-
 
         const updatedStaff = await newStaff.save();
         return { data: "Profile Updated Successfully" }
@@ -274,10 +270,10 @@ exports.registerStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -329,10 +325,10 @@ exports.updateStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -384,10 +380,10 @@ exports.updateStaffDayOff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -449,10 +445,10 @@ exports.deleteStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -513,10 +509,10 @@ exports.signIn = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -573,11 +569,11 @@ exports.signOut = async function (req, res) {
         }
     } catch (err) {
         if (err.isJoi) {
-            return res.send({ JOI_validation_error: err.details[0].message });
-            return res.send({ JOI_validation_error: err });
+            return res.send({ error: err.details[0].message });
+            return res.send({ error: err });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -596,7 +592,7 @@ exports.changePassword = async function (req, res) {
 
         const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
         if (!userToEdit)
-            return res.send({ err: 'No user' });
+            return res.send({ error: 'No user' });
 
         //Checking if oldPassword matches the user password
         const check = await bcrypt.compare(oldPassword, userToEdit.password);
@@ -611,10 +607,10 @@ exports.changePassword = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -630,11 +626,11 @@ exports.updateProfile = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
 
         console.log(err)
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -643,7 +639,7 @@ exports.getProfile = async function (req, res) {
         const user = req.user;
         const staff = await StaffMember.findOne({ gucId: user.gucId });
         if (!staff)
-            return res.send({ err: 'No user' });
+            return res.send({ error: 'No user' });
 
         let newStaff = {
             gucId: staff.gucId,
@@ -669,7 +665,7 @@ exports.getProfile = async function (req, res) {
         return res.send({ data: newStaff });
     } catch (err) {
         console.log(err)
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -694,10 +690,10 @@ exports.updateSalary = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
