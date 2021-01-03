@@ -176,7 +176,7 @@ function ViewAllStaff() {
                     handleOnChange(newValue);
                   }}
                   getOptionLabel={(option) => option.course}
-                  style={{ width: 300,  margin: "auto" }}
+                  style={{ width: "30%",  margin: "auto" }}
                   renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
                 />
               ),
