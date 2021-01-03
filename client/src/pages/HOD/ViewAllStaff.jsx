@@ -187,7 +187,7 @@ function ViewAllStaff() {
           />
         </Grid>
       </Grid>
-      </Fade>
+     </Fade>
     </div>
   );
 }
