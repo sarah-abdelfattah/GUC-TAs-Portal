@@ -263,7 +263,7 @@ exports.getAllStaffMembers = async (req, res) => {
 
 exports.getStaffMembersPerCourse = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    //let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
       _id: req.user.department,
     }).populate('department');
@@ -277,11 +277,11 @@ exports.getStaffMembersPerCourse = async (req, res) => {
         });
     }
     // if this department has different HOD
-    if (!HOD._id.equals(departmentFound.HOD)) {
-      return res.send({
-        error: "Sorry, you don't have access to view this department",
-      });
-    }
+    // if (!HOD._id.equals(departmentFound.HOD)) {
+    //   return res.send({
+    //     error: "Sorry, you don't have access to view this department",
+    //   });
+    // }
 
     if(req.params.course === "all"){
       // case success

@@ -8,7 +8,7 @@ import { link } from "../../helpers/constants.js";
 import { Button } from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Fade from 'react-reveal/Fade'; // Importing Zoom effect
+import Fade from 'react-reveal/Fade';
 
 
 
@@ -26,7 +26,7 @@ function ViewAllStaff() {
         try {
           const response = await axiosCall(
             "get",
-            `${link}/departments/getAllStaffMembers`
+            `${link}/departments/getAllStaffMembers/all`
           );
           const locations = await axiosCall(
             "get",
@@ -117,7 +117,7 @@ function ViewAllStaff() {
   return (
     // styling
     <div>
-            <Fade>{/*Using Zoom Effect*/}
+    <Fade>
       <Grid container spacing={1}>
         <Grid item xs={1}></Grid>
         <Grid item xs={10}>
