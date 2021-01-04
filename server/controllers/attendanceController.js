@@ -353,7 +353,7 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
             const minutesSpentPrinted = Math.abs(missingHours) % 60;
             const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
-            const sentRes = "Missing hours: " + sign;
+            const sentRes = sign;
             staffIDs.push(
                 {
                     GUCID: attendanceRecords[i].gucId,

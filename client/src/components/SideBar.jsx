@@ -22,15 +22,16 @@ function SideBar() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = (await checkLogin()).type;
-      setUser(res);
+      const res = await checkLogin();
+      setUser(res.type);
 
       const depResult = await axiosCall(
         "get",
         "departments/department/all/all"
       );
+
       if (depResult.data.data) {
-        let HOD = await depResult.data.data.find(({ HOD }) => HOD === res._id);
+        let HOD = await depResult.data.data.find(({ HOD }) => HOD === res.id);
 
         if (HOD) setUser("HOD");
       }

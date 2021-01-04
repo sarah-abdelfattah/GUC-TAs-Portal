@@ -56,7 +56,7 @@ function Homepage() {
       const daysRes = await axiosCall("get", "attendance/viewMissingDays");
       if (daysRes.data) setDays(daysRes.data);
 
-      //get days
+      //get hours
       const hoursRes = await axiosCall("get", "attendance/viewHours");
       if (hoursRes.data) setHours(hoursRes.data);
     }

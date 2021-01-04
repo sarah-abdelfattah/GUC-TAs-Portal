@@ -36,6 +36,7 @@ function Profile(props) {
       let user;
       if (props.user) {
         const id = props.user;
+        //TODO: what?
         user = await axiosCall("get", `locations/all/${id}`);
         setHr(true);
       } else user = await checkLogin();

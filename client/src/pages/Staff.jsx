@@ -33,7 +33,17 @@ function Staff() {
               autoDismiss: true,
             });
           } else {
-            let data = response.data.data.map((staff) => {
+            //get missing hours and days
+            const missingRes = await axiosCall(
+              "get",
+              "attendance/viewStaffMissing"
+            );
+
+            let staffData = await response.data.data.map(async (staff) => {
+              const response = await missingRes.data.data.find(
+                ({ GUCID }) => GUCID === staff.gucId
+              );
+
               return {
                 name: staff.name,
                 gucId: staff.gucId,
@@ -50,13 +60,16 @@ function Staff() {
                     } else return null;
                   })
                   .filter((location) => location !== null),
+                missingHours: response.MissingHours,
+                missingDays: response.MissingDays,
               };
             });
-            setData(data);
-            let data2 = courses.data.data;
-            let data3 = data2.push({ course: "all" });
-            console.log(data3);
-            setCourses(data2);
+            console.log(
+              "🚀 ~ file: Staff.jsx ~ line 66 ~ staffData ~ staffData",
+              staffData
+            );
+
+            await setData(staffData);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -95,20 +108,22 @@ function Staff() {
                 { title: "Email", field: "email" },
                 { title: "Day off", field: "dayOff" },
                 { title: "office", field: "location" },
+                { title: "Missing Days", field: "missingDays" },
+                { title: "Missing Hours", field: "missingHours" },
               ]}
               align="center"
               data={data}
-              actions={[
-                {
-                  icon: "save",
-                  tooltip: "Save User",
-                  onClick: (event, rowData) => {
-                    document.location.href =
-                      window.location.origin +
-                      `/viewAttendanceRecord/${rowData.id}`;
-                  },
-                },
-              ]}
+              // actions={[
+              //   {
+              //     icon: "save",
+              //     tooltip: "Save User",
+              //     onClick: (event, rowData) => {
+              //       document.location.href =
+              //         window.location.origin +
+              //         `/viewAttendanceRecord/${rowData.id}`;
+              //     },
+              //   },
+              // ]}
               options={{
                 actionsColumnIndex: -1,
                 headerStyle: {
@@ -123,22 +138,22 @@ function Staff() {
                   fontSize: "15px",
                 },
               }}
-              components={{
-                Action: (props) => (
-                  <Button
-                    onClick={(event) => props.action.onClick(event, props.data)}
-                    variant="contained"
-                    style={{
-                      textTransform: "none",
-                      background: "#045CC8",
-                      color: "#fff",
-                    }}
-                    size="small"
-                  >
-                    Attendance
-                  </Button>
-                ),
-              }}
+              // components={{
+              //   Action: (props) => (
+              //     <Button
+              //       onClick={(event) => props.action.onClick(event, props.data)}
+              //       variant="contained"
+              //       style={{
+              //         textTransform: "none",
+              //         background: "#045CC8",
+              //         color: "#fff",
+              //       }}
+              //       size="small"
+              //     >
+              //       Attendance
+              //     </Button>
+              //   ),
+              // }}
             />
           </Grid>
         </Grid>
