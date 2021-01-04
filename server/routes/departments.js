@@ -3,10 +3,10 @@ const router = express.Router();
 const auth = require('../helpers/auth');
 const departmentController = require('../controllers/departmentController');
 
-router.get("/department/:faculty/:department", departmentController.getDepartment);
 router.post("/department", auth.HRAuth, departmentController.addDepartment);
 router.put("/department", auth.HRAuth, departmentController.updateDepartment);
 router.delete("/department", auth.HRAuth, departmentController.deleteDepartment);
+router.get("/department/:faculty/:department", departmentController.getDepartment);
 
 // HOD
 

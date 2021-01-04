@@ -1,0 +1,10 @@
+@import "./colorSchema";
+
+.MuiGrid-spacing-xs-1>.MuiGrid-item {
+    padding: 0px !important;
+    transform: translateY(-20px);
+}
+
+.MuiPaper-rounded {
+    border-radius: 13px !important;
+}
