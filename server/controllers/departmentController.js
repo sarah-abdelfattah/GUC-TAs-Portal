@@ -12,13 +12,12 @@ exports.getDepartment = async function (req, res) {
     if (req.params.faculty === 'all') {
       //get all departments of all faculties
       if (req.params.department === 'all') {
-        console.log("heere")
-        const result = Department.find({});
+        const result = await Department.find({});
         return res.send({ data: result });
       }
       // search for a specific department under all faculties
       else {
-        const result = Department.findOne({ name: req.params.department });
+        const result = await Department.findOne({ name: req.params.department });
         if (result) return res.send({ data: result });
         else return res.send({ error: "Sorry no department with this name" });
       }
@@ -33,7 +32,7 @@ exports.getDepartment = async function (req, res) {
       }
       // search for a specific department under a specific faculty faculties
       else {
-        const result = Department.findOne({ faculty: fac, name: req.params.department });
+        const result = await Department.findOne({ faculty: fac, name: req.params.department });
         if (result) return res.send({ data: result });
         else return res.send({ error: "Sorry no department with this name under this faculty" });
       }

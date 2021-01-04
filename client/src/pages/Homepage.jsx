@@ -44,7 +44,7 @@ function Homepage() {
         }
 
         //get department
-        const depRes = await axiosCall("get", "departments/all/all");
+        const depRes = await axiosCall("get", "departments/department/all/all");
         let dep;
         if (depRes.data.data) {
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
@@ -127,10 +127,6 @@ function Homepage() {
               <h6> {user.name}</h6>
             </li>
             <li>
-              <h5>Gender: </h5>
-              <h6> {user.gender}</h6>
-            </li>
-            <li>
               <h5>Email: </h5>
               <h6> {user.email}</h6>
             </li>
@@ -164,12 +160,20 @@ function Homepage() {
               <h6> {hours}</h6>
             </li>
           </ul>
-          <button
-            className="attendanceRecord-btn"
-            onClick={() => (document.location.href = "/myAttendanceRecord")}
-          >
-            View Attendance Record
-          </button>
+          <div className="hompage-btns">
+            <button
+              className="attendanceRecord-btn"
+              onClick={() => (document.location.href = "/myAttendanceRecord")}
+            >
+              View Attendance Record
+            </button>
+            <button
+              className="attendanceRecord-btn"
+              onClick={() => (document.location.href = "/profile")}
+            >
+              View Profile
+            </button>
+          </div>
         </div>
       </div>
       <div className="right-hp">

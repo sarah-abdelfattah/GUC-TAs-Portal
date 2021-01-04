@@ -1,7 +1,6 @@
 @import "./colorSchema";
 
 .crud-button {
-    // border: 1px solid red;
     min-width: 200px;
     padding: 8px 10px 8px 15px;
     border-radius: 10px;
@@ -95,6 +94,18 @@
         }
     }
 
+    .crud-delete-btn {
+
+        &:hover,
+        &:active,
+        &:visited,
+        &:focus,
+        &:focus-visible,
+        &:focus-within {
+            background: $secondary-red;
+        }
+    }
+
     &:hover {
         // border-radius: 10px;
         // border-bottom: 5px solid;
@@ -105,13 +116,43 @@
     }
 }
 
+@media only screen and (max-width: 460px) {
+
+    .MuiFormLabel-root,
+    .crud-inputLabel {
+        font-size: 0.75rem !important;
+        padding: 6px 0 4px !important;
+    }
+}
+
+
 @media only screen and (max-width: 340px) {
     .crud-inner-container {
+        width: 90%;
+
         .crud-submit {
             width: 70%;
 
             font-size: 14px;
             font-weight: bold;
+        }
+    }
+}
+
+@media only screen and (max-width: 300px) {
+    .crud-button {
+        min-width: 170px;
+        padding: 8px 10px 8px 15px;
+        border-radius: 10px;
+        margin: 30px 20px 20px 20px;
+
+        .icon {
+            width: 25px;
+            height: 25px;
+        }
+
+        .text {
+            font-size: 12px;
         }
     }
 }
