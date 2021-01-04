@@ -10,7 +10,6 @@ import Fade from "react-reveal/Fade";
 
 function Staff() {
   const [data, setData] = useState([]); //table data
-  const [courses, setCourses] = useState([]); //table data
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -39,11 +38,7 @@ function Staff() {
               "attendance/viewStaffMissing"
             );
 
-            let staffData = await response.data.data.map(async (staff) => {
-              const response = await missingRes.data.data.find(
-                ({ GUCID }) => GUCID === staff.gucId
-              );
-
+            let data = await response.data.data.map((staff) => {
               return {
                 name: staff.name,
                 gucId: staff.gucId,
@@ -60,16 +55,24 @@ function Staff() {
                     } else return null;
                   })
                   .filter((location) => location !== null),
-                missingHours: response.MissingHours,
-                missingDays: response.MissingDays,
+                missingHours: missingRes.data.data
+                  .map((rec) => {
+                    if (rec.GUCID === staff.gucId) {
+                      return rec.MissingHours;
+                    } else return null;
+                  })
+                  .filter((rec) => rec !== null),
+                missingDays: missingRes.data.data
+                  .map((rec) => {
+                    if (rec.GUCID === staff.gucId) {
+                      return rec.MissingDays;
+                    } else return null;
+                  })
+                  .filter((rec) => rec !== null),
               };
             });
-            console.log(
-              "🚀 ~ file: Staff.jsx ~ line 66 ~ staffData ~ staffData",
-              staffData
-            );
 
-            await setData(staffData);
+            await setData(data);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -78,7 +81,38 @@ function Staff() {
       }
       fetchData();
     }
-  }, []);
+  }, [data]);
+
+  const handleDelete = async (gucId) => {
+    try {
+      const res = await axiosCall("delete", "staffMembers/staff", {
+        gucId: gucId,
+      });
+
+      if (res.data.data) {
+        addToast("Staff deleted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+
+        // delete from table
+        const filtered = await data.filter((staff) => staff.gucId !== gucId);
+        setData(filtered);
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  };
 
   return (
     <div>
@@ -113,17 +147,16 @@ function Staff() {
               ]}
               align="center"
               data={data}
-              // actions={[
-              //   {
-              //     icon: "save",
-              //     tooltip: "Save User",
-              //     onClick: (event, rowData) => {
-              //       document.location.href =
-              //         window.location.origin +
-              //         `/viewAttendanceRecord/${rowData.id}`;
-              //     },
-              //   },
-              // ]}
+              actions={[
+                {
+                  title: "Delete",
+                  icon: "delete",
+                  tooltip: "Delete Staff",
+                  onClick: (event, rowData) => {
+                    handleDelete(rowData.gucId);
+                  },
+                },
+              ]}
               options={{
                 actionsColumnIndex: -1,
                 headerStyle: {

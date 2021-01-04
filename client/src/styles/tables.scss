@@ -24,3 +24,10 @@
 .MuiTableCell-alignLeft {
     text-align: center !important;
 }
+
+
+button[title="Delete Staff"] {
+    .MuiIconButton-label {
+        color: $primary-red !important;
+    }
+}
