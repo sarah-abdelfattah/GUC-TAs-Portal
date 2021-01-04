@@ -6,7 +6,10 @@ const SlotSchema = new Schema({
     type: String,
     enum: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
   },
-  time: Date,
+  time: {
+    type: String,
+    enum: ['8:15', '10:00', '11:45', '13:45', '15:45', '15:45'],
+  },
   location: {
     type: Schema.Types.ObjectId,
     ref: 'Location',

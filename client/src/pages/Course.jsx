@@ -7,7 +7,7 @@ import Update from "../components/Update";
 import Delete from "../components/Delete";
 
 import AddCourse from "../components/course/AddCourse";
-// import UpdateCourse from "../components/course/UpdateCourse";
+import UpdateCourse from "../components/course/UpdateCourse";
 import DeleteCourse from "../components/course/DeleteCourse";
 
 function Course() {
@@ -60,7 +60,9 @@ function Course() {
       </div>
       {crudBtns.add ? (
         <AddCourse />
-      ) : crudBtns.update ? null : crudBtns.delete ? ( // <UpdateCourse />
+      ) : crudBtns.update ? (
+        <UpdateCourse />
+      ) : crudBtns.update ? (
         <DeleteCourse />
       ) : null}
     </div>

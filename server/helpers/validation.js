@@ -120,6 +120,7 @@ const courseSchema = Joi.object({
   courseName: Joi.string().required(),
   newDepartment: Joi.string(),
   newName: Joi.string(),
+  newSlot: Joi.object(),
 });
 
 //AC
