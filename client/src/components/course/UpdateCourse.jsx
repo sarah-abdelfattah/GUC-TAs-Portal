@@ -17,7 +17,7 @@ function UpdateCourse() {
   const [facultyChosen, setFacultyChosen] = useState("");
   const [departments, setDepartments] = useState({ departments: [] });
   const [depChosen, setDepChosen] = useState("");
-  const [courses, setCourses] = useState({ departments: [] });
+  const [courses, setCourses] = useState({ courses: [] });
   const [courseChosen, setCourseChosen] = useState("");
   const [newDepChosen, setNewDepChosen] = useState("");
   const [slot, setSlot] = useState({
@@ -80,19 +80,11 @@ function UpdateCourse() {
       let courseName;
       if (courses)
         courseName = await courses.find(({ _id }) => _id === courseChosen).name;
-      console.log(
-        "🚀 ~ file: UpdateCourse.jsx ~ line 83 ~ handleSubmit ~ courseName",
-        courseName
-      );
 
       let newDepName;
       if (departments && newDepChosen !== "")
         newDepName = await departments.find(({ _id }) => _id === newDepChosen)
           .name;
-      console.log(
-        "🚀 ~ file: UpdateCourse.jsx ~ line 89 ~ handleSubmit ~ newDepName",
-        newDepName
-      );
 
       const body = {
         facultyCode: code.toUpperCase(),
@@ -115,7 +107,10 @@ function UpdateCourse() {
         });
         setFacultyChosen("");
         setDepChosen("");
+        setDepartments({ departments: [] });
         setCourseChosen("");
+        setCourses({ courses: [] });
+        setNewDepChosen("");
       }
 
       if (res.data.error) {

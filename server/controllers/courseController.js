@@ -138,6 +138,11 @@ exports.updateCourse = async function (req, res) {
             if (!newDepFound)
                 return res.send({ error: "No department with this new name under this faculty" });
 
+            const foundCourse = await Course.findOne({ department: newDepFound, name: courseFound.name }).populate('department');
+            if (foundCourse)
+                return res.send({ error: "There is another course with the same name under this department" });
+
+
             const course = await Course.findOne({ name: courseName })
             courseFound.department = newDepFound;
         }
@@ -148,11 +153,7 @@ exports.updateCourse = async function (req, res) {
 
             courseFound.name = newName;
         }
-        if (newSlot) {
-            console.log("🚀 ~ file: courseController.js ~ line 152 ~ newSlot", newSlot);
-            // const found = await courseFound.slots.find(({ day, time }) => day === newSlot.day && time === newSlot.time);
-            // if (found)
-            //     return res.send({error: 'Sorry there is another slot is that timing'});
+        if (newSlot.day) {
             if (!newSlot.day || !newSlot.time || !newSlot.location)
                 return res.send({ error: 'Please enter all details needed to add a slot' });
 
@@ -172,7 +173,13 @@ exports.updateCourse = async function (req, res) {
             if (locResult.error) return res.send(locResult);
             else newSlot.location = locResult;
 
-            courseFound.slots = courseFound.slots.push(newSlot);
+            // const madeSlot = new Slot({
+            //     day: newSlot.day,
+            //     time: newSlot.time,
+            //     location: newSlot.location
+            // })
+
+            courseFound.slots.push(newSlot);
         }
 
         const updatedCourse = await courseFound.save();
