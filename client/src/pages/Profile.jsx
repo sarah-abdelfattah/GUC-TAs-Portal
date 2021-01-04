@@ -84,7 +84,7 @@ function Profile(props) {
       }
     }
     fetchData();
-  }, []);
+  }, [props.user]);
 
   const handleUpdateProfile = async () => {
     setBtn("Submit Changes");

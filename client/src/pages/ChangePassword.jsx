@@ -9,6 +9,7 @@ import changePasswordIcon from "../assets/changepasswordicon.png";
 import { FormControl, Input, FormHelperText } from "@material-ui/core";
 
 function ChangePassword() {
+  // eslint-disable-next-line
   const [user, setUser] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

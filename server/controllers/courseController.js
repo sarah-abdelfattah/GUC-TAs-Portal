@@ -3,8 +3,25 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
+const Location = require('../models/Location');
 
 const validation = require('../helpers/validation');
+
+async function locationHelper(officeLocation) {
+    //check if room is found
+    const refLocation = await Location.findOne({
+        location: officeLocation,
+        is_deleted: { $ne: true },
+    }).populate('officeLocation');
+    if (!refLocation) return { error: 'Sorry room not found' };
+    else {
+        if (refLocation.type == 'Office') {
+            return { error: 'Sorry this is an office' };
+        } else {
+            return refLocation;
+        }
+    }
+}
 
 exports.getCourse = async function (req, res) {
     try {
@@ -88,17 +105,18 @@ exports.addCourse = async function (req, res) {
     }
 }
 
+//TODO: not tested well
 exports.updateCourse = async function (req, res) {
     try {
         let JOI_Result = await validation.courseSchema.validateAsync(req.body)
 
-        let { facultyCode, departmentName, courseName, newDepartment, newName } = req.body;
+        let { facultyCode, departmentName, courseName, newDepartment, newName, newSlot } = req.body;
 
         facultyCode = facultyCode.toUpperCase();
 
         //all data entered
-        if (!(newName || newDepartment))
-            return res.send({ error: "Please enter newDepartment and/or newName" });
+        if (!(newSlot || newDepartment))
+            return res.send({ error: "Please enter newDepartment and/or newSlot" });
 
         //faculty found? 
         const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');
@@ -120,6 +138,11 @@ exports.updateCourse = async function (req, res) {
             if (!newDepFound)
                 return res.send({ error: "No department with this new name under this faculty" });
 
+            const foundCourse = await Course.findOne({ department: newDepFound, name: courseFound.name }).populate('department');
+            if (foundCourse)
+                return res.send({ error: "There is another course with the same name under this department" });
+
+
             const course = await Course.findOne({ name: courseName })
             courseFound.department = newDepFound;
         }
@@ -130,10 +153,37 @@ exports.updateCourse = async function (req, res) {
 
             courseFound.name = newName;
         }
+        if (newSlot.day) {
+            if (!newSlot.day || !newSlot.time || !newSlot.location)
+                return res.send({ error: 'Please enter all details needed to add a slot' });
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const foundDay = days.find(d => d === newSlot.day)
+            if (!foundDay)
+                return res.send({ error: 'Sorry day should be one of: ' + days });
+
+
+            const timings = ['8:15', '10:00', '11:45', '13:45', '15:45', '15:45']
+            const foundTime = timings.find(t => t === newSlot.time)
+            if (!foundTime)
+                return res.send({ error: 'Sorry time should be one of: ' + timings });
+            // else new Date("Wed, 27 July 2016 13:30:00");
+            const locResult = await locationHelper(newSlot.location.toUpperCase());
+
+            if (locResult.error) return res.send(locResult);
+            else newSlot.location = locResult;
+
+            // const madeSlot = new Slot({
+            //     day: newSlot.day,
+            //     time: newSlot.time,
+            //     location: newSlot.location
+            // })
+
+            courseFound.slots.push(newSlot);
+        }
 
         const updatedCourse = await courseFound.save();
         return res.send({ data: "Course Updated Successfully" });
-
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);

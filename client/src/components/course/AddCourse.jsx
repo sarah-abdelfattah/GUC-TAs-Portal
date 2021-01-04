@@ -53,7 +53,7 @@ function AddCourse() {
       const body = {
         facultyCode: code.toUpperCase(),
         departmentName: depName,
-        courseName: name.toUpperCase(),
+        courseName: name,
       };
 
       const res = await axiosCall("post", "courses/course", body);
@@ -151,7 +151,7 @@ function AddCourse() {
         disabled={facultyChosen === "" || name === "" ? true : false}
         onClick={handleSubmit}
       >
-        Add Department
+        Add Course
       </Button>
     </div>
   );
