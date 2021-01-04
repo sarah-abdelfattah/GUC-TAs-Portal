@@ -8,11 +8,6 @@ import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
 
-//TODO: integrate button of attendance records
-//TODO: responsiveness
-//TODO: design
-//TODO: department
-
 function Homepage() {
   const [user, setUser] = useState("");
   const [location, setLocation] = useState("");
@@ -49,10 +44,9 @@ function Homepage() {
         }
 
         //get department
-        const depRes = await axiosCall("get", "departments/all/all");
+        const depRes = await axiosCall("get", "departments/department/all/all");
         let dep;
         if (depRes.data.data) {
-          //TODO:fix backend
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
           setDepartment(dep.name);
         }
@@ -133,10 +127,6 @@ function Homepage() {
               <h6> {user.name}</h6>
             </li>
             <li>
-              <h5>Gender: </h5>
-              <h6> {user.gender}</h6>
-            </li>
-            <li>
               <h5>Email: </h5>
               <h6> {user.email}</h6>
             </li>
@@ -170,9 +160,20 @@ function Homepage() {
               <h6> {hours}</h6>
             </li>
           </ul>
-          <button className="attendanceRecord-btn">
-            View Attendance Record
-          </button>
+          <div className="hompage-btns">
+            <button
+              className="attendanceRecord-btn"
+              onClick={() => (document.location.href = "/myAttendanceRecord")}
+            >
+              View Attendance Record
+            </button>
+            <button
+              className="attendanceRecord-btn"
+              onClick={() => (document.location.href = "/profile")}
+            >
+              View Profile
+            </button>
+          </div>
         </div>
       </div>
       <div className="right-hp">

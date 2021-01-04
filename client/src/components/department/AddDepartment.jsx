@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-import axios from "axios";
 
 import {
   FormControl,
@@ -13,7 +12,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-function AddFaculty() {
+function AddDepartment() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
   const [staff, setStaff] = useState({ staff: [] });
@@ -151,4 +150,4 @@ function AddFaculty() {
   );
 }
 
-export default AddFaculty;
+export default AddDepartment;

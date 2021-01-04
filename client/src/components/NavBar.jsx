@@ -11,7 +11,7 @@ function NavBar() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = (await checkLogin()).name;
+      const res = (await checkLogin()).gucId;
       setName(res);
     }
     fetchData();
@@ -25,8 +25,13 @@ function NavBar() {
   return (
     <Navbar className="navbar">
       <Navbar.Brand href="#home">
-        <img alt="" src={profileIcon} className="profile-icon" />{" "}
-        <a className="navbar-name" href="/">
+        <img
+          alt=""
+          src={profileIcon}
+          className="profile-icon"
+          onClick={() => (document.location.href = "/profile")}
+        />{" "}
+        <a className="navbar-name" href="/home">
           {name}
         </a>
       </Navbar.Brand>

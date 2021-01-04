@@ -1,28 +1,56 @@
+@import "./colorSchema";
+
 html,
 body,
 #app,
 #app>div,
 #root,
 .App {
-    height: 100%;
-    background: #fefeff;
+    min-width: 100%;
+    background: #eee;
 }
 
 .myApp {
-    min-height: 100%;
     width: calc(100%-68px);
     margin-top: 60px;
     margin-left: 67px;
     background: #eee;
-    padding-bottom: 50px;
+    // padding-bottom: 50px;
 }
 
-@media only screen and (max-width: 380px) {
+
+@media all and (max-width: 380px) {
     .myApp {
         margin-top: 50px;
         margin-left: 54px;
+        width: calc(100%-55px);
     }
 }
 
+
+
+//general
+// .general-title {
+//     font-size: 35px;
+//     font-family: 'Times New Roman', Times, serif;
+//     position: relative;
+//     top: 30px;
+//     left: 50%;
+// }
+
+.general-line {
+    width: 90%;
+    margin: auto;
+}
+
+.general-header {
+    color: $primary-navy-blue;
+    font-size: 35px;
+    font-family: 'Times New Roman',
+        Times,
+        serif;
+    width: fit-content;
+    margin: 80px auto 0 auto;
+}
 
 //as8r haga 280 then 320

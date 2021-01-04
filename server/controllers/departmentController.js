@@ -12,13 +12,12 @@ exports.getDepartment = async function (req, res) {
     if (req.params.faculty === 'all') {
       //get all departments of all faculties
       if (req.params.department === 'all') {
-        console.log("heere")
-        const result = Department.find({});
+        const result = await Department.find({});
         return res.send({ data: result });
       }
       // search for a specific department under all faculties
       else {
-        const result = Department.findOne({ name: req.params.department });
+        const result = await Department.findOne({ name: req.params.department });
         if (result) return res.send({ data: result });
         else return res.send({ error: "Sorry no department with this name" });
       }
@@ -33,7 +32,7 @@ exports.getDepartment = async function (req, res) {
       }
       // search for a specific department under a specific faculty faculties
       else {
-        const result = Department.findOne({ faculty: fac, name: req.params.department });
+        const result = await Department.findOne({ faculty: fac, name: req.params.department });
         if (result) return res.send({ data: result });
         else return res.send({ error: "Sorry no department with this name under this faculty" });
       }
@@ -263,7 +262,7 @@ exports.getAllStaffMembers = async (req, res) => {
 
 exports.getStaffMembersPerCourse = async (req, res) => {
   try {
-    let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
+    //let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
       _id: req.user.department,
     }).populate('department');
@@ -277,35 +276,47 @@ exports.getStaffMembersPerCourse = async (req, res) => {
         });
     }
     // if this department has different HOD
-    if (!HOD._id.equals(departmentFound.HOD)) {
-      return res.send({
-        error: "Sorry, you don't have access to view this department",
-      });
-    }
+    // if (!HOD._id.equals(departmentFound.HOD)) {
+    //   return res.send({
+    //     error: "Sorry, you don't have access to view this department",
+    //   });
+    // }
 
-    let courseFound = await Course.findOne({
-      department: departmentFound,
-      name: req.params.course,
-    }).populate();
-    // if no course found
-    if (!courseFound) {
-      return res
-        .status(404)
-        .send({
-          message: `No course found with this name ${req.params.course} under your department`,
+    if(req.params.course === "all"){
+      // case success
+      const staffMembers = await StaffMember.find({
+        type: { $in: ["Academic Member"] },
+        department: departmentFound._id,
+      });
+      return res.status(200).send({
+        data: staffMembers,
+      });
+    } else{
+        let courseFound = await Course.findOne({
+          department: departmentFound,
+          name: req.params.course,
+        }).populate();
+        // if no course found
+        if (!courseFound) {
+          return res
+            .status(404)
+            .send({
+              message: `No course found with this name ${req.params.course} under your department`,
+            });
+        }
+    
+        // case success
+        const staffMembers = await StaffMember.find({
+          type: { $in: ["Academic Member"] },
+          department: departmentFound._id,
+          courses: courseFound,
+        });
+    
+        return res.status(200).send({
+          data: staffMembers,
         });
     }
 
-    // case success
-    const staffMembers = await StaffMember.find({
-      type: { $in: ["Academic Member"] },
-      department: departmentFound._id,
-      courses: courseFound,
-    });
-
-    return res.status(200).send({
-      data: staffMembers,
-    });
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
@@ -824,6 +835,48 @@ exports.viewTeachingAssignments = async (req, res) => {
       });
     }
   } catch (err) {
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
+  }
+};
+
+// view the course coverage of each course
+exports.viewCourses = async (req, res) => {
+  try {
+    let departmentFound = await Department.findOne({
+      _id: req.user.department,
+    }).populate('department');
+
+    // if there's no department found
+    if (!departmentFound) {
+      return res
+        .status(404)
+        .send({
+          error: `No department found with this id ${req.user.department}`,
+        });
+    }
+
+    let courses = await Course.find({ department: departmentFound._id });
+
+    // if no courses found for this department
+    if (!courses) {
+      return res.send({
+        error: "No courses found for this department",
+      });
+    }
+
+    return res.status(200).send({
+      data: courses.map((course) => {
+        return {
+          course: course.name,
+          id: course._id
+        }
+      }),
+    });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+    }
     res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };

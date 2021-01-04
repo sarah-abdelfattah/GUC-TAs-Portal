@@ -10,4 +10,6 @@ router.post("/location", auth.HRAuth, locationController.createRoom);
 router.put("/location", auth.HRAuth, locationController.updateRoom);
 router.delete("/location", auth.HRAuth, locationController.deleteRoom);
 
+// added this route to get the location and view it in the HOD view all staff table
+
 module.exports = router;  

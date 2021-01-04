@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import checkLogin from "../helpers/checkLogin";
+import axiosCall from "../helpers/axiosCall";
 
 //icons
-import { FaUserAlt } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 
 //users
 import HRMenuItems from "./sidebar/HRMenuItems";
+import HODMenuItems from "./sidebar/HODMenuItems";
+import CIMenuItems from "./sidebar/CIMenuItems";
+import TAMenuItems from "./sidebar/TAMenuItems";
 
 function SideBar() {
   const [user, setUser] = useState("");
   const [showHome, setHome] = useState(false);
-  const [showProfile, setProfile] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = path;
@@ -22,6 +24,16 @@ function SideBar() {
     async function fetchData() {
       const res = (await checkLogin()).type;
       setUser(res);
+
+      const depResult = await axiosCall(
+        "get",
+        "departments/department/all/all"
+      );
+      if (depResult.data.data) {
+        let HOD = await depResult.data.data.find(({ HOD }) => HOD === res._id);
+
+        if (HOD) setUser("HOD");
+      }
     }
     fetchData();
   }, []);
@@ -38,16 +50,10 @@ function SideBar() {
           {showHome ? "Home" : ""}
         </MenuItem>
 
-        <MenuItem
-          icon={<FaUserAlt />}
-          onMouseEnter={() => setProfile(true)}
-          onMouseLeave={() => setProfile(false)}
-          onClick={() => routeChange("profile")}
-        >
-          {showProfile ? "Profile" : ""}
-        </MenuItem>
-
         {user === "HR" ? <HRMenuItems /> : <p />}
+        {user === "HOD" ? <HODMenuItems /> : <p />}
+        {user === "Course Instructor" ? <CIMenuItems /> : <p />}
+        {user === "Teaching Assistant" ? <TAMenuItems /> : <p />}
       </Menu>
     </ProSidebar>
   );
