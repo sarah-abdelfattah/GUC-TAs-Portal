@@ -6,8 +6,6 @@ import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
 import { link } from "../helpers/constants.js";
 import { Button } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
 
 function Staff() {
@@ -70,16 +68,12 @@ function Staff() {
   }, []);
 
   return (
-    // styling
     <div>
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />
         <Grid container spacing={1}>
-          <Grid item xs={1}></Grid>
-          <Grid item xs={10}>
-            <br />
-            <br />
+          <Grid item xs={11}>
             <MaterialTable
               title=""
               columns={[
@@ -102,6 +96,7 @@ function Staff() {
                 { title: "Day off", field: "dayOff" },
                 { title: "office", field: "location" },
               ]}
+              align="center"
               data={data}
               actions={[
                 {
@@ -117,20 +112,30 @@ function Staff() {
               options={{
                 actionsColumnIndex: -1,
                 headerStyle: {
-                  backgroundColor: "#FFFFFF",
-                  color: "#000000",
+                  backgroundColor: "#FFF",
+                  color: "#000",
+                  letterSpacing: "0.1em",
+                  fontSize: "18px",
+                  margin: "0",
+                  padding: "0 0 10px 0",
+                },
+                rowStyle: {
+                  fontSize: "15px",
                 },
               }}
               components={{
                 Action: (props) => (
                   <Button
                     onClick={(event) => props.action.onClick(event, props.data)}
-                    color="primary"
                     variant="contained"
-                    style={{ textTransform: "none", background: "#045CC8" }}
+                    style={{
+                      textTransform: "none",
+                      background: "#045CC8",
+                      color: "#fff",
+                    }}
                     size="small"
                   >
-                    Attendance Record
+                    Attendance
                   </Button>
                 ),
               }}
