@@ -62,7 +62,7 @@ function Course() {
         <AddCourse />
       ) : crudBtns.update ? (
         <UpdateCourse />
-      ) : crudBtns.update ? (
+      ) : crudBtns.delete ? (
         <DeleteCourse />
       ) : null}
     </div>
