@@ -6,11 +6,9 @@ import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
 import { Button } from "@material-ui/core";
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Fade from 'react-reveal/Fade';
-
-
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Fade from "react-reveal/Fade";
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
@@ -32,10 +30,7 @@ function ViewAllStaff() {
             "get",
             `${link}/locations/room/all`
           );
-          const courses = await axiosCall(
-            "get",
-            `${link}/departments/courses`
-          );
+          const courses = await axiosCall("get", `${link}/departments/courses`);
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
@@ -64,7 +59,7 @@ function ViewAllStaff() {
             });
             setData(data);
             let data2 = courses.data.data;
-            let data3 = data2.push({course:"all"});
+            let data3 = data2.push({ course: "all" });
             console.log(data3);
             setCourses(data2);
           }
@@ -77,16 +72,13 @@ function ViewAllStaff() {
     }
   }, []);
 
-  async function handleOnChange(event){
-    try{
+  async function handleOnChange(event) {
+    try {
       const res = await axiosCall(
         "get",
         `${link}/departments/getAllStaffMembers/${event.course}`
       );
-      const locations = await axiosCall(
-        "get",
-        `${link}/locations/room/all`
-      );
+      const locations = await axiosCall("get", `${link}/locations/room/all`);
 
       let data = res.data.data.map((staff) => {
         return {
@@ -108,8 +100,7 @@ function ViewAllStaff() {
         };
       });
       setData(data);
-    }
-    catch (err) {
+    } catch (err) {
       console.log("~err", err);
     }
   }
@@ -117,81 +108,86 @@ function ViewAllStaff() {
   return (
     // styling
     <div>
-    <Fade>
-      <Grid container spacing={1}>
-        <Grid item xs={1}></Grid>
-        <Grid item xs={10}>
-          <br />
-          <br />
-          <MaterialTable
-            title=""
-            columns={[
-              {
-                title: "Avatar",
-                render: (rowData) => (
-                  <Avatar
-                    maxInitials={1}
-                    size={40}
-                    round={true}
-                    name={rowData === undefined ? " " : rowData.name}
+      <Fade>
+        <h3 className="general-header">Staff Members</h3>
+        <hr className="general-line" />
+        <Grid container spacing={1}>
+          <Grid item xs={10}>
+            <MaterialTable
+              title=""
+              columns={[
+                {
+                  title: "Avatar",
+                  render: (rowData) => (
+                    <Avatar
+                      maxInitials={1}
+                      size={40}
+                      round={true}
+                      name={rowData === undefined ? " " : rowData.name}
+                    />
+                  ),
+                },
+                { title: "Name", field: "name" },
+                { title: "Gender", field: "gender" },
+                { title: "ID", field: "gucId" },
+                { title: "Role", field: "role" },
+                { title: "Email", field: "email" },
+                { title: "Day off", field: "dayOff" },
+                { title: "office", field: "location" },
+              ]}
+              data={data}
+              actions={[
+                {
+                  icon: "save",
+                  tooltip: "Save User",
+                  onClick: (event, rowData) => {
+                    document.location.href = `${rowData.id}/viewSchedule`;
+                  },
+                },
+              ]}
+              options={{
+                actionsColumnIndex: -1,
+                headerStyle: {
+                  backgroundColor: "#FFFFFF",
+                  color: "#000000",
+                },
+              }}
+              components={{
+                Action: (props) => (
+                  <Button
+                    onClick={(event) => props.action.onClick(event, props.data)}
+                    color="primary"
+                    variant="contained"
+                    style={{ textTransform: "none" }}
+                    size="small"
+                  >
+                    View schedule
+                  </Button>
+                ),
+                Toolbar: (props) => (
+                  <Autocomplete
+                    size="small"
+                    id="debug"
+                    options={courses}
+                    onChange={(event, newValue) => {
+                      handleOnChange(newValue);
+                    }}
+                    getOptionLabel={(option) => option.course}
+                    style={{ width: "30%", margin: "auto" }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="View staff members per course"
+                        margin="normal"
+                      />
+                    )}
                   />
                 ),
-              },
-              { title: "Name", field: "name" },
-              { title: "Gender", field: "gender" },
-              { title: "ID", field: "gucId" },
-              { title: "Role", field: "role" },
-              { title: "Email", field: "email" },
-              { title: "Day off", field: "dayOff" },
-              { title: "office", field: "location" },
-            ]}
-            data={data}
-            actions={[
-              {
-                icon: "save",
-                tooltip: "Save User",
-                onClick: (event, rowData) => {
-                  document.location.href = `${rowData.id}/viewSchedule`;
-                },
-              },
-            ]}
-            options={{
-              actionsColumnIndex: -1,
-              headerStyle: {
-                backgroundColor: '#FFFFFF',
-                color: '#000000'
-              },
-            }}
-            components={{
-              Action: (props) => (
-                <Button
-                  onClick={(event) => props.action.onClick(event, props.data)}
-                  color="primary"
-                  variant="contained"
-                  style={{ textTransform: "none" }}
-                  size="small"
-                >
-                  View schedule
-                </Button>
-              ),
-              Toolbar: (props) => (
-                <Autocomplete
-                  size="small"
-                  id="debug"
-                  options={courses}
-                  onChange={(event, newValue) =>{
-                    handleOnChange(newValue);
-                  }}
-                  getOptionLabel={(option) => option.course}
-                  style={{ width: "30%",  margin: "auto" }}
-                  renderInput={(params) => <TextField {...params} label="View staff members per course" margin="normal" />}
-                />
-              ),
-            }}
-          />
+              }}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-     </Fade>
+      </Fade>
     </div>
   );
 }
