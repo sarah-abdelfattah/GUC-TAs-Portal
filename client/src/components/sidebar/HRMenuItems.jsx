@@ -2,55 +2,74 @@ import React, { useState } from "react";
 import { Menu, MenuItem } from "react-pro-sidebar";
 
 //icons
-import { MdLocationOn } from "react-icons/md";
+import { MdLocationOn, MdPersonAdd } from "react-icons/md";
 import { FaUniversity, FaClipboardList, FaBook } from "react-icons/fa";
 
 function HRMenuItems() {
-  const [showLocation, setLocation] = useState(false);
-  const [showFaculty, setFaculty] = useState(false);
-  const [showDepartment, setDepartment] = useState(false);
-  const [showCourse, setCourse] = useState(false);
+  const [icons, setIcons] = useState({
+    location: false,
+    faculty: false,
+    department: false,
+    course: false,
+    staff: false,
+  });
 
   const routeChange = (path) => {
     document.location.href = path;
+  };
+
+  const showTag = (name) => {
+    setIcons({
+      ...icons,
+      [name]: true,
+    });
   };
 
   return (
     <Menu iconShape="round" className="first-new">
       <MenuItem
         icon={<MdLocationOn />}
-        onMouseEnter={() => setLocation(true)}
-        onMouseLeave={() => setLocation(false)}
+        onMouseEnter={() => showTag("location")}
+        onMouseLeave={() => setIcons(false)}
         onClick={() => routeChange("location")}
       >
-        {showLocation ? "Location" : ""}
+        {icons.location ? "Location" : ""}
       </MenuItem>
 
       <MenuItem
         icon={<FaUniversity />}
-        onMouseEnter={() => setFaculty(true)}
-        onMouseLeave={() => setFaculty(false)}
+        onMouseEnter={() => showTag("faculty")}
+        onMouseLeave={() => setIcons(false)}
         onClick={() => routeChange("faculty")}
       >
-        {showFaculty ? "Faculty" : ""}
+        {icons.faculty ? "Faculty" : ""}
       </MenuItem>
 
       <MenuItem
         icon={<FaClipboardList />}
-        onMouseEnter={() => setDepartment(true)}
-        onMouseLeave={() => setDepartment(false)}
+        onMouseEnter={() => showTag("department")}
+        onMouseLeave={() => setIcons(false)}
         onClick={() => routeChange("department")}
       >
-        {showDepartment ? "Department" : ""}
+        {icons.department ? "Department" : ""}
       </MenuItem>
 
       <MenuItem
         icon={<FaBook />}
-        onMouseEnter={() => setCourse(true)}
-        onMouseLeave={() => setCourse(false)}
+        onMouseEnter={() => showTag("course")}
+        onMouseLeave={() => setIcons(false)}
         onClick={() => routeChange("course")}
       >
-        {showCourse ? "Course" : ""}
+        {icons.course ? "Course" : ""}
+      </MenuItem>
+
+      <MenuItem
+        icon={<MdPersonAdd />}
+        onMouseEnter={() => showTag("staff")}
+        onMouseLeave={() => setIcons(false)}
+        onClick={() => routeChange("staff")}
+      >
+        {icons.staff ? "Staff " : ""}
       </MenuItem>
     </Menu>
   );
