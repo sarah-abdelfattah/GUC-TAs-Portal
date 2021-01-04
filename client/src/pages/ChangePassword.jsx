@@ -210,7 +210,7 @@ function ChangePassword() {
           <h3>New password should be </h3>
           <h5
             className={
-              newPassword.length < 8
+              newPassword.length < 6
                 ? "newpassword-restrictions"
                 : "newpassword-restrictionsValid"
             }
