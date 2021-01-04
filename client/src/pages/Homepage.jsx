@@ -8,9 +8,6 @@ import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
 
-//TODO: responsiveness
-//TODO: department
-
 function Homepage() {
   const [user, setUser] = useState("");
   const [location, setLocation] = useState("");
@@ -50,7 +47,6 @@ function Homepage() {
         const depRes = await axiosCall("get", "departments/all/all");
         let dep;
         if (depRes.data.data) {
-          //TODO:fix backend
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
           setDepartment(dep.name);
         }
