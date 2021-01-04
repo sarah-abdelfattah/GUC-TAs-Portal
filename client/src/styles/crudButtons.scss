@@ -94,6 +94,18 @@
         }
     }
 
+    .crud-delete-btn {
+
+        &:hover,
+        &:active,
+        &:visited,
+        &:focus,
+        &:focus-visible,
+        &:focus-within {
+            background: $secondary-red;
+        }
+    }
+
     &:hover {
         // border-radius: 10px;
         // border-bottom: 5px solid;
