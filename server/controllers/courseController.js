@@ -25,6 +25,13 @@ async function locationHelper(officeLocation) {
 
 exports.getCourse = async function (req, res) {
     try {
+        if (req.params.faculty.toUpperCase() === 'ALL'
+            && req.params.department === 'all'
+            && req.params.course === 'all'
+        ) {
+            const courses = await Course.find()
+            return res.send({ data: courses });
+        }
         //faculty found
         const facultyCode = req.params.faculty.toUpperCase();
         const facultyFound = await Faculty.findOne({ code: facultyCode }).populate('faculty');

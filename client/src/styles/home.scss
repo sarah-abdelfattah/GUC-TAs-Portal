@@ -1,17 +1,17 @@
+@import "./colorSchema";
+
 html,
 body,
 #app,
 #app>div,
 #root,
 .App {
-    min-height: 100%;
     min-width: 100%;
-    background: #fefeff;
+    background: #eee;
 }
 
 .myApp {
-    min-height: 100%;
-    // width: calc(100%-68px);
+    width: calc(100%-68px);
     margin-top: 60px;
     margin-left: 67px;
     background: #eee;
@@ -27,20 +27,30 @@ body,
     }
 }
 
-.general-title {
-    font-size: 40px;
-    position: relative;
-    top: 30px;
-    left: 60px;
-}
+
+
+//general
+// .general-title {
+//     font-size: 35px;
+//     font-family: 'Times New Roman', Times, serif;
+//     position: relative;
+//     top: 30px;
+//     left: 50%;
+// }
 
 .general-line {
-    border-bottom: 1px solid black;
-    position: relative;
-    top: 35px;
-    width: 85%;
-    left: 60px;
-    height: 10px;
+    width: 90%;
+    margin: auto;
+}
+
+.general-header {
+    color: $primary-navy-blue;
+    font-size: 35px;
+    font-family: 'Times New Roman',
+        Times,
+        serif;
+    width: fit-content;
+    margin: 100px auto 0 auto;
 }
 
 //as8r haga 280 then 320

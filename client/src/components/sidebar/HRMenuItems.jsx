@@ -15,7 +15,7 @@ function HRMenuItems() {
   });
 
   const routeChange = (path) => {
-    document.location.href = path;
+    document.location.href = window.location.origin + `/${path}`;
   };
 
   const showTag = (name) => {
