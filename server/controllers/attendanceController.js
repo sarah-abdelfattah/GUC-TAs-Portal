@@ -339,6 +339,25 @@ exports.viewAttendanceHR = async function (req, res) {
 }
 
 //Function 19: View staff members with missing hours/days.
+exports.getStaffMissingHoursDays = async (staffRecords) => {
+    staffIDs = [];
+    for (i = 0; i < staffRecords.length; i++) {
+        missingDays = await module.exports.findMissingDays(staffRecords[i].gucId);
+        missingHours = await module.exports.findMissingMinutes(staffRecords[i].gucId);
+        const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
+        const minutesSpentPrinted = Math.abs(missingHours) % 60;
+        const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
+        const sentRes = sign;
+        staffIDs.push(
+            {
+                GUCID: staffRecords[i].gucId,
+                MissingDays: missingDays,
+                MissingHours: sentRes
+            });
+    }
+    return staffIDs;
+
+};
 exports.viewStaffWithMissingHoursDays = async function (req, res) {
     try {
         attendanceRecords = await staffMember.find();
@@ -346,21 +365,8 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             res.send({ error: "There no staff in the system yet" });
             return;
         }
-        staffIDs = [];
-        for (i = 0; i < attendanceRecords.length; i++) {
-            missingDays = await module.exports.findMissingDays(attendanceRecords[i].gucId);
-            missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
-            const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
-            const minutesSpentPrinted = Math.abs(missingHours) % 60;
-            const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
-            const sentRes = "Missing hours: " + sign;
-            staffIDs.push(
-                {
-                    GUCID: attendanceRecords[i].gucId,
-                    MissingDays: missingDays,
-                    MissingHours: sentRes
-                });
-        }
+        const staffIDs = await module.exports.getStaffMissingHoursDays(attendanceRecords);
+
         return res.json({ data: staffIDs });
     } catch (err) {
         if (err.isJoi) {
