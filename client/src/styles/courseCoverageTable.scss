@@ -1,0 +1,52 @@
+@import "./colorSchema";
+
+.coverage-title {
+    color: $secondary-blue;
+    font-size: 40px;
+    position: relative;
+    top: 30px;
+    left: 60px;
+}
+
+.line {
+    border-bottom: 1px solid $secondary-blue;
+    position: relative;
+    top: 35px;
+    width: 85%;
+    left: 60px;
+    height: 10px;
+}
+
+.table-page-style {
+    border-radius: 15px;
+    width: 99.6%;
+    height: 660px;
+    position: relative;
+    background-color: #eee;
+}
+
+.table-container {
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid #e3fbff;
+    min-width: 30%;
+    width: 50%;
+    height: 40%;
+    position: relative;
+    top: 100px;
+    left: 60px;
+}
+
+.table-style {
+    background-color: white;
+    min-width: 30%;
+    height: 92.5%;
+    top: 7.75px;
+    left: 10.5px;
+    width: 96%;
+    position: relative;
+}
+
+.MuiTableCell-root.MuiTableCell-head {
+    color: white;
+}

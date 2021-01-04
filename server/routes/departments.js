@@ -14,7 +14,9 @@ router.get("/department/:faculty/:department", departmentController.getDepartmen
 router.get('/getAllStaffMembers', auth.HODAuth, departmentController.getAllStaffMembers);
 
 // to get all the staff members of this department for a specific course
-router.get('/getAllStaffMembers/:course', auth.HODAuth, departmentController.getStaffMembersPerCourse);
+// authorization: both HOD and Course Instructor
+// pass parameter all to get all staff members or pass course name to get staff members of certain course
+router.get('/getAllStaffMembers/:course', auth.HODAuth && auth.CIAuth, departmentController.getStaffMembersPerCourse);
 
 // to view the dayOff of all staff members for this department
 router.get('/viewDayOff', auth.HODAuth, departmentController.viewDayOff);
@@ -32,5 +34,8 @@ router.delete('/assignInstructor', auth.HODAuth, departmentController.deleteInst
 
 // view View teaching assignments (which staff members teach which slots) of course offered by his department.
 router.get('/viewTeachingAssignments/:course', auth.HODAuth, departmentController.viewTeachingAssignments);
+
+// to get all courses for that department
+router.get('/courses', departmentController.viewCourses);
 
 module.exports = router;  

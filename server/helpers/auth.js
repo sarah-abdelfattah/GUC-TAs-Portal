@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 //const Course = require('../models/Course');
-//const StaffMember = require('../models/StaffMember');
+const StaffMember = require('../models/StaffMember');
 const Department = require('../models/Department');
 
 exports.HRAuth = async function (req, res, next) {

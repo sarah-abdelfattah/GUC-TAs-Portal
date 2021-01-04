@@ -3,6 +3,7 @@ import axios from "axios";
 import setAuthToken from "../helpers/setAuthToken";
 import { link } from "../helpers/constants";
 import { useToasts } from "react-toast-notifications";
+import Fade from 'react-reveal/Fade';
 
 function Login() {
   // defining the variables and states
@@ -69,6 +70,7 @@ function Login() {
 
   return (
     <div className="container-login100">
+     <Fade bottom>
       <div className="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
         <form onSubmit={handleSubmit} className="login100-form validate-form">
           <span className="login100-form-title p-b-37">{greet}✨</span>
@@ -83,7 +85,7 @@ function Login() {
               type="text"
               name="text"
               placeholder="guc id "
-              onChange={({ target }) => setId(target.value.toUpperCase())}
+              onChange={({ target }) => setId(target.value)}
             />
             <span className="focus-input100"></span>
           </div>
@@ -109,8 +111,8 @@ function Login() {
           </div>
         </form>
       </div>
+     </Fade>
     </div>
   );
 }
-
 export default Login;

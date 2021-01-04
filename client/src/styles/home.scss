@@ -4,8 +4,8 @@ body,
 #app>div,
 #root,
 .App {
-    height: 100%;
-    width: 100%;
+    min-height: 100%;
+    min-width: 100%;
     background: #fefeff;
 }
 
@@ -27,5 +27,20 @@ body,
     }
 }
 
+.general-title {
+    font-size: 40px;
+    position: relative;
+    top: 30px;
+    left: 60px;
+}
+
+.general-line {
+    border-bottom: 1px solid black;
+    position: relative;
+    top: 35px;
+    width: 85%;
+    left: 60px;
+    height: 10px;
+}
 
 //as8r haga 280 then 320
