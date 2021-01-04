@@ -13,6 +13,26 @@ const Notification = require('../models/Notification')
 
 const validation = require('../helpers/validation');
 
+const errorMsgs = {
+  notFound: (name, id) => {
+    return `There is no ${name} with this ${id}`;
+  },
+  notAssignedTo: (assignmentName, assignee) => {
+    return `There are no ${assignmentName} assigned to this ${assignee}`;
+  },
+  notAssigned: (assignmentName, extraInfo) => {
+    return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
+  },
+  notAuthorized: (action) => {
+    return `You are not authorized to ${action}`;
+  },
+  allAssigned: (assignmentName) => {
+    return `All the ${assignmentName} are already assigned`;
+  },
+  alreadyAssigned: (assignmentName) => {
+    return `The ${assignmentName} is already assigned`;
+  },
+};
 
 async function locationHelper(officeLocation) {
     //check if room is found
@@ -696,6 +716,27 @@ exports.updateSalary = async function (req, res) {
         res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
+
+exports.getSalary = async function (req, res) {
+  try {
+    const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
+
+    // Case: ac not found
+    if (!targetAc)
+      return res.status(404).send({
+        error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
+      });
+
+    return res.status(200).send({ salary: targetAc.salary });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err.details[0].message });
+    }
+    console.log('~ err', err);
+    res.status(500).send({ err: `Internal Server Error: ${err}` });
+  }
+};
 
 //Function 39: View their schedule. Schedule should show teaching activities and replacements if present. 
 exports.viewMySchedule = async (req, res) => {
