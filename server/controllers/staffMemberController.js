@@ -727,7 +727,26 @@ exports.getSalary = async function (req, res) {
         error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
       });
 
-    return res.status(200).send({ salary: targetAc.salary });
+    allStaff = await StaffMember.find();
+    if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
+    const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
+
+    const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
+
+    // Case: AC is not on the returned array (does not have any missings)
+    if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
+
+    //Case: AC Exist => Get the salary
+    // MissingDays ==> Salary -= (Salary / 60 ) * days
+    // MissingHours ==> Salary -= (Salary / 180 ) * hours
+    // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
+    const missingDays = allMissing[acIndex].MissingDays;
+    const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
+    const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
+    const originalSalary = targetAc.salary;
+    const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
+
+    return res.status(200).send({ salary: newSalary });
   } catch (err) {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
