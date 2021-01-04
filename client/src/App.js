@@ -4,6 +4,7 @@ import { ToastProvider } from 'react-toast-notifications';
 
 import '../src/styles/courseCoverageTable.scss'
 import '../src/styles/slotsAssignedTable.scss'
+import '../src/styles/courseSlot.scss'
 
 
 //Import the styles
@@ -31,6 +32,7 @@ import Department from "./pages/Department";
 import CourseCoverage from './pages/InstCourseCoverage';
 import SlotsAssigned from './pages/InstructorSlotsAssigned';
 import Schedule from './pages/AcademicMemberSchedule';
+import CourseSlot from './pages/AcademicMemberCourseSlot';
 
 
 function App() {
@@ -58,7 +60,7 @@ function App() {
                 <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
                 <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
                 <Route exact path = "/viewMySchedule" render = {(props)=> <Schedule {...props}/>} />
-
+                <Route exact path = "/courseSlots" render = {(props)=> <CourseSlot {...props}/>} />
             <Route
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
