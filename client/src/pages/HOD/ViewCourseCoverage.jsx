@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
-import Fade from 'react-reveal/Fade';
+import Fade from "react-reveal/Fade";
 
 function ViewCourseCoverage() {
   const [data, setData] = useState([]); //table data
@@ -27,7 +27,7 @@ function ViewCourseCoverage() {
               autoDismiss: true,
             });
           } else {
-            let data = response.data.data
+            let data = response.data.data;
             setData(data);
           }
         } catch (err) {
@@ -40,33 +40,29 @@ function ViewCourseCoverage() {
   }, []);
 
   return (
-    // styling
     <div>
-    <Fade>
-      <Grid container spacing={3}>
-        <Grid item xs={2}></Grid>
-        <Grid item xs={8}>
-          <br />
-          <br />
-          <MaterialTable
-            title="View course coverage"
-            columns={[
-              
-              { title: "Course name", field: "course" },
-              { title: "Coverage %", field: "coverage" },
-            ]}
-            data={data}
-            options={{
-              headerStyle: {
-                backgroundColor: '#01579b',
-                color: '#FFF'
-              },
-              
-            }}
-          />
+      <Fade>
+        <h3 className="general-header">View course coverage</h3>
+        <hr className="general-line" />
+        <Grid container spacing={1}>
+          <Grid item xs={8}>
+            <MaterialTable
+              title=""
+              columns={[
+                { title: "Course name", field: "course" },
+                { title: "Coverage %", field: "coverage" },
+              ]}
+              data={data}
+              options={{
+                headerStyle: {
+                  backgroundColor: "#045CC8",
+                  color: "#FFF",
+                },
+              }}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-     </Fade>
+      </Fade>
     </div>
   );
 }
