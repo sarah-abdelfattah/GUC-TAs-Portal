@@ -5,15 +5,16 @@ const registerSchema = Joi.object({
   name: Joi.string().required(),
   gender: Joi.string().valid('female', 'male').required(),
   email: Joi.string().email().lowercase().required(),
-  salary: Joi.number().integer().required(),
+  salary: Joi.number().integer().min(0).required(),
   officeLocation: Joi.string()
     .regex(/[ABCDGMN][1-7].[0-4][0-9][1-9] || ^H[1-9]{1,}/)
     .required(),
   type: Joi.string().valid('HR', 'Academic Member').required(),
-  role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
   dayOff: Joi.string().valid('Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'),
   faculty: Joi.string(),
   department: Joi.string(),
+  role: Joi.string(),
+  courses: Joi.string(),
 });
 
 const registerACSchema = Joi.object({

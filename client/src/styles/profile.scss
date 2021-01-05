@@ -60,6 +60,7 @@
             flex-wrap: wrap;
             margin-top: 20px;
 
+            .profile-btn,
             .profile-update-btn,
             .profile-change-password-btn {
                 border-radius: 10px;
@@ -79,6 +80,14 @@
             .profile-update-btn {
                 &:hover {
                     background: $secondary-blue;
+                }
+            }
+
+            .profile-add-btn {
+                background: $primary-green;
+
+                &:hover {
+                    background: $secondary-green;
                 }
             }
 

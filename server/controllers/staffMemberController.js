@@ -155,10 +155,19 @@ exports.getAcademicMembers = async function (req, res) {
 
 exports.registerStaff = async function (req, res) {
     try {
-        let JOI_Result = await validation.registerSchema.validateAsync(req.body)
-
-        if (req.body.type === 'Academic Member')
+        if (req.body.type === 'HR') {
+            req.body.role = undefined
+            req.body.faculty = undefined
+            req.body.department = undefined
+            req.body.courses = undefined
+            let JOI_Result = await validation.registerSchema.validateAsync(req.body)
+        } else if (req.body.type === 'Academic Member')
             JOI_Result = await validation.registerACSchema.validateAsync(req.body)
+        else {
+            return res.send({
+                error: 'Sorry, position of the staff is required',
+            });
+        }
 
         let {
             name,
@@ -174,79 +183,63 @@ exports.registerStaff = async function (req, res) {
         }
             = req.body;
 
-        faculty = faculty.toUpperCase();
 
         //check email is found and if he was deleted
         const foundMail = await StaffMember.findOne({ email: email });
         if (foundMail) {
-            if (foundMail.is_deleted) {
-                foundMail.is_deleted = false;
-                foundMail.name = name;
-                foundMail.gender = gender;
-                foundMail.dayOff = dayOff;
-                foundMail.salary = salary;
-                foundMail.type = type;
-                foundMail.courses = [];
-                foundMail.attendanceRecord = [];
-                foundMail.password = await bcrypt.hash('123456', 12);
-
-                const locResult = await locationHelper(officeLocation);
-
-                if (locResult.error) return res.send(locResult);
-                else foundMail.officeLocation = locResult;
-
-                if (type === 'Academic Member') {
-                    foundMail.role = role;
-
-                    const facultyResult = await facultyHelper(faculty);
-
-                    if (facultyResult.error) return res.send(facultyResult);
-                    else foundMail.faculty = facultyResult;
-
-                    const departmentResult = await departmentHelper(faculty, department);
-
-                    if (departmentResult.error) return res.send(departmentResult);
-                    else foundMail.department = departmentResult;
-                }
-                else {
-                    foundMail.dayOff = 'Saturday';
-                    foundMail.role = undefined;
-                    foundMail.faculty = undefined;
-                    foundMail.department = undefined;
-                }
-
-                const newStaffMember = await foundMail.save();
-                return res.send({ data: newStaffMember });
-            } else
-                return res.send({
-                    error: 'Email is already registered to another staff',
-                });
+            return res.send({
+                error: 'Email is already registered to another staff',
+            });
         }
+
+        //check location
+        // ObjectId locObj = new ObjectId(officeLocation);
+        // const refLocation = await Location.findOne({ id: locObj });
+        // if (!refLocation) return { error: 'Sorry room not found' };
+        // else {
+        //     //room capacity for offices
+        //     const occupied = await StaffMember.find({
+        //         officeLocation: refLocation._id,
+        //     });
+        //     if (occupied.length >= refLocation.capacity)
+        //         return { error: 'Sorry room capacity is full' };
+        //     else if (refLocation.type != 'Office') {
+        //         return { error: 'Sorry this is not an office' };
+        //     }
+        // }
+        // console.log("here")
+
+        const locResult = await locationHelper(req.body.officeLocation);
+        if (locResult.error) return res.send(locResult);
+        else officeLocation = locResult;
 
         if (type === 'Academic Member') {
-            req.body.role = role;
+            if (!role)
+                return res.send({
+                    error: 'Sorry role must be one of [Course Instructor,Teaching Assistant]'
+                });
 
+            // faculty
+            // const refFaculty = await Faculty.findOne({ _id: faculty }).populate('faculty')
+            // if (!refFaculty) return { error: 'Sorry Faculty not found' };
+            faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
-
             if (facultyResult.error) return res.send(facultyResult);
-            else req.body.faculty = facultyResult;
+            else faculty = facultyResult;
 
-
+            //department
+            // const refDep = await Department.findOne({ _id: department }).populate('department')
+            // if (!refDep) return { error: 'Sorry Department not found' };
             const departmentResult = await departmentHelper(faculty, department);
-
             if (departmentResult.error) return res.send(departmentResult);
-            else req.body.department = departmentResult;
+            else department = departmentResult
         }
         else {
-            req.body.dayOff = 'Saturday';
-            req.body.role = undefined;
-            req.body.faculty = undefined;
-            req.body.department = undefined;
+            dayOff = 'Saturday';
+            role = undefined;
+            faculty = undefined;
+            department = undefined;
         }
-
-        const locResult = await locationHelper(officeLocation);
-        if (locResult.error) return res.send(locResult);
-        else req.body.officeLocation = locResult;
 
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
@@ -258,14 +251,29 @@ exports.registerStaff = async function (req, res) {
         }
 
         const temp = idRole + '-' + num;
-        req.body.gucId = temp;
+        const gucId = temp;
 
-        req.body.attendanceRecord = [];
-        req.body.courses = [];
-        req.body.password = await bcrypt.hash('123456', 12);;
+        const attendanceRecord = [];
+        const courses = [];
+        const password = await bcrypt.hash('123456', 12);;
 
-
-        const newStaffMember = await StaffMember.create(req.body);
+        // req.body.registeredDate = new Date()
+        const newStaffMember = await StaffMember.create({
+            gucId,
+            name,
+            gender,
+            email,
+            salary,
+            officeLocation,
+            type,
+            role,
+            dayOff,
+            faculty,
+            department,
+            attendanceRecord,
+            courses,
+            password
+        });
         return res.send({ data: newStaffMember });
     } catch (err) {
         if (err.isJoi) {

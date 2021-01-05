@@ -356,7 +356,7 @@ function StaffProfile(props) {
             className="profile-change-password-btn"
             onClick={() =>
               (document.location.href =
-                window.location.origin + "/changePassword")
+                window.location.origin + `/viewStaffAttendance/${gucId}`)
             }
           >
             Change Password
