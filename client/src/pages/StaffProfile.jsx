@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-import checkLogin from "../helpers/checkLogin";
+import auth from "../helpers/auth";
 
 import {
   FormControl,
@@ -11,11 +11,9 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-//TODO: refactor
-function Profile(props) {
+function StaffProfile(props) {
   const [btn, setBtn] = useState("Update profile");
   const [update, setUpdate] = useState(false);
-  const [HR, setHr] = useState(false);
   const [gucId, setId] = useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -29,12 +27,24 @@ function Profile(props) {
   const [role, setRole] = useState("");
   const [faculty, setFaculty] = useState("");
   const [department, setDepartment] = useState("");
+  const [facultyChosen, setFacultyChosen] = useState("");
+  const [departmentChosen, setDepartmentChosen] = useState("");
+  const [faculties, setFaculties] = useState([]);
+  const [deps, setDeps] = useState([]);
+
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
+      await auth(["HR"]);
       //get user
-      let user = await checkLogin();
+      const url = document.location.pathname.split("/");
+      const gucId = url[url.length - 1];
+
+      //   let gucId = "AC-1";
+      let res = await axiosCall("get", `staffMembers/all/${gucId}`);
+      let user = "";
+      if (res.data.data) user = res.data.data;
 
       setId(user.gucId);
       setName(user.name);
@@ -44,7 +54,7 @@ function Profile(props) {
       setSalary(user.salary);
       setPosition(user.type);
 
-      //get location
+      //   get location
       const locationRes = await axiosCall("get", "locations/room/all");
       const filtered = locationRes.data.data.filter(
         (loc) => loc.type === "Office"
@@ -55,6 +65,7 @@ function Profile(props) {
         office = locationRes.data.data.find(
           ({ _id }) => _id === user.officeLocation
         );
+
         setRoomChosen(office._id);
         setLocation(office.location);
       }
@@ -64,23 +75,29 @@ function Profile(props) {
 
         //get faculty
         const facultyRes = await axiosCall("get", "faculties/faculty/all");
+        setFaculties(facultyRes.data.data);
+
         let fac;
         if (facultyRes.data.data) {
           fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
-          setFaculty(fac.code);
+          setFacultyChosen(fac.code);
+          setFaculty(fac.code + " - " + fac.name);
         }
 
         //get department
         const depRes = await axiosCall("get", "departments/department/all/all");
+        setDeps(depRes.data.data);
+
         let dep;
         if (depRes.data.data) {
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
+          setDepartmentChosen(dep._id);
           setDepartment(dep.name);
         }
       }
     }
     fetchData();
-  }, [props.user]);
+  }, [gucId]);
 
   const handleUpdateProfile = async () => {
     setBtn("Submit Changes");
@@ -89,30 +106,38 @@ function Profile(props) {
 
   const handleSubmit = async () => {
     try {
-      // const result = await axiosCall("get", "locations/room/all");
+      let locName;
+      if (rooms) locName = rooms.find(({ _id }) => _id === roomChosen);
 
-      // let name;
-      // if (rooms) name = rooms.find(({ _id }) => _id === roomChosen).location;
-      // console.log(roomChosen);
+      let facName;
+      if (faculties)
+        facName = faculties.find(({ code }) => code === facultyChosen);
+
+      let depName;
+      if (deps) depName = deps.find(({ _id }) => _id === departmentChosen);
 
       const body = {
-        gucId: gucId,
-        name: name,
-        gender: gender,
-        role: role,
+        gucId,
+        name,
+        gender,
+        role,
+        salary,
+        officeLocation: locName.location,
+        faculty: facName.code,
+        department: depName.name,
       };
 
-      const res = await axiosCall("put", "staffMembers/profile", body);
-      console.log(
-        "🚀 ~ file: Profile.jsx ~ line 113 ~ handleSubmit ~ res",
-        res
-      );
+      const res = await axiosCall("put", "staffMembers/staff", body);
+
       if (res.data.data) {
         addToast("Profile updated successfully", {
           appearance: "success",
           autoDismiss: true,
         });
         setBtn("Update Profile");
+        setLocation(locName.name);
+        setFaculty(facName.code);
+        setDepartment(depName.name);
         setUpdate(false);
       }
       if (res.data.error) {
@@ -134,7 +159,6 @@ function Profile(props) {
             <InputLabel className="profile-inputLabel">GUC Id</InputLabel>
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
-
           <FormControl
             className={
               update ? `profile-formControl toUpdate` : `profile-formControl`
@@ -148,7 +172,6 @@ function Profile(props) {
               onChange={(event) => setName(event.target.value)}
             />
           </FormControl>
-
           <FormControl
             className={
               update ? `profile-formControl toUpdate` : `profile-formControl`
@@ -162,32 +185,35 @@ function Profile(props) {
               onChange={(event) => setGender(event.target.value)}
             />
           </FormControl>
-
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Email</InputLabel>
             <Input className="profile-input" value={email} disabled={true} />
           </FormControl>
-
+          {/* TODO: change day off */}
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Day off</InputLabel>
             <Input className="profile-input" value={dayOff} disabled={true} />
           </FormControl>
-
-          <FormControl className="profile-formControl">
+          <FormControl
+            className={
+              update ? `profile-formControl toUpdate` : `profile-formControl`
+            }
+          >
             <InputLabel className="profile-inputLabel">Salary</InputLabel>
-            <Input className="profile-input" value={salary} disabled={true} />
+            <Input
+              className="profile-input"
+              value={salary}
+              disabled={update ? false : true}
+              onChange={(event) => setSalary(event.target.value)}
+            />
           </FormControl>
-
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Position</InputLabel>
             <Input className="profile-input" value={position} disabled={true} />
           </FormControl>
-
           <FormControl
             className={
-              update && HR
-                ? `profile-formControl toUpdate`
-                : `profile-formControl`
+              update ? `profile-formControl toUpdate` : `profile-formControl`
             }
           >
             <InputLabel className="profile-inputLabel">
@@ -200,7 +226,7 @@ function Profile(props) {
                 onChange={(event) => {
                   setRoomChosen(event.target.value);
                 }}
-                disabled={update && HR ? false : true}
+                disabled={update ? false : true}
               >
                 {update &&
                   rooms.length > 0 &&
@@ -222,7 +248,6 @@ function Profile(props) {
               />
             )}
           </FormControl>
-
           {position === "Academic Member" ? (
             <div>
               <FormControl
@@ -240,23 +265,81 @@ function Profile(props) {
                   onChange={(event) => setRole(event.target.value)}
                 />
               </FormControl>
-              <FormControl className="profile-formControl">
+              <FormControl
+                className={
+                  update
+                    ? `profile-formControl toUpdate`
+                    : `profile-formControl`
+                }
+              >
                 <InputLabel className="profile-inputLabel">Faculty</InputLabel>
-                <Input
-                  className="profile-input"
-                  value={faculty}
-                  disabled={true}
-                />
+                {update ? (
+                  <Select
+                    className="profile-select"
+                    value={facultyChosen}
+                    onChange={(event) => {
+                      setFacultyChosen(event.target.value);
+                    }}
+                    disabled={update ? false : true}
+                  >
+                    {update &&
+                      faculties.length > 0 &&
+                      faculties.map((fac) => (
+                        <MenuItem
+                          className="profile-menuItem"
+                          value={fac.code}
+                          key={fac.code}
+                        >
+                          {fac.code} - {fac.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                ) : (
+                  <Input
+                    className="profile-input"
+                    value={faculty}
+                    disabled={true}
+                  />
+                )}
               </FormControl>
-              <FormControl className="profile-formControl">
+              <FormControl
+                className={
+                  update
+                    ? `profile-formControl toUpdate`
+                    : `profile-formControl`
+                }
+              >
                 <InputLabel className="profile-inputLabel">
                   Department
                 </InputLabel>
-                <Input
-                  className="profile-input"
-                  value={department}
-                  disabled={true}
-                />
+                {update ? (
+                  <Select
+                    className="profile-select"
+                    value={departmentChosen}
+                    onChange={(event) => {
+                      setDepartmentChosen(event.target.value);
+                    }}
+                    disabled={update ? false : true}
+                  >
+                    {update &&
+                      deps.length > 0 &&
+                      deps.map((department) => (
+                        <MenuItem
+                          className="profile-menuItem"
+                          value={department._id}
+                          key={department._id}
+                        >
+                          {department.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                ) : (
+                  <Input
+                    className="profile-input"
+                    value={department}
+                    disabled={true}
+                  />
+                )}
               </FormControl>
             </div>
           ) : null}
@@ -284,4 +367,4 @@ function Profile(props) {
   );
 }
 
-export default Profile;
+export default StaffProfile;

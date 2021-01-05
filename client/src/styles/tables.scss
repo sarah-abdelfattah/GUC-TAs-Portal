@@ -67,3 +67,30 @@ button[title="Delete Staff"] {
         }
     }
 }
+
+.add-new-staff {
+    width: 210px;
+    margin: 20px 0 0 20px;
+    border-radius: 10px;
+
+    .icon {
+        display: inline;
+        vertical-align: middle;
+        width: 25px;
+        height: 25px;
+        margin-right: 10px;
+    }
+
+    .text {
+        display: inline;
+        vertical-align: middle;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        text-align: end;
+    }
+
+    &:hover {
+        background: $secondary-green;
+    }
+}

@@ -5,9 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
 import { link } from "../helpers/constants.js";
-import { Button } from "@material-ui/core";
+import Button from "react-bootstrap/Button";
 import Fade from "react-reveal/Fade";
-import Add from "../components/Add";
+import add from "../assets/add.svg";
+import auth from "../helpers/auth";
 
 function Staff() {
   const [data, setData] = useState([]); //table data
@@ -20,6 +21,7 @@ function Staff() {
     } else {
       async function fetchData() {
         try {
+          await auth(["HR"]);
           const response = await axiosCall("get", `/staffMembers/all/all`);
 
           const locations = await axiosCall(
@@ -82,7 +84,7 @@ function Staff() {
       }
       fetchData();
     }
-  }, [data]);
+  }, []);
 
   const handleDelete = async (gucId) => {
     try {
@@ -146,6 +148,11 @@ function Staff() {
                 { title: "Missing Days", field: "missingDays" },
                 { title: "Missing Hours", field: "missingHours" },
               ]}
+              onRowClick={(event, rowData) =>
+                // <StaffProfile gucId={rowData.gucId} />
+                (document.location.href =
+                  window.location.origin + `/staffProfile/${rowData.gucId}`)
+              }
               align="center"
               data={data}
               actions={[
@@ -174,13 +181,17 @@ function Staff() {
               }}
               components={{
                 Toolbar: (props) => (
-                  <Add
-                    text="Staff Member"
+                  <Button
+                    variant="success"
+                    className="add-new-staff green"
                     onClick={() =>
                       (document.location.href =
                         window.location.origin + "/newStaffMember")
                     }
-                  />
+                  >
+                    <img src={add} alt="add-icon" className="icon" />
+                    <h5 className="text">New Staff Member </h5>
+                  </Button>
                 ),
               }}
             />

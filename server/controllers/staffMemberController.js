@@ -285,7 +285,7 @@ exports.updateStaff = async function (req, res) {
         const leaveBalance = req.body.leaveBalance;
         let faculty = req.body.faculty;
         const department = req.body.department;
-
+        const salary = req.body.salary;
 
         if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
         const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
@@ -295,6 +295,7 @@ exports.updateStaff = async function (req, res) {
         if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
         if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
+            console.log(req.body.department)
             faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
             if (facultyResult.error) return res.send(facultyResult);
@@ -315,6 +316,8 @@ exports.updateStaff = async function (req, res) {
             if (locResult.error) return res.send(locResult);
             else newStaff.officeLocation = locResult;
         }
+
+        if (req.body.salary) newStaff.salary = req.body.salary
 
         await newStaff.save();
 
