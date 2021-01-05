@@ -62,6 +62,7 @@
 
             .profile-btn,
             .profile-update-btn,
+            .profile-add-btn,
             .profile-change-password-btn {
                 border-radius: 10px;
                 width: 30%;
@@ -100,6 +101,15 @@
                     background: $secondary-navy-blue;
                 }
             }
+
+            .profile-add-btn {
+                background: $primary-green;
+
+                &:hover {
+                    background: $secondary-green;
+                }
+            }
+
         }
     }
 }

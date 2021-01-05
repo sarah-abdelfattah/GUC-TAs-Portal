@@ -347,7 +347,7 @@ function NewStaffMember(props) {
 
         <div className="profile-buttons">
           <button
-            className="profile-btn profile-add-btn green"
+            className="profile-btn profile-add-btn profile-change-password-btn  green"
             onClick={handleSubmit}
             disabled={disable}
           >
