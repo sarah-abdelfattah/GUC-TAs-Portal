@@ -17,7 +17,7 @@ function SideBar() {
   const [showHome, setHome] = useState(false);
 
   const routeChange = (path) => {
-    document.location.href = path;
+    document.location.href = window.location.origin + `/${path}`;
   };
 
   useEffect(() => {

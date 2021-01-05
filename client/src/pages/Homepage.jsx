@@ -163,13 +163,18 @@ function Homepage() {
           <div className="hompage-btns">
             <button
               className="attendanceRecord-btn"
-              onClick={() => (document.location.href = "/myAttendanceRecord")}
+              onClick={() =>
+                (document.location.href =
+                  window.location.origin + "/myAttendanceRecord")
+              }
             >
               View Attendance Record
             </button>
             <button
               className="attendanceRecord-btn"
-              onClick={() => (document.location.href = "/profile")}
+              onClick={() =>
+                (document.location.href = window.location.origin + "/profile")
+              }
             >
               View Profile
             </button>

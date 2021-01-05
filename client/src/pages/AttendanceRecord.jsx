@@ -18,7 +18,7 @@ function Staff() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -106,7 +106,9 @@ function Staff() {
                   icon: "save",
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
-                    document.location.href = `${rowData.id}/viewAttendanceRecord`;
+                    document.location.href =
+                      window.location.origin +
+                      `/${rowData.id}/viewAttendanceRecord`;
                   },
                 },
               ]}

@@ -7,6 +7,7 @@ import axiosCall from "../helpers/axiosCall";
 import { link } from "../helpers/constants.js";
 import { Button } from "@material-ui/core";
 import Fade from "react-reveal/Fade";
+import Add from "../components/Add";
 
 function Staff() {
   const [data, setData] = useState([]); //table data
@@ -15,7 +16,7 @@ function Staff() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -171,22 +172,17 @@ function Staff() {
                   fontSize: "15px",
                 },
               }}
-              // components={{
-              //   Action: (props) => (
-              //     <Button
-              //       onClick={(event) => props.action.onClick(event, props.data)}
-              //       variant="contained"
-              //       style={{
-              //         textTransform: "none",
-              //         background: "#045CC8",
-              //         color: "#fff",
-              //       }}
-              //       size="small"
-              //     >
-              //       Attendance
-              //     </Button>
-              //   ),
-              // }}
+              components={{
+                Toolbar: (props) => (
+                  <Add
+                    text="Staff Member"
+                    onClick={() =>
+                      (document.location.href =
+                        window.location.origin + "/newStaffMember")
+                    }
+                  />
+                ),
+              }}
             />
           </Grid>
         </Grid>

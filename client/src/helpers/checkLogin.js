@@ -14,7 +14,7 @@ async function checkLogin() {
         }
     } catch (err) {
         localStorage.removeItem("user");
-        document.location.href = "/login";
+        document.location.href = window.location.origin + "/login";
         console.log("~ err", err);
     }
 }

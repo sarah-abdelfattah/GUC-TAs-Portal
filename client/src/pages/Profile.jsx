@@ -276,7 +276,10 @@ function Profile(props) {
           </button>
           <button
             className="profile-change-password-btn"
-            onClick={() => (document.location.href = "/changePassword")}
+            onClick={() =>
+              (document.location.href =
+                window.location.origin + "/changePassword")
+            }
           >
             Change Password
           </button>

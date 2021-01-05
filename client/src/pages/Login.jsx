@@ -3,7 +3,7 @@ import axios from "axios";
 import setAuthToken from "../helpers/setAuthToken";
 import { link } from "../helpers/constants";
 import { useToasts } from "react-toast-notifications";
-import Fade from 'react-reveal/Fade';
+import Fade from "react-reveal/Fade";
 
 function Login() {
   // defining the variables and states
@@ -25,7 +25,7 @@ function Login() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
-      document.location.href = "/home";
+      document.location.href = window.location.origin + "/home";
     }
   }, []);
 
@@ -57,7 +57,7 @@ function Login() {
           localStorage.setItem("user", token);
           setAuthToken(token);
           // go to the home page after login is successful
-          document.location.href = "/home";
+          document.location.href = window.location.origin + "/home";
         }
       } catch (err) {
         addToast("wrong Id or password", {
@@ -70,48 +70,48 @@ function Login() {
 
   return (
     <div className="container-login100">
-     <Fade bottom>
-      <div className="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
-        <form onSubmit={handleSubmit} className="login100-form validate-form">
-          <span className="login100-form-title p-b-37">{greet}✨</span>
+      <Fade bottom>
+        <div className="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+          <form onSubmit={handleSubmit} className="login100-form validate-form">
+            <span className="login100-form-title p-b-37">{greet}✨</span>
 
-          <div
-            className="wrap-input100 validate-input m-b-20"
-            data-validate="Please enter your GUC ID"
-          >
-            <input
-              value={gucId}
-              className="input100"
-              type="text"
-              name="text"
-              placeholder="guc id "
-              onChange={({ target }) => setId(target.value)}
-            />
-            <span className="focus-input100"></span>
-          </div>
+            <div
+              className="wrap-input100 validate-input m-b-20"
+              data-validate="Please enter your GUC ID"
+            >
+              <input
+                value={gucId}
+                className="input100"
+                type="text"
+                name="text"
+                placeholder="guc id "
+                onChange={({ target }) => setId(target.value)}
+              />
+              <span className="focus-input100"></span>
+            </div>
 
-          <div
-            className="wrap-input100 validate-input m-b-25"
-            data-validate="Please enter your password"
-          >
-            <input
-              className="input100"
-              type="password"
-              value={password}
-              placeholder="password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-            <span className="focus-input100"></span>
-          </div>
+            <div
+              className="wrap-input100 validate-input m-b-25"
+              data-validate="Please enter your password"
+            >
+              <input
+                className="input100"
+                type="password"
+                value={password}
+                placeholder="password"
+                onChange={({ target }) => setPassword(target.value)}
+              />
+              <span className="focus-input100"></span>
+            </div>
 
-          <div className="container-login100-form-btn">
-            <button type="submit" className="login100-form-btn">
-              Login In
-            </button>
-          </div>
-        </form>
-      </div>
-     </Fade>
+            <div className="container-login100-form-btn">
+              <button type="submit" className="login100-form-btn">
+                Login In
+              </button>
+            </div>
+          </form>
+        </div>
+      </Fade>
     </div>
   );
 }

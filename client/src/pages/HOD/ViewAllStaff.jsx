@@ -18,7 +18,7 @@ function ViewAllStaff() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -65,7 +65,7 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();
@@ -141,7 +141,8 @@ function ViewAllStaff() {
                   icon: "save",
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
-                    document.location.href = `${rowData.id}/viewSchedule`;
+                    document.location.href =
+                      window.location.origin + `/${rowData.id}/viewSchedule`;
                   },
                 },
               ]}
