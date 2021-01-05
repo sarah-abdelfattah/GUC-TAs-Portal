@@ -4,7 +4,6 @@ import AttendanceTable from "../components/AttendanceTable";
 
 function MyAttendanceRecord() {
   const [userId, setUserId] = useState("");
-  const [data, setData] = useState({ data: [] });
 
   useEffect(() => {
     async function fetchData() {

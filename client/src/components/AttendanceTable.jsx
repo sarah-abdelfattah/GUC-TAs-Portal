@@ -6,49 +6,17 @@ import axiosCall from "../helpers/axiosCall";
 import Fade from "react-reveal/Fade";
 import checkLogin from "../helpers/checkLogin";
 import { IoFilter, IoCloseSharp } from "react-icons/io5";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Input,
-} from "@material-ui/core";
+import { Select, MenuItem } from "@material-ui/core";
 
-//TODO: filter by year -->
-//year only with no month
-//remove this condition year only with no month
-//add condition both cannot be empty
 function AttendanceTable(props) {
   const [staff, setStaff] = useState([]);
+  const [HR, setHr] = useState(false);
   const [originalData, setOriginalData] = useState([]);
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
-  const [selectedYear, setYear] = useState("2021");
 
   const { addToast } = useToasts();
-
-  const year = [
-    "2021",
-    "2020",
-    "2019",
-    "2018",
-    "2017",
-    "2016",
-    "2015",
-    "2014",
-    "2013",
-    "2012",
-    "2011",
-    "2010",
-    "2009",
-    "2008",
-    "2007",
-    "2006",
-    "2005",
-    "2004",
-    "2003",
-  ];
 
   const month = [
     "11 Jan - 10 Feb", //0 1-2
@@ -85,23 +53,26 @@ function AttendanceTable(props) {
     } else {
       async function fetchData() {
         try {
-          let staff;
-          if (!props.hr) {
-            let user = await checkLogin();
-            staff = await axiosCall("get", `staffMembers/all/${user.gucId}`);
-          } else {
-          }
+          let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+          let staff = "";
+          if (temp.data.data) staff = temp.data.data;
 
-          if (staff.data.data) {
-            setStaff(staff.data.data);
-            let records = staff.data.data.attendanceRecords;
+          if (props.hr) setHr(true);
+
+          if (staff) {
+            setStaff(staff);
+            let records = staff.attendanceRecords;
 
             //sorted .. from most to least recent
             const result = records.sort(compare);
             setOriginalData(result);
             setData(result);
+            // addToast("uploaded", {
+            //   appearance: "success",
+            //   autoDismiss: true,
+            // });
           } else {
-            addToast(staff.data.error, {
+            addToast("Error occurred, please try again later", {
               appearance: "danger",
               autoDismiss: true,
             });
@@ -156,8 +127,82 @@ function AttendanceTable(props) {
     setData(originalData);
     setFiltered(false);
     setMonth("");
-    setYear("2021");
   };
+
+  const handleRowUpdate = async (newData, oldData) => {
+    //changed endTime
+    const filtered = originalData.filter((rec) => rec.date === oldData.date);
+    let numberHere = 0;
+    for (let i = 0; i < filtered.length; i++) {
+      if (filtered[i]._id === oldData._id) {
+        numberHere = i + 1;
+        break;
+      }
+    }
+
+    if (newData.startTime === oldData.startTime) {
+      const index = oldData.tableData.id;
+      const dataUpdate = [...data];
+      dataUpdate[index] = newData;
+      // setOriginalData([...dataUpdate]);
+      if (!newData.endTime) console.log("please enter some info");
+      else {
+        if (newData.endTime.length !== 8) {
+          addToast("Time should be in the format of: HH:MM:SS", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        } else {
+          const body = {
+            id: staff.gucId,
+            signOut: newData.endTime,
+            date: oldData.date,
+            day: oldData.day,
+            number: parseInt(numberHere),
+          };
+
+          const res = await axiosCall(
+            "put",
+            "attendance/addMissingSignInOut",
+            body
+          );
+          console.log(
+            "🚀 ~ file: AttendanceTable.jsx ~ line 165 ~ handleRowUpdate ~ res",
+            res
+          );
+
+          if (res.data.error) {
+            addToast(res.data.error, {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          }
+
+          let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+          let staffUpdated = "";
+          if (temp.data.data) staffUpdated = temp.data.data;
+
+          if (staffUpdated) {
+            let records = staffUpdated.attendanceRecords;
+
+            //sorted .. from most to least recent
+            const result = records.sort(compare);
+
+            setOriginalData(result);
+            setData(result);
+          } else {
+            addToast("Error occurred, please try again later", {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          }
+        }
+      }
+    } else {
+    }
+  };
+
+  const handleRowAdd = (newData) => {};
 
   return (
     <div>
@@ -169,12 +214,22 @@ function AttendanceTable(props) {
             <MaterialTable
               title=""
               columns={[
-                { title: "Day", field: "day", filtering: false },
+                {
+                  title: "Day",
+                  field: "day",
+                  filtering: false,
+                  editable: false,
+                },
                 {
                   title: "Date",
                   field: "date",
+                  editable: false,
                 },
-                { title: "Sign In", field: "startTime", filtering: false },
+                {
+                  title: "Sign In",
+                  field: "startTime",
+                  filtering: false,
+                },
                 {
                   title: "Sign Out",
                   field: "endTime",
@@ -186,18 +241,21 @@ function AttendanceTable(props) {
                   field: "absentsatisfied",
                   sorting: false,
                   filtering: false,
+                  editable: false,
                 },
                 {
                   title: "Absent Status",
                   field: "absentStatus",
                   sorting: false,
                   filtering: false,
+                  editable: false,
                 },
                 {
                   title: "Description",
                   field: "description",
                   sorting: false,
                   filtering: false,
+                  editable: false,
                 },
               ]}
               align="center"
@@ -237,19 +295,6 @@ function AttendanceTable(props) {
                       ))}
                     </Select>
 
-                    <Select
-                      className="table-select year"
-                      value={selectedYear}
-                      onChange={(event) => setYear(event.target.value)}
-                      placeholder="Year"
-                    >
-                      {year.map((y) => (
-                        <MenuItem className="" value={y} key={y}>
-                          {y}
-                        </MenuItem>
-                      ))}
-                    </Select>
-
                     <IoFilter
                       className="filter-icon"
                       onClick={() => handleFilter()}
@@ -263,6 +308,26 @@ function AttendanceTable(props) {
                   </div>
                 ),
               }}
+              editable={
+                HR
+                  ? {
+                      // handle row add
+                      onRowAdd: (newData) =>
+                        new Promise((resolve) => {
+                          handleRowAdd(newData, resolve);
+                        }),
+
+                      //to update row
+                      onRowUpdate: (newData, oldData) =>
+                        new Promise((resolve) => {
+                          setTimeout(() => {
+                            handleRowUpdate(newData, oldData);
+                            resolve();
+                          }, 1000);
+                        }),
+                    }
+                  : false
+              }
             />
           </Grid>
         </Grid>

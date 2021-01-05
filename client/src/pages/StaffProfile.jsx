@@ -359,7 +359,7 @@ function StaffProfile(props) {
                 window.location.origin + `/viewStaffAttendance/${gucId}`)
             }
           >
-            Change Password
+            View Attendance Records
           </button>
         </div>
       </div>

@@ -32,9 +32,6 @@ function NewStaffMember(props) {
   const [updated, setUpdated] = useState(false);
 
   const [rooms, setRooms] = useState({ rooms: [] });
-  const [roomChosen, setRoomChosen] = useState("");
-  const [facultyChosen, setFacultyChosen] = useState("");
-  const [departmentChosen, setDepartmentChosen] = useState("");
   const [faculties, setFaculties] = useState([]);
   const [deps, setDeps] = useState([]);
 
@@ -132,21 +129,11 @@ function NewStaffMember(props) {
   const handleFacOnChange = async (event) => {
     try {
       updateUser(event);
-      setFacultyChosen(event.target.value);
-      const facCode = await faculties.find(
-        ({ _id }) => _id === event.target.value
-      );
+      let depResult;
 
-      if (facCode)
-        setUser({
-          ...user,
-          faculty: facCode.code,
-        });
-
-      updateUser(event);
-      const depResult = await axiosCall(
+      depResult = await axiosCall(
         "get",
-        `departments/department/${user.faculty}/all`
+        `departments/department/${event.target.value}/all`
       );
 
       await setDeps(depResult.data.data);
@@ -305,6 +292,7 @@ function NewStaffMember(props) {
                 <Select
                   className="profile-select"
                   value={user.faculty}
+                  name="faculty"
                   onChange={async (event) => {
                     await handleFacOnChange(event);
                   }}

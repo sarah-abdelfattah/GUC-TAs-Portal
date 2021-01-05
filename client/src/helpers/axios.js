@@ -14,4 +14,3 @@ export const axios = axiosReq.create({
     'auth-token': localStorage.getItem('user'),
   },
 });
-console.log("🚀 ~ file: axios.js ~ line 17 ~ axios", axios);

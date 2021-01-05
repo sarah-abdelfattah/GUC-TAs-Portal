@@ -228,8 +228,6 @@ exports.registerStaff = async function (req, res) {
             else faculty = facultyResult;
 
             //department
-            // const refDep = await Department.findOne({ _id: department }).populate('department')
-            // if (!refDep) return { error: 'Sorry Department not found' };
             const departmentResult = await departmentHelper(faculty, department);
             if (departmentResult.error) return res.send(departmentResult);
             else department = departmentResult
@@ -320,9 +318,13 @@ exports.updateStaff = async function (req, res) {
             return res.send({ error: 'Sorry Please the new department is required' });
 
         if (req.body.officeLocation) {
-            const locResult = await locationHelper(req.body.officeLocation);
-            if (locResult.error) return res.send(locResult);
-            else newStaff.officeLocation = locResult;
+            const refLocation = await Location.findOne({ location: req.body.officeLocation }).populate('officeLocation');
+            if (!refLocation) return { error: 'Sorry room not found' };
+            if (req.body.officeLocation !== refLocation.location) {
+                const locResult = await locationHelper(req.body.officeLocation);
+                if (locResult.error) return res.send(locResult);
+                else newStaff.officeLocation = locResult;
+            }
         }
 
         if (req.body.salary) newStaff.salary = req.body.salary
@@ -482,18 +484,17 @@ exports.signIn = async function (req, res) {
 
             let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            let hours = currentTime.getHours().length > 1 ? currentTime.getHours() : "0" + currentTime.getHours();
-            let minutes = currentTime.getMinutes() > 1 ? currentTime.getMinutes() : "0" + currentTime.getMinutes();
-            let seconds = currentTime.getSeconds() > 1 ? currentTime.getSeconds() : "0" + currentTime.getSeconds();
+            let hours = currentTime.getHours() > 9 ? currentTime.getHours() : "0" + currentTime.getHours();
+            let minutes = currentTime.getMinutes() > 9 ? currentTime.getMinutes() : "0" + currentTime.getMinutes();
+            let seconds = currentTime.getSeconds() > 9 ? currentTime.getSeconds() : "0" + currentTime.getSeconds();
 
             let time = hours + ":" + minutes + ":" + seconds;
 
-
-            let month = (currentTime.getMonth() + 1).length > 1 ? (currentTime.getMonth() + 1) : "0" + (currentTime.getMonth() + 1)
-            let day = currentTime.getDate().length > 1 ? currentTime.getDate() : "0" + currentTime.getDate();
+            let month = (currentTime.getMonth() + 1) > 9 ? (currentTime.getMonth() + 1) : "0" + (currentTime.getMonth() + 1)
+            let day = currentTime.getDate() > 9 ? currentTime.getDate() : "0" + currentTime.getDate();
 
             if (currentTime.getHours() < 7)
-                time = '7:00:00'
+                time = '07:00:00'
             if (currentTime.getHours() > 19)
                 time = '19:00:00'
 
@@ -544,20 +545,22 @@ exports.signOut = async function (req, res) {
         else {
             const today = new Date();
 
-            let hours = today.getHours().length > 1 ? today.getHours() : "0" + today.getHours();
-            let minutes = today.getMinutes() > 1 ? today.getMinutes() : "0" + v.getMinutes();
-            let seconds = today.getSeconds() > 1 ? today.getSeconds() : "0" + today.getSeconds();
+            let hours = today.getHours() > 9 ? today.getHours() : "0" + today.getHours();
+            let minutes = today.getMinutes() > 9 ? today.getMinutes() : "0" + v.getMinutes();
+            let seconds = today.getSeconds() > 9 ? today.getSeconds() : "0" + today.getSeconds();
 
             let time = hours + ":" + minutes + ":" + seconds;
 
 
-            let month = (today.getMonth() + 1).length > 1 ? (today.getMonth() + 1) : "0" + (today.getMonth() + 1)
-            let day = today.getDate().length > 1 ? today.getDate() : "0" + today.getDate();
+            let month = (today.getMonth() + 1) > 9 ? (today.getMonth() + 1) : "0" + (today.getMonth() + 1)
+            let day = today.getDate() > 9 ? today.getDate() : "0" + today.getDate();
 
 
             const currentDate = today.getFullYear() + '-' + month + '-' + day;
             let currentTime = hours + ":" + minutes + ":" + seconds;
 
+            if (today.getHours() < 7)
+                time = '07:00:00'
             if (today.getHours() > 19)
                 currentTime = '19:00:00'
 

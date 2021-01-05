@@ -42,6 +42,8 @@ import Schedule from './pages/AcademicMemberSchedule';
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
+import StaffAttendance from './pages/Staff/StaffAttendance';
+
 import Test from './pages/test';
 
 function App() {
@@ -79,6 +81,7 @@ function App() {
                   <Route exact path='/test' render={(props) => <Test {...props} />} />
                   <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
+                  <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
                 </div>
               )}
           </ToastProvider>
