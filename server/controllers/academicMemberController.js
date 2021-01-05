@@ -123,13 +123,14 @@ const courseInstructorController = {
             course_name: course.name,
             course_slots: course.slots
               // Get the slots of the current instructor
-              .filter((slot) => slot.isAssigned && `${slot.isAssigned._id}` === `${instructor._id}`)
+              // .filter((slot) => slot.isAssigned && `${slot.isAssigned._id}` === `${instructor._id}`)
               // Map them to only send back the day, time, location
-              .map(({ day, time, location }) => {
+              .map(({ day, time, location, isAssigned }) => {
                 return {
                   day: day,
                   time: `${time.toLocaleString('en-EG').split(',')[1].trim() || time.getHours() + ':' + time.getMinutes()}`,
                   location: location ? location['location'] : 'No location is assigned yet',
+                  assignedTo: isAssigned === null ? 'None' : { name: isAssigned.name, id: isAssigned.gucId },
                 };
               }),
           };
