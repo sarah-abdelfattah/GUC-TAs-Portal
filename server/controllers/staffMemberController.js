@@ -471,11 +471,15 @@ exports.signIn = async function (req, res) {
 
             let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            let time = currentTime.getHours() +
-                ':' +
-                currentTime.getMinutes() +
-                ':' +
-                currentTime.getSeconds();
+            let hours = currentTime.getHours().length > 1 ? currentTime.getHours() : "0" + currentTime.getHours();
+            let minutes = currentTime.getMinutes() > 1 ? currentTime.getMinutes() : "0" + currentTime.getMinutes();
+            let seconds = currentTime.getSeconds() > 1 ? currentTime.getSeconds() : "0" + currentTime.getSeconds();
+
+            let time = hours + ":" + minutes + ":" + seconds;
+
+
+            let month = (currentTime.getMonth() + 1).length > 1 ? (currentTime.getMonth() + 1) : "0" + (currentTime.getMonth() + 1)
+            let day = currentTime.getDate().length > 1 ? currentTime.getDate() : "0" + currentTime.getDate();
 
             if (currentTime.getHours() < 7)
                 time = '7:00:00'
@@ -487,9 +491,9 @@ exports.signIn = async function (req, res) {
                 date:
                     currentTime.getFullYear() +
                     '-' +
-                    (currentTime.getMonth() + 1) +
+                    month +
                     '-' +
-                    currentTime.getDate(),
+                    day,
                 startTime: time,
                 status: 'Present',
             };
@@ -529,8 +533,19 @@ exports.signOut = async function (req, res) {
         else {
             const today = new Date();
 
-            const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-            let currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let hours = today.getHours().length > 1 ? today.getHours() : "0" + today.getHours();
+            let minutes = today.getMinutes() > 1 ? today.getMinutes() : "0" + v.getMinutes();
+            let seconds = today.getSeconds() > 1 ? today.getSeconds() : "0" + today.getSeconds();
+
+            let time = hours + ":" + minutes + ":" + seconds;
+
+
+            let month = (today.getMonth() + 1).length > 1 ? (today.getMonth() + 1) : "0" + (today.getMonth() + 1)
+            let day = today.getDate().length > 1 ? today.getDate() : "0" + today.getDate();
+
+
+            const currentDate = today.getFullYear() + '-' + month + '-' + day;
+            let currentTime = hours + ":" + minutes + ":" + seconds;
 
             if (today.getHours() > 19)
                 currentTime = '19:00:00'

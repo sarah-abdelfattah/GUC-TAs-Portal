@@ -10,10 +10,6 @@ function MyAttendanceRecord() {
     async function fetchData() {
       let user = await checkLogin();
       await setUserId(user.gucId);
-      console.log(
-        "🚀 ~ file: MyAttendanceRecord.jsx ~ line 13 ~ fetchData ~ user.gucId",
-        user.gucId
-      );
     }
     fetchData();
   }, [userId]);

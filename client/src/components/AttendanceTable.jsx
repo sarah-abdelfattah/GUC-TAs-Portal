@@ -7,10 +7,30 @@ import { link } from "../helpers/constants.js";
 import { Button } from "@material-ui/core";
 import Fade from "react-reveal/Fade";
 import checkLogin from "../helpers/checkLogin";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 function AttendanceTable(props) {
+  const [staff, setStaff] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const [data, setData] = useState([]); //table data
+  const [filtered, setFiltered] = useState([]);
+
   const { addToast } = useToasts();
+
+  const month = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const compare = (a, b) => {
     const rec1 = a.date;
@@ -40,10 +60,12 @@ function AttendanceTable(props) {
           }
 
           if (staff.data.data) {
+            setStaff(staff.data.data);
             let records = staff.data.data.attendanceRecords;
 
             //sorted .. from most to least recent
             const result = records.sort(compare);
+            setOriginalData(result);
             setData(result);
           } else {
             addToast(staff.data.error, {
@@ -59,6 +81,41 @@ function AttendanceTable(props) {
     }
   }, [props]);
 
+  const handleFilter = async (inputData) => {
+    try {
+      let term = parseInt(month.indexOf(inputData));
+      if (term > -1) {
+        let month1 = term + 1;
+        console.log(
+          "🚀 ~ file: AttendanceTable.jsx ~ line 89 ~ handleFilter ~ month1",
+          month1
+        );
+        let month2;
+        if (month1 === 12) month2 = 1;
+        else month2 = month1 + 1;
+        console.log(
+          "🚀 ~ file: AttendanceTable.jsx ~ line 93 ~ handleFilter ~ month2",
+          month2
+        );
+
+        // const res = await axiosCall(
+        //   "get",
+        //   `attendance/viewAttendance/${term}/${month2}`
+        // );
+        // console.log(
+        //   "🚀 ~ file: AttendanceTable.jsx ~ line 77 ~ handleFilter ~ res",
+        //   res.data
+        // );
+        // setFiltered(res.data);
+      } else {
+        addToast("Sorry this is not a valid month", {
+          appearance: "danger",
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {}
+  };
+
   return (
     <div>
       <Fade>
@@ -69,21 +126,47 @@ function AttendanceTable(props) {
             <MaterialTable
               title=""
               columns={[
-                { title: "Day", field: "day" },
-                { title: "Date", field: "date" },
-                { title: "Sign In", field: "startTime" },
-                { title: "Sign Out", field: "endTime", sorting: false },
-                { title: "leave", field: "absentsatisfied", sorting: false },
+                { title: "Day", field: "day", filtering: false },
+                {
+                  title: "Date",
+                  field: "date",
+                  // customFilterAndSearch: (term, rowData) => {
+                  //   if (term) {
+                  //     console.log("terrmmmm");
+                  //     handleFilter(term);
+                  //   }
+                  // },
+                },
+                { title: "Sign In", field: "startTime", filtering: false },
+                {
+                  title: "Sign Out",
+                  field: "endTime",
+                  sorting: false,
+                  filtering: false,
+                },
+                {
+                  title: "leave",
+                  field: "absentsatisfied",
+                  sorting: false,
+                  filtering: false,
+                },
                 {
                   title: "Absent Status",
                   field: "absentStatus",
                   sorting: false,
+                  filtering: false,
                 },
-                { title: "Description", field: "description", sorting: false },
+                {
+                  title: "Description",
+                  field: "description",
+                  sorting: false,
+                  filtering: false,
+                },
               ]}
               align="center"
               data={data}
               options={{
+                // filtering: true,
                 sorting: true,
                 actionsColumnIndex: -1,
                 headerStyle: {
@@ -99,19 +182,24 @@ function AttendanceTable(props) {
                 },
               }}
               components={{
-                Action: (props) => (
-                  <Button
-                    onClick={(event) => props.action.onClick(event, props.data)}
-                    variant="contained"
-                    style={{
-                      textTransform: "none",
-                      background: "#045CC8",
-                      color: "#fff",
-                    }}
+                Toolbar: (props) => (
+                  <Autocomplete
                     size="small"
-                  >
-                    Attendance
-                  </Button>
+                    id="debug"
+                    options={month}
+                    onChange={(event, newValue) => {
+                      handleFilter(newValue);
+                    }}
+                    getOptionLabel={(option) => option}
+                    style={{ width: "30%", margin: "auto" }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="View attendance of Month: "
+                        margin="normal"
+                      />
+                    )}
+                  />
                 ),
               }}
             />
