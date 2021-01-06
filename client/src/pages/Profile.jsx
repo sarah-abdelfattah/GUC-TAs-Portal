@@ -46,7 +46,7 @@ function Profile(props) {
       setPosition(user.type);
 
       let dSalary = await axiosCall("get", `staffMembers/salary/${user.gucId}`);
-      setDeductedSalary(dSalary.data.salary);
+      setDeductedSalary(dSalary.data.salary.toFixed(2));
 
       //get location
       const locationRes = await axiosCall("get", "locations/room/all");

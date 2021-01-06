@@ -58,7 +58,7 @@ function StaffProfile(props) {
       setPosition(user.type);
 
       let dSalary = await axiosCall("get", `staffMembers/salary/${gucId}`);
-      setDeductedSalary(dSalary.data.salary);
+      setDeductedSalary(dSalary.data.salary.toFixed(2));
 
       //   get location
       const locationRes = await axiosCall("get", "locations/room/all");
@@ -242,7 +242,7 @@ function StaffProfile(props) {
           </FormControl>
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">
-              Dedicted Salary
+              Deducted Salary
             </InputLabel>
             <Input
               className="profile-input"
