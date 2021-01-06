@@ -82,7 +82,7 @@ function App() {
                   <Route exact path='/staff' render={(props) => <Staff {...props} />} />
                   <Route exact path='/test' render={(props) => <Test {...props} />} />
                   {/* <Route exact path = "/courseSlots" render = {(props)=> <CourseSlot {...props}/>} /> */}
-                  <Route exact path = "/cc/courseSlot" render = {(props)=><CourseSlotCC {...props}/>}/>
+                  <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
 
                 </div>
               )}

@@ -23,16 +23,16 @@ import Radio from '@material-ui/core/Radio';
 import { axios } from "../../helpers/axios"
 import { link } from "../../helpers/constants";
 import { useToasts } from "react-toast-notifications";
+import {axiosCall} from "../../helpers/axiosCall";
 
 //Styling
 import "../../styles/_colorSchema.scss";
 import {makeStyles} from "@material-ui/core/styles"
-import Fade from 'react-reveal/Fade';
 
 function CourseSlotCRUD() {
     //States needed
-    const [courses,setCourses] = useState(["Computer Science 1"]); //To get the courses and put it in the list
-    const [course,setCourse] = useState(""); //The selected course
+    const [courses,setCourses] = useState([]); //To get the courses and put it in the list
+    const [course1,setCourse] = useState(""); //The selected course
     const [day,setDay] = useState(""); //The day added-deleted
     const [location,setLocation] = useState(""); //The location added-deleted
     const [timing,setTiming] = useState(""); //The timing added-deleted
@@ -45,11 +45,32 @@ function CourseSlotCRUD() {
 
     const {addToast} = useToasts(); 
     const useStyles = makeStyles((theme)=>({
+        mainGridContainer:{
+            marginTop:"150px",
+            marginLeft:"50px"
+        },
         gridContainer:{
             backgroundColor: "white",
-            padding: "140px",
+            boxShadow: "0px 0px 15px 0px rgba(0, 0, 0, 0.64)",
+            borderRadius: "13px"
+            // padding: "140px",
             // width:
-        }
+        },
+        courseSlotsDiv: {
+            width:"80%",
+            height:"80%"
+        },
+        button:{
+            backgroundColor: (optionSelected === "add")?"#058c42":(optionSelected === "update")? "#045CC8":" #C81927",
+            color:"white",
+            // marginRight:"150px"
+        },
+        radio: {
+            '&$checked': {
+              color: '#058c42'
+            }
+          },
+          checked: {}
     }))
     const classes = useStyles();
     //Constants for select options
@@ -75,6 +96,11 @@ function CourseSlotCRUD() {
     const handleOnChangeRadio = (e) =>{
         // console.log(e.target.value)
         setOptionSelected(e.target.value);
+        if(e.target.value === "add" || e.target.value === "delete"){
+            setDayU("");
+            setTimingU("");
+            setLocationU("");
+        }
         // handleButtonEnable();
     }
     //3- Choose day
@@ -109,11 +135,55 @@ function CourseSlotCRUD() {
     }
     //8- Handling the submitting
     const handleSubmit = async (e) =>{
-        //Add-update-delete a course slot
+        try{
+            let response = null;
+            if(optionSelected === "add"){
+                console.log("add");
+                response = await axios.post(`${link}/slots/courseSlot`,
+                {
+                    course:course1,
+                    day: day,
+                    time: timing.substring(10,15),
+                    location: location
+                });
+            }else if(optionSelected === "update"){
+                response = await axios.put(`${link}/slots/courseSlot`,
+                {
+                    course: course1,
+                    dayOld: day,
+                    timeOld: timing.substring(10,15),
+                    locationOld:location,
+                    dayNew: dayU,
+                    timeNew: timingU.substring(10,15),
+                    locationNew: locationU,
+                });
+            }else if(optionSelected === "delete"){
+                console.log(course1);
+                response = await axiosCall("delete",`${link}/slots/courseSlot`,
+                {
+                    course:course1,
+                    day: day,
+                    time: timing.substring(10,15),
+                    location: location
+                });
+            }else{
+                addToast("You should specify an option", {appearance: 'warning',autoDismiss: true});
+                return;
+            }
+            if(response.data.error){
+                addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
+            }else{
+                console.log(response.data.data);
+                addToast(response.data.data, {appearance: 'success',autoDismiss: true});
+            }
+        }catch(e){
+            console.log('~ err', e);
+            document.location.href = '/unauthorized';
+        }
     }
     const handleButtonEnable = () =>{
-        if((course && day && location && timing && (optionSelected === "add" || optionSelected === "delete")) ||
-            (course && day && location && timing && dayU && locationU && timingU && optionSelected === "update")){
+        if((course1 && day && location && timing && (optionSelected === "add" || optionSelected === "delete")) ||
+            (course1 && day && location && timing && dayU && locationU && timingU && optionSelected === "update")){
             setButtonEnabled(false);
         }else{
             setButtonEnabled(true);
@@ -121,74 +191,89 @@ function CourseSlotCRUD() {
     }
 
     useEffect(async()=>{
+        try{
+            const response = await axios.get(`${link}/courses/coursesCC`);
+            if(response.data.error){
+                addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
+            }else{
+                const myCourses = response.data.data;
+                setCourses(myCourses);
+            }
+        }catch(e){
+            console.log('~ err', e);
+            document.location.href = '/unauthorized';
+        }
+    },[])
+
+    useEffect(()=>{
         handleButtonEnable();
     },
-    [courses,course,day,dayU,timing,timingU,location,locationU,optionSelected,buttonEnabled]);
+    [courses,course1,day,dayU,timing,timingU,location,locationU,optionSelected,buttonEnabled]);
 
     return (
-        <div className = "course-slot-div">
-        <Grid container spacing={3} className = "grid-container" justify = "space-around">
-            {/* Choose Course */}
-            <Grid item container xs={12} sm = {6}>
-                <Grid item xs = {0} sm = {0} style = {{padding: "4px",top:"4px"}}>
-                    <LibraryBooksIcon />
-                </Grid>
-                <Grid item xs = {12} sm = {6}>
-                    <Autocomplete
-                    id="auto-complete"
-                    options={courses}
-                    getOptionLabel={(coursename) => coursename}
-                    onChange = {(e,newValue)=>handleOnChangeCourse(newValue)}
-                    autoComplete
-                    includeInputInList
-                    renderInput={(params) => <TextField {...params} label="Course" value = {course}/>}
-                    />
-                </Grid>
-            </Grid>
-            <Grid item container xs={12} sm = {6}>
-                <Grid item xs = {4} sm = {4}>
-                    <FormControlLabel 
-                    value="add" 
-                    control={<Radio value = 'add' checked={optionSelected === 'add'} onChange={handleOnChangeRadio} />} 
-                    label="Add" />
-                </Grid>
-                <Grid item xs = {4} sm = {4}>
-                <FormControlLabel 
-                    value="update" 
-                    control={<Radio value = 'update' checked={optionSelected === 'update'} onChange={handleOnChangeRadio} />} 
-                    label="Update" />
-                </Grid>
-                <Grid item xs = {4} sm = {4}>
-                <FormControlLabel 
-                    value="delete" 
-                    control={<Radio value = 'delete' checked={optionSelected === 'delete'} onChange={handleOnChangeRadio} />} 
-                    label="Delete" />
-                </Grid>
-            </Grid>
-            <Grid container item xs = {12} sm = {6}>
-                <Grid item>
-                    <TodayIcon/>
-                </Grid>
-                <Grid item>
-                    <Autocomplete
+        <div className = {classes.courseSlotsDiv}>
+        <Grid container className = {classes.mainGridContainer} justify = "center">
+            <Grid item container spacing={7} className = {classes.gridContainer} justify = "space-between" xs = {12} sm = {12} md = {12}>
+                {/* Choose Course */}
+                <Grid item container spacing={2} xs = {12} sm={12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{alignSelf:"flex-end",marginBottom:"5px",marginRight:"15px"}}>
+                        <LibraryBooksIcon />
+                    </Grid>
+                    <Grid item xs = {9} sm = {9} md = {7}>
+                        <Autocomplete
                         id="auto-complete"
-                        options={weekDays}
-                        getOptionLabel={(day) => day}
-                        onChange = {(e,newValue)=>handleOnChangeDay(newValue)}
+                        options={courses}
+                        getOptionLabel={(coursename) => coursename}
+                        onChange = {(e,newValue)=>handleOnChangeCourse(newValue)}
                         autoComplete
                         includeInputInList
-                        renderInput={(params) => <TextField {...params} label="Day" margin="normal" />}
-                    />
+                        renderInput={(params) => <TextField {...params} label="Course" value = {course1}/>}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            {/* Update day */}
-            {optionSelected === "update"?
-            <Grid item xs = {12} sm = {6}>
-                <Fade>
-                    <Grid item>
+                <Grid item container spacing={2} xs = {12} sm={12} md = {6} justify = "space-between">
+                    <Grid item xs = {12} sm = {12} md = {2}>
+                        <FormControlLabel 
+                        value="add" 
+                        control={<Radio classes={{root: classes.radio, checked: classes.checked}} value = 'add' checked={optionSelected === 'add'} onChange={handleOnChangeRadio} />} 
+                        label="Add" />
+                    </Grid>
+                    <Grid item xs = {12} sm = {12} md = {2} style = {{marginRight:"30px"}}>
+                    <FormControlLabel 
+                        value="update" 
+                        control={<Radio color = "primary" value = 'update' checked={optionSelected === 'update'} onChange={handleOnChangeRadio} />} 
+                        label="Update" />
+                    </Grid>
+                    <Grid item xs = {12} sm = {12} md = {2} style = {{marginRight:"115px"}}>
+                    <FormControlLabel 
+                        value="delete" 
+                        control={<Radio value = 'delete' checked={optionSelected === 'delete'} onChange={handleOnChangeRadio} />} 
+                        label="Delete" />
+                    </Grid>
+                </Grid>
+                <Grid container item spacing={2} xs = {12} sm = {12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{alignSelf:"flex-end",marginBottom:"10px",marginRight: "15px"}}>
                         <TodayIcon/>
                     </Grid>
-                    <Grid item>
+                    <Grid item xs = {9} sm = {9} md = {6}>
+                        <Autocomplete
+                            id="auto-complete"
+                            options={weekDays}
+                            getOptionLabel={(day) => day}
+                            onChange = {(e,newValue)=>handleOnChangeDay(newValue)}
+                            autoComplete
+                            includeInputInList
+                            renderInput={(params) => <TextField {...params} label="Day" margin="normal" />}
+                        />
+                    </Grid>
+                </Grid>
+                {/* Update day */}
+                {optionSelected === "update"?
+                <Grid container item spacing={2} xs = {12} sm = {12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{alignSelf:"flex-end",marginBottom:"10px",marginRight: "15px"}}>
+                        <TodayIcon/>
+                    </Grid>
+                    <Grid item xs = {9} sm = {9} md = {6}>
                         <Autocomplete
                             id="auto-complete"
                             options={weekDays}
@@ -196,87 +281,90 @@ function CourseSlotCRUD() {
                             onChange = {(e,newValue)=>handleOnChangeDayU(newValue)}
                             autoComplete
                             includeInputInList
-                            renderInput={(params) => <TextField {...params} label="Updated day" margin="normal" />}
+                            renderInput={(params) => <TextField {...params} label="New day" margin="normal" />}
                         />
                     </Grid>
-                </Fade>
-            </Grid>:<Grid item xs = {12} sm = {6}/>}
-            <Grid item xs = {12} sm = {6}>
-                <Grid item>
-                    <AccessTimeIcon/>
-                </Grid>
-                <Grid item>
-                    <Autocomplete
-                        id="auto-complete"
-                        options={slotTiming}
-                        getOptionLabel={(slot) => slot}
-                        onChange = {(e,newValue)=>handleOnChangeTiming(newValue)}
-                        autoComplete
-                        includeInputInList
-                        renderInput={(params) => <TextField {...params} label="Slot timing" margin="normal" />}
-                    />
-                </Grid>
-            </Grid>
-            {/* Update slot timing */}
-            {optionSelected === "update"?
-            <Grid item xs = {12} sm = {6}>
-                <Fade>
-                    <Grid item>
+                </Grid>:<Grid item xs = {12} sm = {12} md = {6}/>}
+                <Grid item container spacing={2} item xs = {12} sm = {12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{alignSelf:"flex-end",marginBottom:"10px",marginRight: "15px"}}>
                         <AccessTimeIcon/>
                     </Grid>
-                    <Grid item>
+                    <Grid item xs = {9} sm = {9} md = {6}>
                         <Autocomplete
                             id="auto-complete"
                             options={slotTiming}
                             getOptionLabel={(slot) => slot}
-                            onChange = {(e,newValue)=>handleOnChangeTimingU(newValue)}
+                            onChange = {(e,newValue)=>handleOnChangeTiming(newValue)}
                             autoComplete
                             includeInputInList
-                            renderInput={(params) => <TextField {...params} label="Updated slot timing" margin="normal" />}
+                            renderInput={(params) => <TextField {...params} label="Timing" margin="normal" />}
                         />
                     </Grid>
-                </Fade>
-            </Grid>:<Grid item xs = {12} sm = {6}/>}
-            <Grid item xs = {12} sm = {6}>
-                <div
-                 >
-                    <Grid container spacing={1} alignItems="flex-end">
-                        <Grid item>
-                            <LocationOnIcon />
+                </Grid>
+                {/* Update slot timing */}
+                {optionSelected === "update"?
+                <Grid container item spacing={2} xs = {12} sm = {12} md = {6}>
+                        <Grid item xs = {1} sm = {1} md = {1} style = {{alignSelf:"flex-end",marginBottom:"10px",marginRight: "15px"}}>
+                            <AccessTimeIcon/>
                         </Grid>
-                        <Grid item>
-                            <TextField id="input-with-icon-grid" label="Location" onChange = {handleOnChangeLocation} />
+                        <Grid item xs = {9} sm = {9} md = {6}>
+                            <Autocomplete
+                                id="auto-complete"
+                                options={slotTiming}
+                                getOptionLabel={(slot) => slot}
+                                onChange = {(e,newValue)=>handleOnChangeTimingU(newValue)}
+                                autoComplete
+                                includeInputInList
+                                renderInput={(params) => <TextField {...params} label="New timing" margin="normal" />}
+                            />
                         </Grid>
+                </Grid>:<Grid item xs = {12} sm = {12} md = {6}/>}
+                <Grid container item spacing={2} xs = {12} sm = {12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{marginTop:"15px",marginRight: "15px"}}>
+                        <LocationOnIcon />
                     </Grid>
-                </div>
+                    <Grid item xs = {9} sm = {9} md = {6}>
+                        <TextField
+                            // id="standard-error-helper-text"
+                            label="Location"
+                            // helperText="Incorrect entry."
+                            placeholder = "eg. C7.209"
+                            onChange = {handleOnChangeLocation}
+                            // margin="normal"
+                        />
+                    </Grid>
+                </Grid>
+                {/* Update slot location */}
+                {optionSelected === "update"?
+                <Grid container item spacing={2} xs  = {12} sm = {12} md = {6}>
+                    <Grid item xs = {1} sm = {1} md = {1} style = {{marginTop:"15px",marginRight: "15px"}}>
+                        <AddLocationIcon />
+                    </Grid>
+                    <Grid item xs = {9} sm = {9} md = {6}>
+                        <TextField
+                            // id="standard-error-helper-text"
+                            label="New location"
+                            // helperText="Incorrect entry."
+                            placeholder = "eg. C7.209"
+                            onChange = {handleOnChangeLocationU}
+                            // margin="normal"
+                        />
+                    </Grid>
+                </Grid>:<Grid item xs = {12} sm = {12} md = {6}/>}
+                <Grid item container xs = {12} sm = {12} md = {12} justify = "flex-end">
+                    <Grid item xs = {12} sm = {12} md = {2} >
+                        <Button variant = "contained"
+                                // color = {optionSelected === 'add'?"success":optionSelected === 'update'?"primary":"secondary"}
+                                className = {classes.button}
+                                startIcon = {optionSelected === 'add'?<AddCircleIcon />:optionSelected === 'update'?<EditIcon />:<DeleteIcon />}
+                                onClick = {handleSubmit}
+                                disabled = {buttonEnabled}>           
+                                {optionSelected === 'add'?"Add":optionSelected === 'update'?"Update":"Delete"}
+                        </Button> 
+                    </Grid>
+                </Grid>
             </Grid>
-            {/* Update slot location */}
-            {optionSelected === "update"?
-            <Grid item xs = {12} sm = {6}>
-                <Fade>
-                    <div>
-                        <Grid container spacing={1} alignItems="flex-end">
-                            <Grid item>
-                                <AddLocationIcon />
-                            </Grid>
-                            <Grid item>
-                                <TextField id = "input-with-icon-grid" label = "Updated Location" onChange = {handleOnChangeLocationU}/>
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Fade>
-            </Grid>:<Grid item xs = {12} sm = {6}/>}
-            <Grid item xs = {12} sm = {6}>
-                <Button variant = "contained"
-                        color = "primary"
-                        // className = {classes.button}
-                        startIcon = {optionSelected === 'add'?<AddCircleIcon />:optionSelected === 'update'?<EditIcon />:<DeleteIcon />}
-                        onClick = {handleSubmit}
-                        disabled = {buttonEnabled}>           
-                        {optionSelected === 'add'?"Add":optionSelected === 'update'?"Update":"Delete"}
-                </Button> 
             </Grid>
-        </Grid>
         </div>
     )
 }

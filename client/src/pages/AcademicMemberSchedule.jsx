@@ -75,6 +75,7 @@ function InstructorSlotsAssigned() {
   useEffect(() => {
     async function fetchData() {
       const loggedInUser = localStorage.getItem("user");
+      console.log(loggedInUser);
       if (!loggedInUser) {
         document.location.href = "/login";
       } else {
@@ -128,7 +129,7 @@ function InstructorSlotsAssigned() {
           }
         } catch (e) {
           console.log("~ err", e);
-          document.location.href = "/unauthorized";
+          // document.location.href = "/unauthorized";
         }
       }
     }
