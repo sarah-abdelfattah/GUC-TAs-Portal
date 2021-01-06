@@ -11,7 +11,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useToasts } from 'react-toast-notifications'
 
 
-import {axios} from '../helpers/axios'
+import {axios} from '../helpers/axios';
 import "../styles/_colorSchema.scss";
 
 function AcademicMemberCourseSlot() {
@@ -63,6 +63,7 @@ function AcademicMemberCourseSlot() {
         }
     },[]);
 
+
     return (
         <div>
             <div className = "course-slots-container">
@@ -90,16 +91,11 @@ function AcademicMemberCourseSlot() {
                     id="courses-dropdown"
                     options={courses}
                     getOptionLabel={(coursename) => coursename}
+                    onChange = {handleOnChange(e)}
                     style={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
                     className= "courses-dropdown"
                 />
-                <Button
-                variant="contained"
-                className={classes.button}
-                endIcon={<ViewModuleIcon/>}>
-                View Course Slots
-                </Button>
             </div>
         </div>
     );

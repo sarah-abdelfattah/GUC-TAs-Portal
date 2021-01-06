@@ -44,12 +44,12 @@ function Homepage() {
         }
 
         //get department
-        const depRes = await axiosCall("get", "departments/all/all");
-        let dep;
-        if (depRes.data.data) {
-          dep = depRes.data.data.find(({ _id }) => _id === user.department);
-          setDepartment(dep.name);
-        }
+        // const depRes = await axiosCall("get", "departments/all/all");
+        // let dep;
+        // if (depRes.data.data) {
+        //   dep = depRes.data.data.find(({ _id }) => _id === user.department);
+        //   setDepartment(dep.name);
+        // }
       }
 
       //get days

@@ -4,7 +4,8 @@ import { ToastProvider } from 'react-toast-notifications';
 
 import '../src/styles/courseCoverageTable.scss'
 import '../src/styles/slotsAssignedTable.scss'
-import '../src/styles/courseSlot.scss'
+// import '../src/styles/courseSlot.scss'
+import '../src/styles/courseSlotCRUDCC.scss'
 
 
 //Import the styles
@@ -34,7 +35,8 @@ import ViewCourseCoverage from './pages/HOD/ViewCourseCoverage';
 import CourseCoverage from './pages/InstCourseCoverage';
 import SlotsAssigned from './pages/InstructorSlotsAssigned';
 import Schedule from './pages/AcademicMemberSchedule';
-import CourseSlot from './pages/AcademicMemberCourseSlot';
+import CourseSlotCC from './pages/CC/CourseSlotCRUD';
+// import CourseSlot from './pages/AcademicMemberCourseSlot';
 
 
 function App() {
@@ -64,7 +66,8 @@ function App() {
                 <Route exact path = "/CourseCoverage" render = {(props)=> <CourseCoverage {...props}/>} />
                 <Route exact path = "/SlotsAssigned" render = {(props)=> <SlotsAssigned {...props}/>} />
                 <Route exact path = "/viewMySchedule" render = {(props)=> <Schedule {...props}/>} />
-                <Route exact path = "/courseSlots" render = {(props)=> <CourseSlot {...props}/>} />
+                {/* <Route exact path = "/courseSlots" render = {(props)=> <CourseSlot {...props}/>} /> */}
+                <Route exact path = "/cc/courseSlot" render = {(props)=><CourseSlotCC {...props}/>}/>
             <Route
               path="/unauthorized"
               render={(props) => <UnauthorizedPage {...props} />}
