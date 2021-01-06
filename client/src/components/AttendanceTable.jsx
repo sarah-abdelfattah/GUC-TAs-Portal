@@ -439,7 +439,6 @@ function AttendanceTable(props) {
                   {
                     title: "Day",
                     field: "day",
-                    filtering: false,
                   },
                   {
                     title: "Date",

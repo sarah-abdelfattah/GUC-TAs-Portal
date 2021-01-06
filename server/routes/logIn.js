@@ -54,7 +54,6 @@ router.post("", async function (req, res) {
             await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
-                staff.registeredDate = new Date();
                 console.log("not logged in before")
                 await readline.question('Do you want to change your password (Y/N): ', async (answer) => {
                     if (answer === 'Y' || answer === 'y') {

@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import checkLogin from "../helpers/checkLogin";
 import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-
 import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
@@ -15,6 +14,8 @@ function Homepage() {
   const [department, setDepartment] = useState("");
   const [days, setDays] = useState("");
   const [hours, setHours] = useState("");
+  const [modal, setmodal] = useState(false);
+
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -32,6 +33,19 @@ function Homepage() {
         );
 
         setLocation(office.location);
+      }
+      console.log("modal", modal);
+
+      if (!user.lastLogIn) {
+        console.log(
+          "🚀 ~ file: Homepage.jsx ~ line 39 ~ fetchData ~ user.lastLogIn",
+          user.lastLogIn
+        );
+
+        setmodal(true);
+        console.log("modal", modal);
+      } else {
+        console.log("DCs");
       }
 
       if (user.type === "Academic Member") {
@@ -200,6 +214,30 @@ function Homepage() {
           <h6> Sign Out</h6>
         </Button>
       </div>
+
+      {modal ? (
+        <div className="modal-outer-container">
+          <div className="modal-container">
+            <p>Do you want to change your default password?</p>
+            <div className="modal-button-area">
+              <button
+                className="green"
+                onClick={() => {
+                  setmodal(false)(
+                    (document.location.href =
+                      window.location.origin + "/changePassword")
+                  );
+                }}
+              >
+                YES
+              </button>
+              <button className="red" onClick={() => setmodal(false)}>
+                NO
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
