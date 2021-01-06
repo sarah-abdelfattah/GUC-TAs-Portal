@@ -18,7 +18,7 @@ function Staff() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -70,14 +70,11 @@ function Staff() {
   }, []);
 
   return (
-    // styling
-    <div>
+    <div className="my-table">
       <Fade>
         <Grid container spacing={1}>
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>
-            <br />
-            <br />
             <MaterialTable
               title=""
               columns={[
@@ -106,7 +103,9 @@ function Staff() {
                   icon: "save",
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
-                    document.location.href = `${rowData.id}/viewAttendanceRecord`;
+                    document.location.href =
+                      window.location.origin +
+                      `/${rowData.id}/viewAttendanceRecord`;
                   },
                 },
               ]}

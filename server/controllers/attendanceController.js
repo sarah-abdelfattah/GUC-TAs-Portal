@@ -13,9 +13,13 @@ exports.viewAttendance = async function (req, res) {
         //All field vaildation
         const validateAttendance = await validation.viewAllAttendance.validateAsync({ all });
 
-        if (((!month1 || !month2) && !all)) {
-            res.send({ error: "You should choose an option either to enter month1 and month2 or all" });
-            return;
+        // if (((!month1 || !month2) && !all)) {
+        //     res.send({ error: "You should choose an option either to enter month1 and month2 or all" });
+        //     return;
+        // }
+        if (!all) {
+            month1 = req.params.month1
+            month2 = req.params.month2
         }
 
         month1 = parseInt(month1);
@@ -38,9 +42,9 @@ exports.viewAttendance = async function (req, res) {
             const validateMonth = await validation.viewMonthAttendance.validateAsync({ month1, month2 });
             attendanceRecord = await viewAttendance(id, month1, month2);
             if (typeof (attendanceRecord) === 'string')
-                res.send(attendanceRecord);
+                return res.send(attendanceRecord);
             else
-                res.json(attendanceRecord);
+                return res.json(attendanceRecord);
         }
     } catch (err) {
         if (err.isJoi) {
@@ -150,7 +154,7 @@ exports.addMissingSignInOut = async function (req, res) {
                             && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signIntSec)))
             });
             if (overLappedsignIn) {
-                res.send({ msg: "You are not able to add a signIn that is between an existing signIn/Out" });
+                res.send({ error: "You are not able to add a signIn that is between an existing signIn/Out" });
                 return;
             }
         }
@@ -169,7 +173,7 @@ exports.addMissingSignInOut = async function (req, res) {
                             && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signOutSec)))
             });
             if (overLappedsignOut) {
-                res.send({ msg: "You are not able to add a signOut that is between an existing signIn/Out" });
+                res.send({ error: "You are not able to add a signOut that is between an existing signIn/Out" });
                 return;
             }
         }
@@ -339,6 +343,26 @@ exports.viewAttendanceHR = async function (req, res) {
 }
 
 //Function 19: View staff members with missing hours/days.
+exports.getStaffMissingHoursDays = async (staffRecords) => {
+    staffIDs = [];
+    for (i = 0; i < staffRecords.length; i++) {
+        const gucId = staffRecords[i].gucId;
+        missingDays = await module.exports.findMissingDays(gucId);
+        missingHours = await module.exports.findMissingMinutes(gucId);
+        const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
+        const minutesSpentPrinted = Math.abs(missingHours) % 60;
+        const sign = missingHours < 0 ? hoursSpentPrinted + " hrs. " + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
+        const sentRes = sign;
+        staffIDs.push(
+            {
+                GUCID: gucId,
+                MissingDays: missingDays,
+                MissingHours: sentRes
+            });
+    }
+    return staffIDs;
+
+};
 exports.viewStaffWithMissingHoursDays = async function (req, res) {
     try {
         attendanceRecords = await staffMember.find();
@@ -346,21 +370,8 @@ exports.viewStaffWithMissingHoursDays = async function (req, res) {
             res.send({ error: "There no staff in the system yet" });
             return;
         }
-        staffIDs = [];
-        for (i = 0; i < attendanceRecords.length; i++) {
-            missingDays = await module.exports.findMissingDays(attendanceRecords[i].gucId);
-            missingHours = await module.exports.findMissingMinutes(attendanceRecords[i].gucId);
-            const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
-            const minutesSpentPrinted = Math.abs(missingHours) % 60;
-            const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
-            const sentRes = "Missing hours: " + sign;
-            staffIDs.push(
-                {
-                    GUCID: attendanceRecords[i].gucId,
-                    MissingDays: missingDays,
-                    MissingHours: sentRes
-                });
-        }
+        const staffIDs = await module.exports.getStaffMissingHoursDays(attendanceRecords);
+
         return res.json({ data: staffIDs });
     } catch (err) {
         if (err.isJoi) {
@@ -558,10 +569,10 @@ exports.findMissingMinutes = async function (id) {
     cumulativeMin = 0.0;
     datesExist = [] //To keep track of the dates in the attendance record (in case of there are duplicates 'multiple sign in/outs')
     filteredRecords.forEach((record) => {
-        startTimeHrs = parseInt(record.startTime.substring(0, 2)); //The hours of the sign in time
-        endTimeHrs = parseInt(record.endTime.substring(0, 2));     //The hours of the sign out time
-        startTimeMin = parseInt(record.startTime.substring(3, 5)); //The mins of the signed in time
-        endTimeMin = parseInt(record.endTime.substring(3, 5));     //The mins of the sign out time
+        startTimeHrs = record.startTime ? parseInt(record.startTime.substring(0, 2)) : undefined; //The hours of the sign in time
+        endTimeHrs = record.endTime ? parseInt(record.endTime.substring(0, 2)) : undefined;     //The hours of the sign out time
+        startTimeMin = record.startTime ? parseInt(record.startTime.substring(3, 5)) : undefined; //The mins of the signed in time
+        endTimeMin = record.endTime ? parseInt(record.endTime.substring(3, 5)) : undefined;     //The mins of the sign out time
         //The calculated spent hours is from 07:00 till 19:00
         if (startTimeHrs < 7) { //If the signedIn hour is before 7, we set it to 7 to ignore the eariler hours
             startTimeHrs = 7;
