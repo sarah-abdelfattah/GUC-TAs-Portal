@@ -22,6 +22,7 @@ function Profile(props) {
   const [email, setEmail] = useState("");
   const [dayOff, setDayOff] = useState("");
   const [salary, setSalary] = useState("");
+  const [deductedSalary, setDeductedSalary] = useState("");
   const [location, setLocation] = useState("");
   const [rooms, setRooms] = useState({ rooms: [] });
   const [roomChosen, setRoomChosen] = useState("");
@@ -43,6 +44,9 @@ function Profile(props) {
       setDayOff(user.dayOff);
       setSalary(user.salary);
       setPosition(user.type);
+
+      let dSalary = await axiosCall("get", `staffMembers/salary/${user.gucId}`);
+      setDeductedSalary(dSalary.data.salary);
 
       //get location
       const locationRes = await axiosCall("get", "locations/room/all");
@@ -167,6 +171,17 @@ function Profile(props) {
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Salary</InputLabel>
             <Input className="profile-input" value={salary} disabled={true} />
+          </FormControl>
+
+          <FormControl className="profile-formControl">
+            <InputLabel className="profile-inputLabel">
+              Deducted Salary
+            </InputLabel>
+            <Input
+              className="profile-input"
+              value={deductedSalary}
+              disabled={true}
+            />
           </FormControl>
 
           <FormControl className="profile-formControl">

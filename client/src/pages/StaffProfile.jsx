@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import auth from "../helpers/auth";
+import checkLogin from "../helpers/checkLogin";
 
 import {
   FormControl,
@@ -20,6 +21,7 @@ function StaffProfile(props) {
   const [email, setEmail] = useState("");
   const [dayOff, setDayOff] = useState("");
   const [salary, setSalary] = useState("");
+  const [deductedSalary, setDeductedSalary] = useState("");
   const [location, setLocation] = useState("");
   const [rooms, setRooms] = useState({ rooms: [] });
   const [roomChosen, setRoomChosen] = useState("");
@@ -36,6 +38,7 @@ function StaffProfile(props) {
 
   useEffect(() => {
     async function fetchData() {
+      await checkLogin();
       await auth(["HR"]);
       //get user
       const url = document.location.pathname.split("/");
@@ -53,6 +56,9 @@ function StaffProfile(props) {
       setDayOff(user.dayOff);
       setSalary(user.salary);
       setPosition(user.type);
+
+      let dSalary = await axiosCall("get", `staffMembers/salary/${gucId}`);
+      setDeductedSalary(dSalary.data.salary);
 
       //   get location
       const locationRes = await axiosCall("get", "locations/room/all");
@@ -234,6 +240,17 @@ function StaffProfile(props) {
               onChange={(event) => setSalary(event.target.value)}
             />
           </FormControl>
+          <FormControl className="profile-formControl">
+            <InputLabel className="profile-inputLabel">
+              Dedicted Salary
+            </InputLabel>
+            <Input
+              className="profile-input"
+              value={deductedSalary}
+              disabled={true}
+            />
+          </FormControl>
+
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Position</InputLabel>
             <Input className="profile-input" value={position} disabled={true} />
