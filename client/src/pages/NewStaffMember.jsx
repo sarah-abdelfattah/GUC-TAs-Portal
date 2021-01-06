@@ -96,10 +96,6 @@ function NewStaffMember(props) {
 
   const handleFacOnChange = async (event) => {
     try {
-       console.log(
-         "🚀 ~ file: NewStaffMember.jsx ~ line 59 ~ updateUser ~ event",
-         typeof event.target.value
-       );
       updateUser(event);
       let depResult;
 
@@ -265,6 +261,7 @@ function NewStaffMember(props) {
                   className="profile-select"
                   value={user.faculty}
                   name="faculty"
+                  disabled={disable}
                   onChange={async (event) => {
                     await handleFacOnChange(event);
                   }}

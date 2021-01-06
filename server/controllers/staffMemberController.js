@@ -212,23 +212,6 @@ exports.registerStaff = async function (req, res) {
             });
         }
 
-        //check location
-        // ObjectId locObj = new ObjectId(officeLocation);
-        // const refLocation = await Location.findOne({ id: locObj });
-        // if (!refLocation) return { error: 'Sorry room not found' };
-        // else {
-        //     //room capacity for offices
-        //     const occupied = await StaffMember.find({
-        //         officeLocation: refLocation._id,
-        //     });
-        //     if (occupied.length >= refLocation.capacity)
-        //         return { error: 'Sorry room capacity is full' };
-        //     else if (refLocation.type != 'Office') {
-        //         return { error: 'Sorry this is not an office' };
-        //     }
-        // }
-        // console.log("here")
-
         const locResult = await locationHelper(req.body.officeLocation);
         if (locResult.error) return res.send(locResult);
         else officeLocation = locResult;
@@ -246,13 +229,11 @@ exports.registerStaff = async function (req, res) {
             const facultyResult = await facultyHelper(faculty);
             if (facultyResult.error) return res.send(facultyResult);
             else faculty = facultyResult;
-            console.log("🚀 ~ file: staffMemberController.js ~ line 249 ~ faculty", faculty);
 
             //department
             const departmentResult = await departmentHelper(faculty.code, department);
             if (departmentResult.error) return res.send(departmentResult);
             else department = departmentResult
-            console.log("🚀 ~ file: staffMemberController.js ~ line 254 ~ department", department);
         }
         else {
             dayOff = 'Saturday';
@@ -264,7 +245,6 @@ exports.registerStaff = async function (req, res) {
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
         const num = typeStaff.length + 1;
-        console.log("🚀 ~ file: staffMemberController.js ~ line 266 ~ num", num);
 
         var idRole = 'HR';
         if (type === 'Academic Member') {
