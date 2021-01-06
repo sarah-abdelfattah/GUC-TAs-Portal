@@ -315,13 +315,15 @@ function NewStaffMember(props) {
         </div>
 
         <div className="profile-buttons">
-          <button
-            className="profile-btn profile-add-btn profile-change-password-btn  green"
-            onClick={handleSubmit}
-            disabled={disable}
-          >
-            Add New Staff Member
-          </button>
+          {!disable ? (
+            <button
+              className="profile-btn profile-add-btn profile-change-password-btn  green"
+              onClick={handleSubmit}
+              disabled={disable}
+            >
+              Add New Staff Member
+            </button>
+          ) : null}
           <button
             className="profile-change-password-btn"
             onClick={() =>
