@@ -26,7 +26,6 @@ function NewStaffMember(props) {
     department: "",
     role: "",
     officeLocation: "",
-    courses: [],
   });
 
   const [updated, setUpdated] = useState(false);
@@ -36,37 +35,6 @@ function NewStaffMember(props) {
   const [deps, setDeps] = useState([]);
 
   const { addToast } = useToasts();
-
-  //   const updateData = async () => {
-  //     let locName;
-  //     if (rooms) locName = await rooms.find(({ _id }) => _id === roomChosen);
-
-  //     if (locName) {
-  //       setUser({
-  //         ...user,
-  //         officeLocation: locName.location,
-  //       });
-  //     }
-
-  //     let facCode;
-  //     if (faculties)
-  //       facCode = await faculties.find(({ _id }) => _id === facultyChosen);
-
-  //     if (facCode)
-  //       setUser({
-  //         ...user,
-  //         faculty: facCode.code,
-  //       });
-
-  //     let depName;
-  //     if (deps) depName = await deps.find(({ _id }) => _id === departmentChosen);
-
-  //     if (depName)
-  //       setUser({
-  //         ...user,
-  //         faculty: depName.name,
-  //       });
-  //   };
 
   useEffect(() => {
     async function fetchData() {
@@ -128,6 +96,10 @@ function NewStaffMember(props) {
 
   const handleFacOnChange = async (event) => {
     try {
+       console.log(
+         "🚀 ~ file: NewStaffMember.jsx ~ line 59 ~ updateUser ~ event",
+         typeof event.target.value
+       );
       updateUser(event);
       let depResult;
 

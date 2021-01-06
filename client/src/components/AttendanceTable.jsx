@@ -140,65 +140,138 @@ function AttendanceTable(props) {
       }
     }
 
+    //endtime changed
     if (newData.startTime === oldData.startTime) {
       const index = oldData.tableData.id;
       const dataUpdate = [...data];
       dataUpdate[index] = newData;
-      // setOriginalData([...dataUpdate]);
-      if (!newData.endTime) console.log("please enter some info");
-      else {
-        if (newData.endTime.length !== 8) {
-          addToast("Time should be in the format of: HH:MM:SS", {
+
+      if (!newData.endTime) {
+        addToast("Please enter the record (HH:MM:SS) or cancel", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        return;
+      }
+      if (newData.endTime.length !== 8) {
+        addToast("Time should be in the format of: HH:MM:SS", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      } else {
+        const body = {
+          id: staff.gucId,
+          signOut: newData.endTime,
+          date: oldData.date,
+          day: oldData.day,
+          number: parseInt(numberHere),
+        };
+
+        const res = await axiosCall(
+          "put",
+          "attendance/addMissingSignInOut",
+          body
+        );
+
+        if (res.data.data) {
+          addToast("Record added successfully", {
             appearance: "error",
             autoDismiss: true,
           });
+        }
+        if (res.data.error) {
+          addToast(res.data.error, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
+
+        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+        let staffUpdated = "";
+        if (temp.data.data) staffUpdated = temp.data.data;
+
+        if (staffUpdated) {
+          let records = staffUpdated.attendanceRecords;
+
+          //sorted .. from most to least recent
+          const result = records.sort(compare);
+
+          setOriginalData(result);
+          setData(result);
         } else {
-          const body = {
-            id: staff.gucId,
-            signOut: newData.endTime,
-            date: oldData.date,
-            day: oldData.day,
-            number: parseInt(numberHere),
-          };
+          addToast("Error occurred, please try again later", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
+      }
+      //startTime changed
+    } else if (newData.endTime === oldData.endTime) {
+      if (!newData.endTime) {
+        addToast("Please enter the record (HH:MM:SS) or cancel", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        return;
+      }
+      if (newData.endTime.length !== 8) {
+        addToast("Time should be in the format of: HH:MM:SS", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      } else {
+        const body = {
+          id: staff.gucId,
+          signIn: newData.endTime,
+          date: oldData.date,
+          day: oldData.day,
+          number: parseInt(numberHere),
+        };
 
-          const res = await axiosCall(
-            "put",
-            "attendance/addMissingSignInOut",
-            body
-          );
-          console.log(
-            "🚀 ~ file: AttendanceTable.jsx ~ line 165 ~ handleRowUpdate ~ res",
-            res
-          );
+        const res = await axiosCall(
+          "put",
+          "attendance/addMissingSignInOut",
+          body
+        );
 
-          if (res.data.error) {
-            addToast(res.data.error, {
-              appearance: "error",
-              autoDismiss: true,
-            });
-          }
+        if (res.data.data) {
+          addToast("Record added successfully", {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
 
-          let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
-          let staffUpdated = "";
-          if (temp.data.data) staffUpdated = temp.data.data;
+        if (res.data.error) {
+          addToast(res.data.error, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
 
-          if (staffUpdated) {
-            let records = staffUpdated.attendanceRecords;
+        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+        let staffUpdated = "";
+        if (temp.data.data) staffUpdated = temp.data.data;
 
-            //sorted .. from most to least recent
-            const result = records.sort(compare);
+        if (staffUpdated) {
+          let records = staffUpdated.attendanceRecords;
 
-            setOriginalData(result);
-            setData(result);
-          } else {
-            addToast("Error occurred, please try again later", {
-              appearance: "error",
-              autoDismiss: true,
-            });
-          }
+          //sorted .. from most to least recent
+          const result = records.sort(compare);
+
+          setOriginalData(result);
+          setData(result);
+        } else {
+          addToast("Error occurred, please try again later", {
+            appearance: "error",
+            autoDismiss: true,
+          });
         }
       }
     } else {
+      addToast("Sorry you cannot change both records", {
+        appearance: "error",
+        autoDismiss: true,
+      });
     }
   };
 
@@ -261,6 +334,7 @@ function AttendanceTable(props) {
               align="center"
               data={data}
               options={{
+                search: true,
                 // filtering: true,
                 sorting: true,
                 actionsColumnIndex: -1,
@@ -313,8 +387,12 @@ function AttendanceTable(props) {
                   ? {
                       // handle row add
                       onRowAdd: (newData) =>
-                        new Promise((resolve) => {
-                          handleRowAdd(newData, resolve);
+                        new Promise((resolve, reject) => {
+                          setTimeout(() => {
+                            handleRowAdd(newData, resolve);
+
+                            resolve();
+                          }, 1500);
                         }),
 
                       //to update row
@@ -323,11 +401,21 @@ function AttendanceTable(props) {
                           setTimeout(() => {
                             handleRowUpdate(newData, oldData);
                             resolve();
-                          }, 1000);
+                          }, 1500);
                         }),
                     }
                   : false
               }
+              // actions={[
+              //   {
+              //     icon: "add_box",
+              //     tooltip: "my tooltip",
+              //     position: "toolbar",
+              //     onClick: () => {
+              //       console.log("clicked");
+              //     },
+              //   },
+              // ]}
             />
           </Grid>
         </Grid>

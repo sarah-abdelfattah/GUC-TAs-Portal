@@ -14,24 +14,24 @@ const Notification = require('../models/Notification')
 const validation = require('../helpers/validation');
 
 const errorMsgs = {
-  notFound: (name, id) => {
-    return `There is no ${name} with this ${id}`;
-  },
-  notAssignedTo: (assignmentName, assignee) => {
-    return `There are no ${assignmentName} assigned to this ${assignee}`;
-  },
-  notAssigned: (assignmentName, extraInfo) => {
-    return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
-  },
-  notAuthorized: (action) => {
-    return `You are not authorized to ${action}`;
-  },
-  allAssigned: (assignmentName) => {
-    return `All the ${assignmentName} are already assigned`;
-  },
-  alreadyAssigned: (assignmentName) => {
-    return `The ${assignmentName} is already assigned`;
-  },
+    notFound: (name, id) => {
+        return `There is no ${name} with this ${id}`;
+    },
+    notAssignedTo: (assignmentName, assignee) => {
+        return `There are no ${assignmentName} assigned to this ${assignee}`;
+    },
+    notAssigned: (assignmentName, extraInfo) => {
+        return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
+    },
+    notAuthorized: (action) => {
+        return `You are not authorized to ${action}`;
+    },
+    allAssigned: (assignmentName) => {
+        return `All the ${assignmentName} are already assigned`;
+    },
+    alreadyAssigned: (assignmentName) => {
+        return `The ${assignmentName} is already assigned`;
+    },
 };
 
 async function locationHelper(officeLocation) {
@@ -246,11 +246,13 @@ exports.registerStaff = async function (req, res) {
             const facultyResult = await facultyHelper(faculty);
             if (facultyResult.error) return res.send(facultyResult);
             else faculty = facultyResult;
+            console.log("🚀 ~ file: staffMemberController.js ~ line 249 ~ faculty", faculty);
 
             //department
-            const departmentResult = await departmentHelper(faculty, department);
+            const departmentResult = await departmentHelper(faculty.code, department);
             if (departmentResult.error) return res.send(departmentResult);
             else department = departmentResult
+            console.log("🚀 ~ file: staffMemberController.js ~ line 254 ~ department", department);
         }
         else {
             dayOff = 'Saturday';
@@ -262,6 +264,7 @@ exports.registerStaff = async function (req, res) {
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
         const num = typeStaff.length + 1;
+        console.log("🚀 ~ file: staffMemberController.js ~ line 266 ~ num", num);
 
         var idRole = 'HR';
         if (type === 'Academic Member') {
@@ -274,6 +277,7 @@ exports.registerStaff = async function (req, res) {
         const attendanceRecord = [];
         const courses = [];
         const password = await bcrypt.hash('123456', 12);;
+        console.log("🚀 ~ file: staffMemberController.js ~ line 278 ~ password", password);
 
         // req.body.registeredDate = new Date()
         const newStaffMember = await StaffMember.create({
@@ -292,6 +296,7 @@ exports.registerStaff = async function (req, res) {
             courses,
             password
         });
+        console.log("🚀 ~ file: staffMemberController.js ~ line 297 ~ newStaffMember", newStaffMember);
         return res.send({ data: newStaffMember });
     } catch (err) {
         if (err.isJoi) {
@@ -747,43 +752,43 @@ exports.updateSalary = async function (req, res) {
 }
 
 exports.getSalary = async function (req, res) {
-  try {
-    const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
+    try {
+        const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
 
-    // Case: ac not found
-    if (!targetAc)
-      return res.status(404).send({
-        error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
-      });
+        // Case: ac not found
+        if (!targetAc)
+            return res.status(404).send({
+                error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
+            });
 
-    allStaff = await StaffMember.find();
-    if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
-    const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
+        allStaff = await StaffMember.find();
+        if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
+        const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
 
-    const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
+        const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
 
-    // Case: AC is not on the returned array (does not have any missings)
-    if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
+        // Case: AC is not on the returned array (does not have any missings)
+        if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
 
-    //Case: AC Exist => Get the salary
-    // MissingDays ==> Salary -= (Salary / 60 ) * days
-    // MissingHours ==> Salary -= (Salary / 180 ) * hours
-    // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
-    const missingDays = allMissing[acIndex].MissingDays;
-    const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
-    const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
-    const originalSalary = targetAc.salary;
-    const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
+        //Case: AC Exist => Get the salary
+        // MissingDays ==> Salary -= (Salary / 60 ) * days
+        // MissingHours ==> Salary -= (Salary / 180 ) * hours
+        // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
+        const missingDays = allMissing[acIndex].MissingDays;
+        const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
+        const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
+        const originalSalary = targetAc.salary;
+        const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
 
-    return res.status(200).send({ salary: newSalary });
-  } catch (err) {
-    if (err.isJoi) {
-      console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+        return res.status(200).send({ salary: newSalary });
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
+        }
+        console.log('~ err', err);
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
-    console.log('~ err', err);
-    res.status(500).send({ err: `Internal Server Error: ${err}` });
-  }
 };
 
 //Function 39: View their schedule. Schedule should show teaching activities and replacements if present. 
