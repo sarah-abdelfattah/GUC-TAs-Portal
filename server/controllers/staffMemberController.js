@@ -13,6 +13,26 @@ const Notification = require('../models/Notification')
 
 const validation = require('../helpers/validation');
 
+const errorMsgs = {
+  notFound: (name, id) => {
+    return `There is no ${name} with this ${id}`;
+  },
+  notAssignedTo: (assignmentName, assignee) => {
+    return `There are no ${assignmentName} assigned to this ${assignee}`;
+  },
+  notAssigned: (assignmentName, extraInfo) => {
+    return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
+  },
+  notAuthorized: (action) => {
+    return `You are not authorized to ${action}`;
+  },
+  allAssigned: (assignmentName) => {
+    return `All the ${assignmentName} are already assigned`;
+  },
+  alreadyAssigned: (assignmentName) => {
+    return `The ${assignmentName} is already assigned`;
+  },
+};
 
 async function locationHelper(officeLocation) {
     //check if room is found
@@ -61,8 +81,8 @@ async function updateInfoHelper(user) {
     let JOI_Result = await validation.updateSchema.validateAsync(user)
 
     const gucId = user.gucId;
+    const name = user.name;
     const role = user.role;
-    const officeLocation = user.officeLocation;
     const gender = user.gender;
 
     const newStaff = await StaffMember.findOne({ gucId: gucId });
@@ -70,16 +90,17 @@ async function updateInfoHelper(user) {
         return { error: 'No staff with this id' };
 
     else {
+        if (name) {
+            newStaff.name = name;
+        }
+
         if (gender) {
             newStaff.gender = gender;
         }
 
-
-
         if (newStaff.type === 'Academic Member') {
             if (role) newStaff.role = role;
         }
-
 
         const updatedStaff = await newStaff.save();
         return { data: "Profile Updated Successfully" }
@@ -269,10 +290,10 @@ exports.registerStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -324,10 +345,10 @@ exports.updateStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -379,10 +400,10 @@ exports.updateStaffDayOff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -444,10 +465,10 @@ exports.deleteStaff = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -508,10 +529,10 @@ exports.signIn = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -568,11 +589,11 @@ exports.signOut = async function (req, res) {
         }
     } catch (err) {
         if (err.isJoi) {
-            return res.send({ JOI_validation_error: err.details[0].message });
-            return res.send({ JOI_validation_error: err });
+            return res.send({ error: err.details[0].message });
+            return res.send({ error: err });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 };
 
@@ -591,7 +612,7 @@ exports.changePassword = async function (req, res) {
 
         const userToEdit = await StaffMember.findOne({ gucId: user.gucId });
         if (!userToEdit)
-            return res.send({ err: 'No user' });
+            return res.send({ error: 'No user' });
 
         //Checking if oldPassword matches the user password
         const check = await bcrypt.compare(oldPassword, userToEdit.password);
@@ -606,10 +627,10 @@ exports.changePassword = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        return res.send({ err: err });
+        return res.send({ error: err });
     }
 }
 
@@ -625,11 +646,11 @@ exports.updateProfile = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
 
         console.log(err)
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -638,7 +659,7 @@ exports.getProfile = async function (req, res) {
         const user = req.user;
         const staff = await StaffMember.findOne({ gucId: user.gucId });
         if (!staff)
-            return res.send({ err: 'No user' });
+            return res.send({ error: 'No user' });
 
         let newStaff = {
             gucId: staff.gucId,
@@ -664,7 +685,7 @@ exports.getProfile = async function (req, res) {
         return res.send({ data: newStaff });
     } catch (err) {
         console.log(err)
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 
@@ -689,12 +710,52 @@ exports.updateSalary = async function (req, res) {
     } catch (err) {
         if (err.isJoi) {
             console.log(' JOI validation error: ', err);
-            return res.send({ JOI_validation_error: err.details[0].message });
+            return res.send({ error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
+
+exports.getSalary = async function (req, res) {
+  try {
+    const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
+
+    // Case: ac not found
+    if (!targetAc)
+      return res.status(404).send({
+        error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
+      });
+
+    allStaff = await StaffMember.find();
+    if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
+    const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
+
+    const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
+
+    // Case: AC is not on the returned array (does not have any missings)
+    if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
+
+    //Case: AC Exist => Get the salary
+    // MissingDays ==> Salary -= (Salary / 60 ) * days
+    // MissingHours ==> Salary -= (Salary / 180 ) * hours
+    // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
+    const missingDays = allMissing[acIndex].MissingDays;
+    const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
+    const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
+    const originalSalary = targetAc.salary;
+    const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
+
+    return res.status(200).send({ salary: newSalary });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ JOI_validation_error: err.details[0].message });
+    }
+    console.log('~ err', err);
+    res.status(500).send({ err: `Internal Server Error: ${err}` });
+  }
+};
 
 //Function 39: View their schedule. Schedule should show teaching activities and replacements if present. 
 exports.viewMySchedule = async (req, res) => {

@@ -7,5 +7,6 @@ const courseController = require('../controllers/courseController');
 router.post("/course", auth.HRAuth, courseController.addCourse);
 router.put("/course", auth.HRAuth, courseController.updateCourse);
 router.delete("/course", auth.HRAuth, courseController.deleteCourse);
+router.get("/course/:faculty/:department/:course", courseController.getCourse);
 
 module.exports = router;  

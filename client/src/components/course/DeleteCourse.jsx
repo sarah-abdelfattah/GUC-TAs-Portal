@@ -11,11 +11,14 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-function DeleteFaculty() {
+function DeleteCourse() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
   const [departments, setDepartments] = useState({ departments: [] });
   const [depChosen, setDepChosen] = useState("");
+  const [courses, setCourses] = useState({ departments: [] });
+  const [courseChosen, setCourseChosen] = useState("");
+
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -26,7 +29,7 @@ function DeleteFaculty() {
     fetchData();
   }, [facultyChosen]);
 
-  const handleOnChange = async (target) => {
+  const handleFacOnChange = async (target) => {
     setFacultyChosen(target.value);
     const facCode = faculties.find(({ _id }) => _id === target.value).code;
 
@@ -37,31 +40,49 @@ function DeleteFaculty() {
     setDepartments(depResult.data.data);
   };
 
+  const handleDepOnChange = async (target) => {
+    const facCode = faculties.find(({ _id }) => _id === facultyChosen).code;
+
+    setDepChosen(target.value);
+    const depName = departments.find(({ _id }) => _id === target.value).name;
+
+    const courseResult = await axiosCall(
+      "get",
+      `courses/course/${facCode}/${depName}/all`
+    );
+    setCourses(courseResult.data.data);
+  };
+
   const handleSubmit = async () => {
     try {
       let code;
       if (faculties)
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
-      let dep;
+      let depName;
       if (departments)
-        dep = await departments.find(({ _id }) => _id === depChosen).name;
+        depName = await departments.find(({ _id }) => _id === depChosen).name;
+
+      let courseName;
+      if (courses)
+        courseName = await courses.find(({ _id }) => _id === courseChosen).name;
 
       const body = {
         facultyCode: code.toUpperCase(),
-        depName: dep,
+        departmentName: depName,
+        courseName: courseName,
       };
 
-      const res = await axiosCall("delete", "departments/department", body);
+      const res = await axiosCall("delete", "courses/course", body);
 
       if (res.data.data) {
-        addToast(res.data.data, {
+        addToast("Course deleted successfully", {
           appearance: "success",
           autoDismiss: true,
         });
-
         setFacultyChosen("");
-        setDepartments("");
+        setDepChosen("");
+        setCourseChosen("");
       }
 
       if (res.data.error) {
@@ -84,7 +105,7 @@ function DeleteFaculty() {
             className="crud-select"
             value={facultyChosen}
             onChange={(event) => {
-              handleOnChange(event.target);
+              handleFacOnChange(event.target);
             }}
           >
             {faculties.length > 0 &&
@@ -109,7 +130,7 @@ function DeleteFaculty() {
             className="crud-select"
             value={depChosen}
             onChange={(event) => {
-              setDepChosen(event.target.value);
+              handleDepOnChange(event.target);
             }}
           >
             {departments.length > 0 &&
@@ -127,18 +148,45 @@ function DeleteFaculty() {
             This field is required
           </FormHelperText>
         </FormControl>
+
+        <FormControl className="crud-formControl" required>
+          <InputLabel className="crud-inputLabel">Course</InputLabel>
+          <Select
+            className="crud-select"
+            value={courseChosen}
+            onChange={(event) => setCourseChosen(event.target.value)}
+          >
+            {courses.length > 0 &&
+              courses.map((course) => (
+                <MenuItem
+                  className="crud-menuItem"
+                  value={course._id}
+                  key={course._id}
+                >
+                  {course.name}
+                </MenuItem>
+              ))}
+          </Select>
+          <FormHelperText className="crud-helperText">
+            This field is required
+          </FormHelperText>
+        </FormControl>
       </div>
 
       <Button
         variant="danger"
         className="crud-submit crud-delete-btn red"
-        disabled={facultyChosen === "" || depChosen === "" ? true : false}
+        disabled={
+          facultyChosen === "" || depChosen === "" || courseChosen === ""
+            ? true
+            : false
+        }
         onClick={handleSubmit}
       >
-        Delete Department
+        Delete Course
       </Button>
     </div>
   );
 }
 
-export default DeleteFaculty;
+export default DeleteCourse;

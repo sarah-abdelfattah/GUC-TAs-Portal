@@ -40,8 +40,10 @@ router.post("", async function (req, res) {
                 gender: staff.gender,
                 name: staff.name,
                 email: staff.email,
+                dayOff: staff.dayOff,
                 type: staff.type,
                 role: staff.role,
+                salary: staff.salary,
                 officeLocation: staff.officeLocation,
                 faculty: staff.type === 'Academic Member' ? staff.faculty : undefined,
                 department: staff.type === 'Academic Member' ? staff.department : undefined

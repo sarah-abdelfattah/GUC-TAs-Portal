@@ -3,14 +3,14 @@ import MaterialTable from "material-table";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
-import axiosCall from "../../helpers/axiosCall";
-import { link } from "../../helpers/constants.js";
+import axiosCall from "../helpers/axiosCall";
+import { link } from "../helpers/constants.js";
 import { Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
 
-function ViewAllStaff() {
+function Staff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
   const { addToast } = useToasts();
@@ -22,19 +22,16 @@ function ViewAllStaff() {
     } else {
       async function fetchData() {
         try {
-          const response = await axiosCall(
-            "get",
-            `${link}/departments/getAllStaffMembers/all`
-          );
+          const response = await axiosCall("get", `/staffMembers/all/all`);
+
           const locations = await axiosCall(
             "get",
             `${link}/locations/room/all`
           );
-          const courses = await axiosCall("get", `${link}/departments/courses`);
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "danger",
               autoDismiss: true,
             });
           } else {
@@ -65,54 +62,22 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = "/unauthorized";
+          //   document.location.href = "/unauthorized";
         }
       }
       fetchData();
     }
   }, []);
 
-  async function handleOnChange(event) {
-    try {
-      const res = await axiosCall(
-        "get",
-        `${link}/departments/getAllStaffMembers/${event.course}`
-      );
-      const locations = await axiosCall("get", `${link}/locations/room/all`);
-
-      let data = res.data.data.map((staff) => {
-        return {
-          name: staff.name,
-          gucId: staff.gucId,
-          gender: staff.gender,
-          email: staff.email,
-          role: staff.role,
-          salary: staff.salary,
-          dayOff: staff.dayOff,
-          id: staff._id,
-          location: locations.data.data
-            .map((location) => {
-              if (staff.officeLocation === location._id) {
-                return location.location;
-              } else return null;
-            })
-            .filter((location) => location !== null),
-        };
-      });
-      setData(data);
-    } catch (err) {
-      console.log("~err", err);
-    }
-  }
-
   return (
     // styling
     <div>
       <Fade>
-        <h3 className="general-header">Staff Members</h3>
-        <hr className="general-line" />
         <Grid container spacing={1}>
+          <Grid item xs={1}></Grid>
           <Grid item xs={10}>
+            <br />
+            <br />
             <MaterialTable
               title=""
               columns={[
@@ -141,7 +106,7 @@ function ViewAllStaff() {
                   icon: "save",
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
-                    document.location.href = `${rowData.id}/viewSchedule`;
+                    document.location.href = `${rowData.id}/viewAttendanceRecord`;
                   },
                 },
               ]}
@@ -161,27 +126,8 @@ function ViewAllStaff() {
                     style={{ textTransform: "none" }}
                     size="small"
                   >
-                    View schedule
+                    Attendance Record
                   </Button>
-                ),
-                Toolbar: (props) => (
-                  <Autocomplete
-                    size="small"
-                    id="debug"
-                    options={courses}
-                    onChange={(event, newValue) => {
-                      handleOnChange(newValue);
-                    }}
-                    getOptionLabel={(option) => option.course}
-                    style={{ width: "30%", margin: "auto" }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="View staff members per course"
-                        margin="normal"
-                      />
-                    )}
-                  />
                 ),
               }}
             />
@@ -192,4 +138,4 @@ function ViewAllStaff() {
   );
 }
 
-export default ViewAllStaff;
+export default Staff;
