@@ -350,7 +350,7 @@ exports.getStaffMissingHoursDays = async (staffRecords) => {
         missingHours = await module.exports.findMissingMinutes(staffRecords[i].gucId);
         const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
         const minutesSpentPrinted = Math.abs(missingHours) % 60;
-        const sign = missingHours < 0 ? hoursSpentPrinted + " hrs." + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
+        const sign = missingHours < 0 ? hoursSpentPrinted + " hrs. " + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
         const sentRes = sign;
         staffIDs.push(
             {
