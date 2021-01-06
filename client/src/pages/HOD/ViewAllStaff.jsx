@@ -5,12 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
-import { Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
 import { MyButton } from "../../styles/TableStyles";
-import { MyGrid } from "../../styles/TableStyles";
 
 
 function ViewAllStaff() {
@@ -110,16 +108,13 @@ function ViewAllStaff() {
 
   return (
     // styling
-    <div>
+    <div className="my-table">
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />
-        <Grid style={{display: 'flex', justifyContent: 'center'}}>
-          <MyGrid item xs={10}>
+        <Grid container spacing = {1}>
+          <Grid item xs = {10}>
             <MaterialTable
-              style={{
-                borderRadius: '15px'
-              }}
               title=""
               columns={[
                 {
@@ -191,7 +186,7 @@ function ViewAllStaff() {
                 ),
               }}
             />
-          </MyGrid>
+          </Grid>
         </Grid>
       </Fade>
     </div>

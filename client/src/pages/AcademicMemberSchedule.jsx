@@ -128,7 +128,7 @@ function InstructorSlotsAssigned() {
           }
         } catch (e) {
           console.log("~ err", e);
-          document.location.href = "/unauthorized";
+         // document.location.href = "/unauthorized";
         }
       }
     }

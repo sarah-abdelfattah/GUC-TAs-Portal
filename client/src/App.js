@@ -19,7 +19,7 @@ import './styles/crudButtons.scss';
 import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
 import './styles/ChangePassword.scss';
-//import './styles/tables.scss';
+import './styles/tables.scss';
 
 //Import the pages
 import NavBar from './components/NavBar';
