@@ -1,7 +1,7 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
-
+import React, { useState, useEffect } from "react";
 import '../src/styles/courseCoverageTable.scss';
 import '../src/styles/slotsAssignedTable.scss';
 
@@ -22,6 +22,7 @@ import './styles/ChangePassword.scss';
 import './styles/tables.scss';
 
 //Import the pages
+import checkLogin from "./helpers/checkLogin";
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
 import Homepage from './pages/Homepage';
@@ -44,12 +45,29 @@ import Staff from './pages/Staff';
 import Test from './pages/test';
 
 function App() {
+  
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
+  
   var t = (document.title = 'GUC Portal');
+  
+  //var user = checkLogin() ;  //a3ml wait 1000 seconds msln
+  // const [flag, setFlag] = useState(false);
+  // useEffect(async () => {
+  //   if(currentLocation!='/login'){
+  //   let user =  await checkLogin() ;
+  //   if(user){
+  // if(user.type=="Academic Member"){
+  //   setFlag(true);
+  // }
+  //      } }
+    
+  // }, []);
+
 
   return (
+       
     <div className='App'>
       <Router>
         <Switch>
@@ -65,7 +83,8 @@ function App() {
                   <Route exact path='/location' render={(props) => <Location {...props} />} />
                   <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                   <Route exact path='/department' render={(props) => <Department {...props} />} />
-                  <Route exact path='/request' render={(props) => <Request {...props} />} />
+                  <Route exact path='/request' render={(props) => <Request {...props} />} />  
+                  
                   <Route exact path='/course' render={(props) => <Course {...props} />} />
                   <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                   <Route exact path='/profile' render={(props) => <Profile {...props} />} />

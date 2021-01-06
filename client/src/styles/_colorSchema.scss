@@ -17,7 +17,14 @@ $secondary-rose: #a42542;
 $secondary-navy-blue: #000b13;
 $secondary-gray: #2B2B2B;
 $secondary-white-gray: #f0f0f1b5;
-
+$secondary-lightblue:	#3E6F8E;
+$secondary-lightgreen :#3A8F92;
+.lightblue{
+    background-color: $secondary-lightblue;
+}
+.lightgreen{
+    background-color: $secondary-lightgreen;
+}
 
 .green {
     background-color: $primary-green;
