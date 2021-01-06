@@ -346,15 +346,16 @@ exports.viewAttendanceHR = async function (req, res) {
 exports.getStaffMissingHoursDays = async (staffRecords) => {
     staffIDs = [];
     for (i = 0; i < staffRecords.length; i++) {
-        missingDays = await module.exports.findMissingDays(staffRecords[i].gucId);
-        missingHours = await module.exports.findMissingMinutes(staffRecords[i].gucId);
+        const gucId = staffRecords[i].gucId;
+        missingDays = await module.exports.findMissingDays(gucId);
+        missingHours = await module.exports.findMissingMinutes(gucId);
         const hoursSpentPrinted = Math.floor(Math.abs(missingHours) / 60);
         const minutesSpentPrinted = Math.abs(missingHours) % 60;
         const sign = missingHours < 0 ? hoursSpentPrinted + " hrs. " + minutesSpentPrinted + " min." : "0 hrs. 0 min.";
         const sentRes = sign;
         staffIDs.push(
             {
-                GUCID: staffRecords[i].gucId,
+                GUCID: gucId,
                 MissingDays: missingDays,
                 MissingHours: sentRes
             });

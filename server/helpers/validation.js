@@ -14,7 +14,6 @@ const registerSchema = Joi.object({
   faculty: Joi.string(),
   department: Joi.string(),
   role: Joi.string(),
-  courses: Joi.string(),
 });
 
 const registerACSchema = Joi.object({
