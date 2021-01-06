@@ -151,6 +151,22 @@ function StaffProfile(props) {
     }
   };
 
+  const handleFacOnChange = async (event) => {
+    try {
+      setFacultyChosen(event.target.value);
+      let depResult;
+
+      depResult = await axiosCall(
+        "get",
+        `departments/department/${event.target.value}/all`
+      );
+
+      await setDeps(depResult.data.data);
+    } catch (err) {
+      console.log("~err:", err);
+    }
+  };
+
   return (
     <div className="profile-inner-container">
       <div className="profile-all">
@@ -226,7 +242,7 @@ function StaffProfile(props) {
                 onChange={(event) => {
                   setRoomChosen(event.target.value);
                 }}
-                disabled={update ? false : true}
+                disabled={!update}
               >
                 {update &&
                   rooms.length > 0 &&
@@ -277,8 +293,8 @@ function StaffProfile(props) {
                   <Select
                     className="profile-select"
                     value={facultyChosen}
-                    onChange={(event) => {
-                      setFacultyChosen(event.target.value);
+                    onChange={async (event) => {
+                      await handleFacOnChange(event);
                     }}
                     disabled={update ? false : true}
                   >
