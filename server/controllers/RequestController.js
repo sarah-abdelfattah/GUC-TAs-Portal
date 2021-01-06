@@ -1003,7 +1003,6 @@ exports.viewmyRequests = async function (req, res) {
     return res.send({ err: err });
   }
 };
- 
 
 // Function 37: Accept/reject “slot linking” requests from academic members linked to his/her course.
 // Note that once a “slot linking” request is accepted, it should be automatically added to the sender’s schedule.
