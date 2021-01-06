@@ -19,13 +19,13 @@ const [CurDayOff,setCurDayOff]=useState("");
 
  const { addToast } = useToasts();
 
-// useEffect(() => {
-//     async function fetchData() {
-//       const Day = await axiosCall("get", ".........."); 
-//       setCurDayOff(Day.data.data); 
-//     }
-//     fetchData();
-//   }, []);
+useEffect(() => {
+    async function fetchData() {
+      const Day = await axiosCall('get', 'requests/dayOff'); 
+      setCurDayOff(Day.data.data); 
+    }
+    fetchData();
+  }, []);
 const handleSubmit = async () => {
     try {
       
@@ -36,7 +36,7 @@ const handleSubmit = async () => {
       };
       if(NewDayOff==CurDayOff){
        addToast("already Your Current DayOff", {
-          appearance: "success",
+          appearance: "warning",
           autoDismiss: true,
         });
         setDayOff("")
@@ -93,7 +93,7 @@ const handleSubmit = async () => {
       <InputLabel className="crud-inputLabel">Reason</InputLabel>
       <br/>
       <br/>
-       <textarea  className="crud-input"   rows="3" cols="50" value={Reason} onChange={(event) => {
+       <textarea  className="crud-input"   rows="3" cols="40" value={Reason} onChange={(event) => {
               setReason(event.target.value);
             }}></textarea>
       </FormControl>

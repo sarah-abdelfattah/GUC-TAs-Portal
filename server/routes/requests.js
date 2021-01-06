@@ -19,6 +19,10 @@ router.put('/AcceptOrRejectSlot/:_id', auth.CCAuth, RequestController.AcceptOrRe
 router.put('/AcceptOrRejectLeave/:_id', auth.HODAuth, RequestController.AcceptOrRejectLeave);
 router.delete('/CancelRequest/:_id', auth.AcademicMemberAuth, RequestController.CancelRequest);
 
+
+router.get('/dayOff',RequestController.getDayOff);
+router.get('/hisCourses',RequestController.getCourses);
+
 //const { auth } = require("../../utils/authentication");
 //router.get("/viewMyRequest",RequestController.viewmyReequests);
 // //with staus

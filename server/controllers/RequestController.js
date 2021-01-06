@@ -158,9 +158,10 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Slot Request') {
       const coursename = req.body.course;
-      const x = req.body.date;
+     
+      const date = req.body.date ;
       const locationType = req.body.locationType;
-      if (!coursename || !x || !locationType) return res.send({ error: 'Please enter all the missing fields' });
+      if (!coursename || !date || !locationType) return res.send({ error: 'Please enter all the missing fields' });
       if (locationType !== 'Tutorial Room' && locationType !== 'Lecture Hall' && locationType !== 'Lab') return res.send({ error: 'Please enter a valid location type' });
 
       const course = await Course.findOne({ name: coursename });
@@ -169,7 +170,7 @@ exports.sendRequest = async function (req, res) {
       const rec = course.courseCoordinator;
       if (!rec) return res.send({ error: 'This course has no course coordinator yet' });
 
-      const date = new Date(Date.parse(x));
+    
       if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });
 
       var foundCourse = await Course.findOne({ name: coursename }).populate();
@@ -491,7 +492,7 @@ exports.sendRequest = async function (req, res) {
     // const NewRequest = await Request.post(senderID,recieverId,req.body);
 
     console.log('~ err', err);
-    return res.status(500).send({ err: err });
+    return res.status(500).send({ error: err });
   }
 };
 
@@ -598,7 +599,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 
@@ -666,7 +667,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
     }
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 
@@ -706,7 +707,7 @@ exports.AcceptOrRejectSlot = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.AcceptOrRejectLeave = async function (req, res) {
@@ -859,7 +860,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.CancelRequest = async function (req, res) {
@@ -886,7 +887,7 @@ exports.CancelRequest = async function (req, res) {
     return res.send({ data: 'Request deleted successfully' });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewmyReequestsByStatus = async function (req, res) {
@@ -901,7 +902,7 @@ exports.viewmyReequestsByStatus = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewmyReequestsByType = async function (req, res) {
@@ -917,7 +918,7 @@ exports.viewmyReequestsByType = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewRecievedReplacementRequest = async function (req, res) {
@@ -931,7 +932,7 @@ exports.viewRecievedReplacementRequest = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewRecievedRequest = async function (req, res) {
@@ -939,13 +940,13 @@ exports.viewRecievedRequest = async function (req, res) {
     var recId = req.user.gucId;
     var rec = await StaffMember.findOne({ gucId: recId }).populate();
     if (req.params.type != 'Change DayOff' && req.params.type != 'Leave Request') {
-      return res.send({ data: 'there is no such a type' });
+      return res.send({error:error });
     }
     var searchQuery = await Request.find({ reciever: rec, type: req.params.type }).populate();
     return res.send({ data: searchQuery });
   } catch (err) {
-    console.log(err);
-    return res.send({ err: err });
+    
+    return res.send({ error: err });
   }
 };
 exports.viewSlotRequest = async function (req, res) {
@@ -956,7 +957,7 @@ exports.viewSlotRequest = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewNotification = async function (req, res) {
@@ -974,9 +975,48 @@ exports.viewNotification = async function (req, res) {
     });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
+
+
+exports.getDayOff=async function (req, res) {
+  try {
+  const senderId = req.user.gucId;
+    var sender = await StaffMember.findOne({ gucId: senderId }).populate();
+    return res.send({ data: sender.dayOff });
+  }
+  catch (err) {
+    console.log(err);
+    return res.send({ error: err });
+  }}
+    
+
+ 
+
+
+
+exports.getCourses=async function (req, res) {
+  try {
+  const senderId = req.user.gucId;
+  
+var  instructor = await StaffMember.findOne({ gucId: senderId }).populate('courses');
+    
+  if(instructor){ 
+ var courseNames = instructor.courses.map((course) => course.name);
+ 
+    return res.send({  data: courseNames});
+    }
+    else
+      return res.send({error: "this staff has no courses" });
+  }
+  catch (err) {
+    console.log(err);
+    return res.send({ error: err });
+  }}
+     
+
+  
 exports.viewmyRequests = async function (req, res) {
   try {
     var senderId = req.user.gucId;
@@ -1000,7 +1040,7 @@ exports.viewmyRequests = async function (req, res) {
     //   }
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 

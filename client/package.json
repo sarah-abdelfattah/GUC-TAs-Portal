@@ -13,11 +13,10 @@
     "bootstrap": "^4.5.3",
     "material-table": "^1.69.2",
     "node-sass": "^4.14.1",
-    
     "react": "^17.0.1",
     "react-avatar": "^3.9.7",
     "react-bootstrap": "^1.4.0",
-    
+    "react-datetime-picker": "^3.0.4",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",
     "react-pro-sidebar": "^0.5.0",
