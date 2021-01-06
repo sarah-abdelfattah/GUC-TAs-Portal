@@ -154,7 +154,7 @@ exports.addMissingSignInOut = async function (req, res) {
                             && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signIntSec)))
             });
             if (overLappedsignIn) {
-                res.send({ msg: "You are not able to add a signIn that is between an existing signIn/Out" });
+                res.send({ error: "You are not able to add a signIn that is between an existing signIn/Out" });
                 return;
             }
         }
@@ -173,7 +173,7 @@ exports.addMissingSignInOut = async function (req, res) {
                             && parseInt(attendanceRecord[index].endTime.substring(6, 8)) >= signOutSec)))
             });
             if (overLappedsignOut) {
-                res.send({ msg: "You are not able to add a signOut that is between an existing signIn/Out" });
+                res.send({ error: "You are not able to add a signOut that is between an existing signIn/Out" });
                 return;
             }
         }

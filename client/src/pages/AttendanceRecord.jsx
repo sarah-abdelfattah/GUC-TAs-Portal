@@ -70,14 +70,11 @@ function Staff() {
   }, []);
 
   return (
-    // styling
-    <div>
+    <div className="my-table">
       <Fade>
         <Grid container spacing={1}>
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>
-            <br />
-            <br />
             <MaterialTable
               title=""
               columns={[

@@ -106,8 +106,7 @@ function ViewAllStaff() {
   }
 
   return (
-    // styling
-    <div>
+    <div className="my-table">
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />

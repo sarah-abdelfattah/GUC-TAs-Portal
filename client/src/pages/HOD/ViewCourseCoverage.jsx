@@ -40,7 +40,7 @@ function ViewCourseCoverage() {
   }, []);
 
   return (
-    <div>
+    <div className="my-table">
       <Fade>
         <h3 className="general-header">View course coverage</h3>
         <hr className="general-line" />

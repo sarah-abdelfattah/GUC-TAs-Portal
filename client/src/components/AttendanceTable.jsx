@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import MaterialTable from "material-table";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
@@ -7,6 +6,14 @@ import Fade from "react-reveal/Fade";
 import checkLogin from "../helpers/checkLogin";
 import { IoFilter, IoCloseSharp } from "react-icons/io5";
 import { Select, MenuItem } from "@material-ui/core";
+import MaterialTable, { MTableToolbar } from "material-table";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+  TimePicker,
+} from "@material-ui/pickers";
 
 function AttendanceTable(props) {
   const [staff, setStaff] = useState([]);
@@ -15,6 +22,7 @@ function AttendanceTable(props) {
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
+  const [time, setTime] = useState(new Date("2014-08-18T21:11:54"));
 
   const { addToast } = useToasts();
 
@@ -62,15 +70,22 @@ function AttendanceTable(props) {
           if (staff) {
             setStaff(staff);
             let records = staff.attendanceRecords;
+            // console.log(
+            //   "🚀 ~ file: AttendanceTable.jsx ~ line 73 ~ fetchData ~ records",
+            //   records
+            // );
+            // for (let i = 0; i < records.length; i++) {
+            //   console.log(records[i].endTime);
+            //   let nweDate = "2021-01-01T" + records[i].endTime;
+            //   records[i].endTime = new Date(nweDate);
+
+            //   // console.log(t);
+            // }
 
             //sorted .. from most to least recent
             const result = records.sort(compare);
             setOriginalData(result);
             setData(result);
-            // addToast("uploaded", {
-            //   appearance: "success",
-            //   autoDismiss: true,
-            // });
           } else {
             addToast("Error occurred, please try again later", {
               appearance: "danger",
@@ -130,7 +145,7 @@ function AttendanceTable(props) {
   };
 
   const handleRowUpdate = async (newData, oldData) => {
-    //changed endTime
+    //get number
     const filtered = originalData.filter((rec) => rec.date === oldData.date);
     let numberHere = 0;
     for (let i = 0; i < filtered.length; i++) {
@@ -140,285 +155,439 @@ function AttendanceTable(props) {
       }
     }
 
-    //endtime changed
-    if (newData.startTime === oldData.startTime) {
-      const index = oldData.tableData.id;
-      const dataUpdate = [...data];
-      dataUpdate[index] = newData;
+    const newSignIn = newData.startTime;
+    const newSignOut = newData.endTime;
 
-      if (!newData.endTime) {
-        addToast("Please enter the record (HH:MM:SS) or cancel", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        return;
-      }
-      if (newData.endTime.length !== 8) {
-        addToast("Time should be in the format of: HH:MM:SS", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-      } else {
-        const body = {
-          id: staff.gucId,
-          signOut: newData.endTime,
-          date: oldData.date,
-          day: oldData.day,
-          number: parseInt(numberHere),
-        };
-
-        const res = await axiosCall(
-          "put",
-          "attendance/addMissingSignInOut",
-          body
-        );
-
-        if (res.data.data) {
-          addToast("Record added successfully", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-        if (res.data.error) {
-          addToast(res.data.error, {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-
-        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
-        let staffUpdated = "";
-        if (temp.data.data) staffUpdated = temp.data.data;
-
-        if (staffUpdated) {
-          let records = staffUpdated.attendanceRecords;
-
-          //sorted .. from most to least recent
-          const result = records.sort(compare);
-
-          setOriginalData(result);
-          setData(result);
-        } else {
-          addToast("Error occurred, please try again later", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-      }
-      //startTime changed
-    } else if (newData.endTime === oldData.endTime) {
-      if (!newData.endTime) {
-        addToast("Please enter the record (HH:MM:SS) or cancel", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        return;
-      }
-      if (newData.endTime.length !== 8) {
-        addToast("Time should be in the format of: HH:MM:SS", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-      } else {
-        const body = {
-          id: staff.gucId,
-          signIn: newData.endTime,
-          date: oldData.date,
-          day: oldData.day,
-          number: parseInt(numberHere),
-        };
-
-        const res = await axiosCall(
-          "put",
-          "attendance/addMissingSignInOut",
-          body
-        );
-
-        if (res.data.data) {
-          addToast("Record added successfully", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-
-        if (res.data.error) {
-          addToast(res.data.error, {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-
-        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
-        let staffUpdated = "";
-        if (temp.data.data) staffUpdated = temp.data.data;
-
-        if (staffUpdated) {
-          let records = staffUpdated.attendanceRecords;
-
-          //sorted .. from most to least recent
-          const result = records.sort(compare);
-
-          setOriginalData(result);
-          setData(result);
-        } else {
-          addToast("Error occurred, please try again later", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        }
-      }
-    } else {
-      addToast("Sorry you cannot change both records", {
+    if (typeof newSignIn === "object" && typeof newSignOut === "object") {
+      return addToast("Sorry you cannot both signIn and sign Out", {
         appearance: "error",
         autoDismiss: true,
+        autoDismissTimeout: 2000,
+      });
+    } else if (!oldData.startTime && newData.startTime) {
+      //changed signIn
+      let time = newData.startTime.toLocaleTimeString().split(" ");
+      let signIn = time[0];
+      let splitted = time[0].split(":");
+      if (time[1] === "PM") {
+        splitted[0] = parseInt(splitted[0]) + 12;
+      } else {
+        if (parseInt(splitted[0]) < 7) {
+          splitted[0] = 7;
+          splitted[1] = "00";
+          splitted[2] = "00";
+        }
+      }
+      signIn = splitted[0] + ":" + splitted[1] + ":" + splitted[2];
+
+      if (signIn.length < 8) signIn = "0" + signIn;
+
+      const body = {
+        id: staff.gucId,
+        signIn: signIn,
+        date: oldData.date,
+        day: oldData.day,
+        number: parseInt(numberHere),
+      };
+
+      const res = await axiosCall(
+        "put",
+        "attendance/addMissingSignInOut",
+        body
+      );
+
+      if (res.data.data) {
+        addToast("Record updated successfully", {
+          appearance: "success",
+          autoDismiss: true,
+          autoDismissTimeout: 3000,
+        });
+
+        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+        let staffUpdated = "";
+        if (temp.data.data) staffUpdated = temp.data.data;
+
+        if (staffUpdated) {
+          let records = staffUpdated.attendanceRecords;
+
+          //sorted .. from most to least recent
+          const result = records.sort(compare);
+
+          setOriginalData(result);
+          setData(result);
+        }
+      }
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: 2000,
+        });
+      }
+    } else if (!oldData.endTime && newData.endTime) {
+      //changed signOut
+
+      let time = newData.endTime.toLocaleTimeString().split(" ");
+      let signOut = time[0];
+      if (time[1] === "PM") {
+        let splitted = time[0].split(":");
+        splitted[0] = parseInt(splitted[0]) + 12;
+        if (splitted[0] > 19) {
+          splitted[0] = 19;
+          splitted[1] = "00";
+          splitted[2] = "00";
+        }
+        signOut = splitted[0] + ":" + splitted[1] + ":" + splitted[2];
+      }
+      if (signOut.length < 8) signOut = "0" + signOut;
+
+      const body = {
+        id: staff.gucId,
+        signOut: signOut,
+        date: oldData.date,
+        day: oldData.day,
+        number: parseInt(numberHere),
+      };
+
+      const res = await axiosCall(
+        "put",
+        "attendance/addMissingSignInOut",
+        body
+      );
+
+      if (res.data.data) {
+        addToast("Record updated successfully", {
+          appearance: "success",
+          autoDismiss: true,
+          autoDismissTimeout: 3000,
+        });
+
+        let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+        let staffUpdated = "";
+        if (temp.data.data) staffUpdated = temp.data.data;
+
+        if (staffUpdated) {
+          let records = staffUpdated.attendanceRecords;
+
+          //sorted .. from most to least recent
+          const result = records.sort(compare);
+
+          setOriginalData(result);
+          setData(result);
+        }
+      }
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: 2000,
+        });
+      }
+    } else if (
+      (typeof oldData.startTime === "string" &&
+        typeof newData.startTime === "object") ||
+      (typeof oldData.endTime === "string" &&
+        typeof newData.endTime === "object")
+    ) {
+      return addToast("You can not change existing records", {
+        appearance: "error",
+        autoDismiss: true,
+        autoDismissTimeout: 2000,
+      });
+    } else {
+      return addToast("You did not change any record", {
+        appearance: "warning",
+        autoDismiss: true,
+        autoDismissTimeout: 2000,
       });
     }
   };
 
-  const handleRowAdd = (newData) => {};
+  const handleRowAdd = async (newData) => {
+    let input = newData.date;
+
+    if (!newData.date || !newData.startTime || !newData.endTime) {
+      return addToast("Please enter all details", {
+        appearance: "error",
+        autoDismiss: true,
+        autoDismissTimeout: 2000,
+      });
+    }
+
+    //day
+    let day;
+    switch (input.toString().split(" ")[0]) {
+      case "Sat":
+        day = "Saturday";
+        break;
+      case "Sun":
+        day = "Sunday";
+        break;
+      case "Mon":
+        day = "Monday";
+        break;
+      case "Tues":
+        day = "Tuesday";
+        break;
+      case "Wed":
+        day = "Wednesday";
+        break;
+      case "Thu":
+        day = "Thursday";
+        break;
+      case "Fri":
+        return addToast("Sorry you cannot add a record on Friday", {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: 2000,
+        });
+      default:
+        break;
+    }
+
+    //date
+    let dayOfMonth =
+      input.getDate() > 9 ? input.getDate() : "0" + input.getDate();
+    let monthOfYear =
+      input.getMonth() + 1 > 9
+        ? input.getMonth() + 1
+        : "0" + (input.getMonth() + 1);
+
+    let date = input.getFullYear() + "-" + monthOfYear + "-" + dayOfMonth;
+
+    //signIn
+    let time = newData.startTime.toLocaleTimeString().split(" ");
+    let signIn = time[0];
+    let splitted = time[0].split(":");
+    if (time[1] === "PM") {
+      splitted[0] = parseInt(splitted[0]) + 12;
+    } else {
+      if (parseInt(splitted[0]) < 7) {
+        splitted[0] = 7;
+        splitted[1] = "00";
+        splitted[2] = "00";
+      }
+    }
+    signIn = splitted[0] + ":" + splitted[1] + ":" + splitted[2];
+
+    if (signIn.length < 8) signIn = "0" + signIn;
+
+    //signOut
+    time = newData.endTime.toLocaleTimeString().split(" ");
+    let signOut = time[0];
+    if (time[1] === "PM") {
+      let splitted = time[0].split(":");
+      splitted[0] = parseInt(splitted[0]) + 12;
+      if (splitted[0] > 19) {
+        splitted[0] = 19;
+        splitted[1] = "00";
+        splitted[2] = "00";
+      }
+      signOut = splitted[0] + ":" + splitted[1] + ":" + splitted[2];
+    }
+    if (signOut.length < 8) signOut = "0" + signOut;
+
+    const body = {
+      id: staff.gucId,
+      signIn: signIn,
+      signOut: signOut,
+      date: date,
+      day: day,
+      number: 1,
+    };
+
+    const res = await axiosCall("put", "attendance/addMissingSignInOut", body);
+
+    if (res.data.data) {
+      addToast("Record updated successfully", {
+        appearance: "success",
+        autoDismiss: true,
+        autoDismissTimeout: 2000,
+      });
+
+      let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+      let staffUpdated = "";
+      if (temp.data.data) staffUpdated = temp.data.data;
+
+      if (staffUpdated) {
+        let records = staffUpdated.attendanceRecords;
+
+        //sorted .. from most to least recent
+        const result = records.sort(compare);
+
+        setOriginalData(result);
+        setData(result);
+      }
+    }
+    if (res.data.error) {
+      addToast(res.data.error, {
+        appearance: "error",
+        autoDismiss: true,
+        autoDismissTimeout: 2000,
+      });
+    }
+  };
 
   return (
-    <div>
+    <div className="my-table">
       <Fade>
         <h3 className="general-header">{props.title}</h3>
         <hr className="general-line" />
-        <Grid container spacing={1}>
-          <Grid item xs={11}>
-            <MaterialTable
-              title=""
-              columns={[
-                {
-                  title: "Day",
-                  field: "day",
-                  filtering: false,
-                  editable: false,
-                },
-                {
-                  title: "Date",
-                  field: "date",
-                  editable: false,
-                },
-                {
-                  title: "Sign In",
-                  field: "startTime",
-                  filtering: false,
-                },
-                {
-                  title: "Sign Out",
-                  field: "endTime",
-                  sorting: false,
-                  filtering: false,
-                },
-                {
-                  title: "leave",
-                  field: "absentsatisfied",
-                  sorting: false,
-                  filtering: false,
-                  editable: false,
-                },
-                {
-                  title: "Absent Status",
-                  field: "absentStatus",
-                  sorting: false,
-                  filtering: false,
-                  editable: false,
-                },
-                {
-                  title: "Description",
-                  field: "description",
-                  sorting: false,
-                  filtering: false,
-                  editable: false,
-                },
-              ]}
-              align="center"
-              data={data}
-              options={{
-                search: true,
-                // filtering: true,
-                sorting: true,
-                actionsColumnIndex: -1,
-                headerStyle: {
-                  backgroundColor: "#FFF",
-                  color: "#000",
-                  letterSpacing: "0.1em",
-                  fontSize: "18px",
-                  margin: "0",
-                  padding: "0 0 10px 0",
-                },
-                rowStyle: {
-                  fontSize: "15px",
-                },
-              }}
-              components={{
-                Toolbar: (props) => (
-                  <div className="select-table-container">
-                    <Select
-                      className="table-select month"
-                      value={selectedMonth}
-                      onChange={(event) => setMonth(event.target.value)}
-                      placeholder="Month"
-                    >
-                      <MenuItem className="" value={"Month"} key={"Month"}>
-                        Month
-                      </MenuItem>
-                      {month.map((mon) => (
-                        <MenuItem className="" value={mon} key={mon}>
-                          {mon}
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <Grid container spacing={1}>
+            <Grid item xs={11}>
+              <MaterialTable
+                title=""
+                columns={[
+                  {
+                    title: "Day",
+                    field: "day",
+                    filtering: false,
+                  },
+                  {
+                    title: "Date",
+                    field: "date",
+                    editComponent: ({ value, onChange }) => (
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                          value={value}
+                          onChange={onChange}
+                          ampm={false}
+                        />
+                      </MuiPickersUtilsProvider>
+                    ),
+                  },
+                  {
+                    title: "Sign In",
+                    field: "startTime",
+                    filtering: false,
+                    editComponent: ({ value, onChange }) => (
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <TimePicker
+                          value={value}
+                          onChange={onChange}
+                          ampm={false}
+                        />
+                      </MuiPickersUtilsProvider>
+                    ),
+                  },
+                  {
+                    title: "Sign Out",
+                    field: "endTime",
+                    sorting: false,
+                    filtering: false,
+                    editComponent: ({ value, onChange }) => (
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <TimePicker
+                          value={value}
+                          onChange={onChange}
+                          ampm={false}
+                        />
+                      </MuiPickersUtilsProvider>
+                    ),
+                  },
+                  {
+                    title: "leave",
+                    field: "absentsatisfied",
+                    sorting: false,
+                    filtering: false,
+                    editable: false,
+                  },
+                  {
+                    title: "Absent Status",
+                    field: "absentStatus",
+                    sorting: false,
+                    filtering: false,
+                    editable: false,
+                  },
+                  {
+                    title: "Description",
+                    field: "description",
+                    sorting: false,
+                    filtering: false,
+                    editable: false,
+                  },
+                ]}
+                align="center"
+                data={data}
+                options={{
+                  search: true,
+                  // filtering: true,
+                  sorting: true,
+                  actionsColumnIndex: -1,
+                  headerStyle: {
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    letterSpacing: "0.1em",
+                    fontSize: "18px",
+                    margin: "0",
+                    padding: "0 0 10px 0",
+                  },
+                  rowStyle: {
+                    fontSize: "15px",
+                  },
+                }}
+                components={{
+                  Toolbar: (props) => (
+                    <div className="select-table-container">
+                      <MTableToolbar {...props} />
+                      <Select
+                        className="table-select month"
+                        value={selectedMonth}
+                        onChange={(event) => setMonth(event.target.value)}
+                        placeholder="Month"
+                      >
+                        <MenuItem className="" value={"Month"} key={"Month"}>
+                          Month
                         </MenuItem>
-                      ))}
-                    </Select>
+                        {month.map((mon) => (
+                          <MenuItem className="" value={mon} key={mon}>
+                            {mon}
+                          </MenuItem>
+                        ))}
+                      </Select>
 
-                    <IoFilter
-                      className="filter-icon"
-                      onClick={() => handleFilter()}
-                    />
-                    {filtered ? (
-                      <IoCloseSharp
+                      <IoFilter
                         className="filter-icon"
-                        onClick={handleRemoveFilter}
+                        onClick={() => handleFilter()}
                       />
-                    ) : null}
-                  </div>
-                ),
-              }}
-              editable={
-                HR
-                  ? {
-                      // handle row add
-                      onRowAdd: (newData) =>
-                        new Promise((resolve, reject) => {
-                          setTimeout(() => {
-                            handleRowAdd(newData, resolve);
+                      {filtered ? (
+                        <IoCloseSharp
+                          className="filter-icon"
+                          onClick={handleRemoveFilter}
+                        />
+                      ) : null}
+                    </div>
+                  ),
+                }}
+                editable={
+                  HR
+                    ? {
+                        // handle row add
+                        onRowAdd: (newData) =>
+                          new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                              handleRowAdd(newData, resolve);
 
-                            resolve();
-                          }, 1500);
-                        }),
+                              resolve();
+                            }, 1500);
+                          }),
 
-                      //to update row
-                      onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve) => {
-                          setTimeout(() => {
-                            handleRowUpdate(newData, oldData);
-                            resolve();
-                          }, 1500);
-                        }),
-                    }
-                  : false
-              }
-              // actions={[
-              //   {
-              //     icon: "add_box",
-              //     tooltip: "my tooltip",
-              //     position: "toolbar",
-              //     onClick: () => {
-              //       console.log("clicked");
-              //     },
-              //   },
-              // ]}
-            />
+                        //to update row
+                        onRowUpdate: (newData, oldData) =>
+                          new Promise((resolve) => {
+                            setTimeout(() => {
+                              handleRowUpdate(newData, oldData);
+                              resolve();
+                            }, 1500);
+                          }),
+                      }
+                    : false
+                }
+              />
+            </Grid>
           </Grid>
-        </Grid>
+        </MuiPickersUtilsProvider>
       </Fade>
     </div>
   );
