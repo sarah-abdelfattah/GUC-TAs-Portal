@@ -4,7 +4,7 @@ const auth = require('../helpers/auth');
 
 const attendanceController = require('../controllers/attendanceController');
 
-router.get('/viewAttendance', attendanceController.viewAttendance);
+router.get('/viewAttendance/:month1/:month2', attendanceController.viewAttendance);
 router.get('/viewMissingDays', attendanceController.viewMissingDays);
 router.get('/viewHours', attendanceController.viewMissingHours);
 
