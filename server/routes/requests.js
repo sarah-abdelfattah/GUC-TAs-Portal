@@ -34,4 +34,6 @@ router.post('/sendrequest', RequestController.sendRequest);
 
 router.put('/acceptRejectSlotLinking', auth.CCAuth, RequestController.slotLinkingReqResponse);
 
+//router.get('/viewRequest/:id', auth.AcademicMemberAuth, RequestController.viewNotification);
+
 module.exports = router;

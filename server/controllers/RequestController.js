@@ -1120,3 +1120,39 @@ exports.slotLinkingReqResponse = async (req, res) => {
     res.status(500).send({ message: `Internal Server Error: ${err}` });
   }
 };
+
+// exports.viewRequest = async (req, res) => {
+//   try {
+//     let departmentFound = await Department.findOne({
+//       _id: req.user.department,
+//     }).populate('department');
+
+//     // if there's no department found
+//     if (!departmentFound) {
+//       return res
+//         .status(404)
+//         .send({
+//           error: `No department found with this id ${req.user.department}`,
+//         });
+//     }
+
+//     let request = await Request.findOne({ _id: req.params.id });
+
+//     // if no request found
+//     if (!request) {
+//       return res.send({
+//         error: "No request is found with this id",
+//       });
+//     }
+
+//     return res.status(200).send({
+//       data: request
+//     });
+//   } catch (err) {
+//     if (err.isJoi) {
+//       console.log(' JOI validation error: ', err);
+//       return res.send({ error: err.details[0].message });
+//     }
+//     res.status(500).send({ error: `Internal Server Error: ${err}` });
+//   }
+// };

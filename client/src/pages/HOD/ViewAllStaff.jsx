@@ -140,9 +140,9 @@ function ViewAllStaff() {
               actions={[
                 {
                   icon: "save",
-                  tooltip: "Save User",
+                  tooltip: "view schedule",
                   onClick: (event, rowData) => {
-                    document.location.href = `${rowData.id}/viewSchedule`;
+                    document.location.href = `/viewSchedule/${rowData.id}`;
                   },
                 },
               ]}
