@@ -34,6 +34,7 @@ router.post('/sendrequest', RequestController.sendRequest);
 
 router.put('/acceptRejectSlotLinking', auth.CCAuth, RequestController.slotLinkingReqResponse);
 
+// to get request by id
 router.get('/viewRequest/:id', RequestController.viewRequest);
 
 module.exports = router;

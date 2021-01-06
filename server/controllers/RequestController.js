@@ -1138,6 +1138,10 @@ exports.viewRequest = async (req, res) => {
 
     let request = await Request.findOne({ _id: req.params.id });
 
+    let sender = await StaffMember.findOne({ _id: request.sender });
+
+    let receiver = await StaffMember.findOne({ _id: request.reciever });
+
     // if no request found
     if (!request) {
       return res.send({
@@ -1146,7 +1150,17 @@ exports.viewRequest = async (req, res) => {
     }
 
     return res.status(200).send({
-      data: request
+      data: {
+        sender: sender.name,
+        senderId: sender.gucId,
+        reciever: receiver.name,
+        recieverId: receiver.gucId,
+        date: request.date,
+        status: request.status,
+        type: request.type,
+        subject: request.subject,
+        comment: request.comment,
+      }
     });
   } catch (err) {
     if (err.isJoi) {
