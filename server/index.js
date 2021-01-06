@@ -78,7 +78,7 @@ app.all('*', async (req, res, next) => {
     next();
   } catch (err) {
     console.log('~ err', err);
-    res.send({ err: err });
+    res.send({ error: err });
   }
 });
 

@@ -767,7 +767,7 @@ exports.getSalary = async function (req, res) {
             return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 };
 
@@ -802,79 +802,103 @@ exports.viewMySchedule = async (req, res) => {
 }
 
 exports.viewOriginalSchedule = async function (objId) {
-    const staff = await StaffMember.findOne({ _id: objId });
-    if (!staff) {
-        return `There is no staff member with ID ${objId}`;
-    }
-    const teachingCoursesObjIDs = staff.courses;
-    teachingCourses = [];
-    mySlots = [];
-    for (i = 0; i < teachingCoursesObjIDs.length; i++) {
-        const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
-        if (!teachingCourse) {
-            return "You do not have the access to view any courses";
+    try {
+        const staff = await StaffMember.findOne({ _id: objId });
+        if (!staff) {
+            return `There is no staff member with ID ${objId}`;
         }
-        teachingCourses.push(teachingCourse);
-    }
-    //The original schedule
-    for (j = 0; j < teachingCourses.length; j++) {
-        courseSlots = teachingCourses[j].slots;
-        for (i = 0; i < courseSlots.length; i++) {
-            if (courseSlots[i].isAssigned && courseSlots[i].isAssigned.equals(objId)) {
-                locationRoom = await Location.findById(courseSlots[i].location);
+        const teachingCoursesObjIDs = staff.courses;
+        teachingCourses = [];
+        mySlots = [];
+        for (i = 0; i < teachingCoursesObjIDs.length; i++) {
+            const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
+            if (!teachingCourse) {
+                return "You do not have the access to view any courses";
+            }
+            teachingCourses.push(teachingCourse);
+        }
+        //The original schedule
+        for (j = 0; j < teachingCourses.length; j++) {
+            courseSlots = teachingCourses[j].slots;
+            for (i = 0; i < courseSlots.length; i++) {
+                if (courseSlots[i].isAssigned && courseSlots[i].isAssigned.equals(objId)) {
+                    locationRoom = await Location.findById(courseSlots[i].location);
 
-                slotAdded = {
-                    day: courseSlots[i].day,
-                    time: courseSlots[i].time.getHours() + ":" + courseSlots[i].time.getMinutes(),
-                    location: locationRoom.location,
-                    course: teachingCourses[j].name
+                    slotAdded = {
+                        day: courseSlots[i].day,
+                        time: courseSlots[i].time.getHours() + ":" + courseSlots[i].time.getMinutes(),
+                        location: locationRoom.location,
+                        course: teachingCourses[j].name
+                    }
+                    mySlots.push(slotAdded);
                 }
-                mySlots.push(slotAdded);
             }
         }
+        return mySlots;
+    } catch (err) {
+        console.log('~ err', err);
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
-    return mySlots;
 }
 
 async function viewReplacementSlots(staffObjId) {
-    replacementReq = await Request.find({ type: 'Replacement Request', status: 'accepted', reciever: staffObjId }).lean();
-    if (!replacementReq) {
-        return 'There is no replacement requests that you accepted before';
-    }
-    today = new Date();
-    todayYear = today.getFullYear();
-    todayMonth = today.getMonth() + 1;
-    todayDay = today.getDate();
-
-    repSlots = [];
-    for (i = 0; i < replacementReq.length; i++) {
-        repYear = replacementReq[i].replacemntDate.getFullYear();
-        repMonth = replacementReq[i].replacemntDate.getMonth() + 1;
-        repDay = replacementReq[i].replacemntDate.getDate();
-
-        //Check that the replacement date is not overdue
-        if (repYear > todayYear || (repYear === todayYear && repMonth > todayMonth) || (repYear === todayYear && repMonth === todayMonth && repDay >= todayDay)) {
-            repWeekDayNum = replacementReq[i].replacemntDate.getDay();
-            repWeekDay = 'Sunday';
-            switch (repWeekDayNum) {
-                case 1: repWeekDay = 'Monday'; break;
-                case 2: repWeekDay = 'Tuesday'; break;
-                case 3: repWeekDay = 'Wednesday'; break;
-                case 4: repWeekDay = 'Thursday'; break;
-                case 5: repWeekDay = 'Friday'; break;
-                case 6: repWeekDay = 'Saturday'; break;
-                default: repWeekDay = 'Sunday'; break;
-            }
-            // console.log(replacementReq[i].replacemntDate.getHours + ":" + replacementReq[i].replacemntDate.getMinutes);
-
-            repSlotAdded = {
-                day: repWeekDay,
-                time: replacementReq[i].replacemntDate,
-                location: replacementReq[i].location,
-                course: replacementReq[i].coursename
-            }
-            repSlots.push(repSlotAdded);
+    try {
+        replacementReq = await Request.find({ type: 'Replacement Request', status: 'accepted', reciever: staffObjId }).lean();
+        if (!replacementReq) {
+            return 'There is no replacement requests that you accepted before';
         }
+        today = new Date();
+        todayYear = today.getFullYear();
+        todayMonth = today.getMonth() + 1;
+        todayDay = today.getDate();
+
+        repSlots = [];
+        for (i = 0; i < replacementReq.length; i++) {
+            repYear = replacementReq[i].replacemntDate.getFullYear();
+            repMonth = replacementReq[i].replacemntDate.getMonth() + 1;
+            repDay = replacementReq[i].replacemntDate.getDate();
+
+            //Check that the replacement date is not overdue
+            if (repYear > todayYear || (repYear === todayYear && repMonth > todayMonth) || (repYear === todayYear && repMonth === todayMonth && repDay >= todayDay)) {
+                repWeekDayNum = replacementReq[i].replacemntDate.getDay();
+                repWeekDay = 'Sunday';
+                switch (repWeekDayNum) {
+                    case 1: repWeekDay = 'Monday'; break;
+                    case 2: repWeekDay = 'Tuesday'; break;
+                    case 3: repWeekDay = 'Wednesday'; break;
+                    case 4: repWeekDay = 'Thursday'; break;
+                    case 5: repWeekDay = 'Friday'; break;
+                    case 6: repWeekDay = 'Saturday'; break;
+                    default: repWeekDay = 'Sunday'; break;
+                }
+                // console.log(replacementReq[i].replacemntDate.getHours + ":" + replacementReq[i].replacemntDate.getMinutes);
+
+                repSlotAdded = {
+                    day: repWeekDay,
+                    time: replacementReq[i].replacemntDate,
+                    location: replacementReq[i].location,
+                    course: replacementReq[i].coursename
+                }
+                repSlots.push(repSlotAdded);
+            }
+        }
+        return repSlots;
+    } catch (err) {
+        console.log('~ err', err);
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
-    return repSlots;
+}
+
+exports.updateLogin = async function (req, res) {
+    try {
+        let user = req.user;
+        const staff = await StaffMember.findOne({ gucId: user.gucId })
+        staff.lastLogin = new Date();
+        const result = await staff.save();
+        return res.send({ data: `updated lastLogin successfully ${result.lastLogin}` });
+
+    } catch (err) {
+        console.log('~ err', err);
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
+    }
 }

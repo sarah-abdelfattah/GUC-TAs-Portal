@@ -10,8 +10,8 @@ exports.addCourseSlot = async (req, res) => {
     try {
         const { course, day, time, location } = req.body;
         const id = req.user.gucId;
-        const validCourse = await validation.validateCourse.validateAsync({course});
-        const validSlot = await validation.validateSlotCC.validateAsync({day,time,location})
+        const validCourse = await validation.validateCourse.validateAsync({ course });
+        const validSlot = await validation.validateSlotCC.validateAsync({ day, time, location })
         if (!course || !day || !time || !location) {
             res.send({ error: "You should specify all the data" });
             return;
@@ -83,7 +83,7 @@ exports.addCourseSlot = async (req, res) => {
         res.send({ data: "The slot is added successfully" });
     } catch (err) {
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -91,8 +91,8 @@ exports.removeCourseSlot = async (req, res) => {
     try {
         const id = req.user.gucId;
         const { course, day, time, location } = req.body;
-        const validCourse = await validation.validateCourse.validateAsync({course});
-        const validSlot = await validation.validateSlotCC.validateAsync({day,time,location})
+        const validCourse = await validation.validateCourse.validateAsync({ course });
+        const validSlot = await validation.validateSlotCC.validateAsync({ day, time, location })
         if (!course || !day || !time || !location) {
             res.send({ error: "You should specify all the data" });
             return;
@@ -179,9 +179,9 @@ exports.updateCourseSlot = async (req, res) => {
     try {
         const id = req.user.gucId;
         const { course, dayOld, timeOld, locationOld, dayNew, timeNew, locationNew } = req.body;
-        const validCourse = await validation.validateCourse.validateAsync({course});
-        const validOldSlot = await validation.validateSlotCC.validateAsync({day:dayOld,time:timeOld,location:locationOld})
-        const validNewSlot = await validation.validateSlotCC.validateAsync({day:dayNew,time:timeNew,location:locationNew})
+        const validCourse = await validation.validateCourse.validateAsync({ course });
+        const validOldSlot = await validation.validateSlotCC.validateAsync({ day: dayOld, time: timeOld, location: locationOld })
+        const validNewSlot = await validation.validateSlotCC.validateAsync({ day: dayNew, time: timeNew, location: locationNew })
 
         if (!course || !dayOld || !timeOld || !locationOld || !dayNew || !timeNew || !locationNew) {
             res.send({ message: "You should specify all the data" });

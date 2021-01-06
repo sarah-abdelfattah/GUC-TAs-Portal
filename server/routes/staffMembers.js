@@ -18,6 +18,7 @@ router.get('/viewMySchedule', auth.AcademicMemberAuth, staffMemberController.vie
 router.post("/signIn", staffMemberController.signIn);
 router.post("/signOut", staffMemberController.signOut);
 
+router.put("/lastLogin", staffMemberController.updateLogin);
 router.put("/changePassword", staffMemberController.changePassword);
 
 router.put("/profile", staffMemberController.updateProfile);
@@ -25,6 +26,7 @@ router.get("/profile", staffMemberController.getProfile);
 
 router.get("/AC/:role/:staff", staffMemberController.getAcademicMembers);
 router.get("/:type/:staff", staffMemberController.getStaff);
+
 
 
 

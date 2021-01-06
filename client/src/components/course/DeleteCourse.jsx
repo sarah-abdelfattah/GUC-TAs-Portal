@@ -92,7 +92,7 @@ function DeleteCourse() {
         });
       }
     } catch (err) {
-      console.log("~err: ", err);
+      console.log("~error: ", err);
     }
   };
 

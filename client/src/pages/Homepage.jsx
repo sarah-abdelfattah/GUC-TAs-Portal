@@ -21,58 +21,68 @@ function Homepage() {
   useEffect(() => {
     async function fetchData() {
       //get user
-      const user = await checkLogin();
-      setUser(user);
+      try {
+        const user = await checkLogin();
+        setUser(user);
 
-      //get location
-      const locationRes = await axiosCall("get", "locations/room/all");
-      let office;
-      if (locationRes.data.data) {
-        office = locationRes.data.data.find(
-          ({ _id }) => _id === user.officeLocation
+        const dbUser = await axiosCall(
+          "get",
+          `staffMembers/salary/${user.gucId}`
         );
 
-        setLocation(office.location);
-      }
-      console.log("modal", modal);
-
-      if (!user.lastLogIn) {
-        console.log(
-          "🚀 ~ file: Homepage.jsx ~ line 39 ~ fetchData ~ user.lastLogIn",
-          user.lastLogIn
-        );
-
-        setmodal(true);
-        console.log("modal", modal);
-      } else {
-        console.log("DCs");
-      }
-
-      if (user.type === "Academic Member") {
-        //get faculty
-        const facultyRes = await axiosCall("get", "faculties/faculty/all");
-        let fac;
-        if (facultyRes.data.data) {
-          fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
-          setFaculty(fac.code);
+        if (!dbUser.lastLogin || dbUser.lastLogin === null) {
+          setmodal(true);
+          const res = await axiosCall("put", "staffMembers/lastLogin");
+          if (res.data.error) {
+            addToast(res.data.error, {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          }
         }
 
-        //get department
-        const depRes = await axiosCall("get", "departments/department/all/all");
-        let dep;
-        if (depRes.data.data) {
-          dep = depRes.data.data.find(({ _id }) => _id === user.department);
-          setDepartment(dep.name);
+        //get location
+        const locationRes = await axiosCall("get", "locations/room/all");
+        let office;
+        if (locationRes.data.data) {
+          office = locationRes.data.data.find(
+            ({ _id }) => _id === user.officeLocation
+          );
+
+          setLocation(office.location);
         }
+
+        if (user.type === "Academic Member") {
+          //get faculty
+          const facultyRes = await axiosCall("get", "faculties/faculty/all");
+          let fac;
+          if (facultyRes.data.data) {
+            fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
+            setFaculty(fac.code);
+          }
+
+          //get department
+          const depRes = await axiosCall(
+            "get",
+            "departments/department/all/all"
+          );
+          let dep;
+          if (depRes.data.data) {
+            dep = depRes.data.data.find(({ _id }) => _id === user.department);
+            setDepartment(dep.name);
+          }
+        }
+
+        //get days
+        const daysRes = await axiosCall("get", "attendance/viewMissingDays");
+        if (daysRes.data) setDays(daysRes.data);
+
+        //get hours
+        const hoursRes = await axiosCall("get", "attendance/viewHours");
+        if (hoursRes.data) setHours(hoursRes.data);
+      } catch (error) {
+        console.log(error);
       }
-
-      //get days
-      const daysRes = await axiosCall("get", "attendance/viewMissingDays");
-      if (daysRes.data) setDays(daysRes.data);
-
-      //get hours
-      const hoursRes = await axiosCall("get", "attendance/viewHours");
-      if (hoursRes.data) setHours(hoursRes.data);
     }
     fetchData();
   }, []);
