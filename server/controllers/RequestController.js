@@ -280,7 +280,7 @@ exports.sendRequest = async function (req, res) {
 
       if (leaveType == 'Compensation') {
         const cdate = req.body.CompensationDate;
-        const CompensationDate = new Date(Date.parse(req.body.CompensationDate)); //date
+        const CompensationDate = new Date( req.body.CompensationDate); //date
         const LeaveDate = new Date(Date.parse(req.body.LeaveDate));
         const reason = req.body.reason;
 
@@ -388,7 +388,7 @@ exports.sendRequest = async function (req, res) {
 
         //should be submitted before targeted day
         const x = req.body.AnnualLeaveDate;
-        const AnnualLeaveDate = new Date(Date.parse(x));
+        const AnnualLeaveDate = new Date( x);
         const replacement = req.body.rep || [];
 
         if (!AnnualLeaveDate) return res.status(400).send({ error: 'Please enter all the required fields' });
@@ -451,7 +451,7 @@ exports.sendRequest = async function (req, res) {
         if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry this type of request is only for females' });
         var reason = req.body.reason || '';
         const doc = req.body.document;
-        const startDate = new Date(Date.parse(req.body.startDate));
+        const startDate = new Date( req.body.startDate);
         if (!doc || !startDate) return res.send({ error: 'Please enter all the missing fields' });
         if (`${startDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
@@ -477,7 +477,7 @@ exports.sendRequest = async function (req, res) {
 
         if (sender.leaveBalance === 0) return res.send({ error: 'Sorry you cannot because your balance is 0' });
 
-        const AccidentDate = new Date(Date.parse(req.body.AccidentDate));
+        const AccidentDate = new Date( req.body.AccidentDate);
         if (!AccidentDate || `${AccidentDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.AccidentDate;
