@@ -19,7 +19,7 @@ function NavBar() {
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
-    document.location.href = "/login";
+    document.location.href = window.location.origin + "/login";
   };
 
   return (

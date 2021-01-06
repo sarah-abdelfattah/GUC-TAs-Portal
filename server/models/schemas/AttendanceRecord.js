@@ -27,7 +27,7 @@ const AttendanceRecordSchema = new Schema({
   },
   absentStatus: {
     type: String,
-    enum: ['None', 'Annual Leave', 'Accidental Leave', 'Sick Leave', 'Maternity Leave', 'Compensation Leave'],
+    enum: [null, 'None', 'Annual Leave', 'Accidental Leave', 'Sick Leave', 'Maternity Leave', 'Compensation Leave'],
     default: 'None'
   },
   description: {

@@ -24,7 +24,7 @@ function InstCourseCoverage() {
     async function fetchData() {
       const loggedInUser = localStorage.getItem("user");
       if (!loggedInUser) {
-        document.location.href = "/login";
+        document.location.href = window.location.origin + "/login";
       } else {
         try {
           const response = await axios.get(
@@ -41,7 +41,7 @@ function InstCourseCoverage() {
           }
         } catch (e) {
           console.log("~ err", e);
-          document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
     }

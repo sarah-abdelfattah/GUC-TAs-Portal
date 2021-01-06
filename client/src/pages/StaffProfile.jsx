@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import auth from "../helpers/auth";
 import checkLogin from "../helpers/checkLogin";
 
 import {
@@ -11,11 +12,9 @@ import {
   MenuItem,
 } from "@material-ui/core";
 
-//TODO: refactor
-function Profile(props) {
+function StaffProfile(props) {
   const [btn, setBtn] = useState("Update profile");
   const [update, setUpdate] = useState(false);
-  const [HR, setHr] = useState(false);
   const [gucId, setId] = useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -30,12 +29,25 @@ function Profile(props) {
   const [role, setRole] = useState("");
   const [faculty, setFaculty] = useState("");
   const [department, setDepartment] = useState("");
+  const [facultyChosen, setFacultyChosen] = useState("");
+  const [departmentChosen, setDepartmentChosen] = useState("");
+  const [faculties, setFaculties] = useState([]);
+  const [deps, setDeps] = useState([]);
+
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
+      await checkLogin();
+      await auth(["HR"]);
       //get user
-      let user = await checkLogin();
+      const url = document.location.pathname.split("/");
+      const gucId = url[url.length - 1];
+
+      //   let gucId = "AC-1";
+      let res = await axiosCall("get", `staffMembers/all/${gucId}`);
+      let user = "";
+      if (res.data.data) user = res.data.data;
 
       setId(user.gucId);
       setName(user.name);
@@ -45,10 +57,10 @@ function Profile(props) {
       setSalary(user.salary);
       setPosition(user.type);
 
-      let dSalary = await axiosCall("get", `staffMembers/salary/${user.gucId}`);
+      let dSalary = await axiosCall("get", `staffMembers/salary/${gucId}`);
       setDeductedSalary(dSalary.data.salary.toFixed(2));
 
-      //get location
+      //   get location
       const locationRes = await axiosCall("get", "locations/room/all");
       const filtered = locationRes.data.data.filter(
         (loc) => loc.type === "Office"
@@ -59,6 +71,7 @@ function Profile(props) {
         office = locationRes.data.data.find(
           ({ _id }) => _id === user.officeLocation
         );
+
         setRoomChosen(office._id);
         setLocation(office.location);
       }
@@ -68,23 +81,29 @@ function Profile(props) {
 
         //get faculty
         const facultyRes = await axiosCall("get", "faculties/faculty/all");
+        setFaculties(facultyRes.data.data);
+
         let fac;
         if (facultyRes.data.data) {
           fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
-          setFaculty(fac.code);
+          setFacultyChosen(fac.code);
+          setFaculty(fac.code + " - " + fac.name);
         }
 
         //get department
         const depRes = await axiosCall("get", "departments/department/all/all");
+        setDeps(depRes.data.data);
+
         let dep;
         if (depRes.data.data) {
           dep = depRes.data.data.find(({ _id }) => _id === user.department);
+          setDepartmentChosen(dep._id);
           setDepartment(dep.name);
         }
       }
     }
     fetchData();
-  }, [props.user]);
+  }, [gucId]);
 
   const handleUpdateProfile = async () => {
     setBtn("Submit Changes");
@@ -93,14 +112,39 @@ function Profile(props) {
 
   const handleSubmit = async () => {
     try {
-      const body = {
-        gucId: gucId,
-        name: name,
-        gender: gender,
-        role: role,
+      let locName;
+      if (rooms) locName = rooms.find(({ _id }) => _id === roomChosen);
+      console.log(
+        "🚀 ~ file: StaffProfile.jsx ~ line 111 ~ handleSubmit ~ locName",
+        locName.location
+      );
+
+      let facName;
+      let depName;
+      let body;
+      if (position === "Academic Member") {
+        console.log(
+          "🚀 ~ file: StaffProfile.jsx ~ line 120 ~ handleSubmit ~ position",
+          position
+        );
+
+        if (faculties)
+          facName = faculties.find(({ code }) => code === facultyChosen).code;
+        if (deps)
+          depName = deps.find(({ _id }) => _id === departmentChosen).name;
+      }
+      body = {
+        gucId,
+        name,
+        gender,
+        role,
+        salary,
+        officeLocation: locName.location,
+        faculty: facName,
+        department: depName,
       };
 
-      const res = await axiosCall("put", "staffMembers/profile", body);
+      const res = await axiosCall("put", "staffMembers/staff", body);
 
       if (res.data.data) {
         addToast("Profile updated successfully", {
@@ -108,6 +152,9 @@ function Profile(props) {
           autoDismiss: true,
         });
         setBtn("Update Profile");
+        setLocation(locName.location);
+        setFaculty(facName);
+        setDepartment(depName);
         setUpdate(false);
       }
       if (res.data.error) {
@@ -121,6 +168,22 @@ function Profile(props) {
     }
   };
 
+  const handleFacOnChange = async (event) => {
+    try {
+      setFacultyChosen(event.target.value);
+      let depResult;
+
+      depResult = await axiosCall(
+        "get",
+        `departments/department/${event.target.value}/all`
+      );
+
+      await setDeps(depResult.data.data);
+    } catch (err) {
+      console.log("~err:", err);
+    }
+  };
+
   return (
     <div className="profile-inner-container">
       <div className="profile-all">
@@ -129,7 +192,6 @@ function Profile(props) {
             <InputLabel className="profile-inputLabel">GUC Id</InputLabel>
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
-
           <FormControl
             className={
               update ? `profile-formControl toUpdate` : `profile-formControl`
@@ -143,7 +205,6 @@ function Profile(props) {
               onChange={(event) => setName(event.target.value)}
             />
           </FormControl>
-
           <FormControl
             className={
               update ? `profile-formControl toUpdate` : `profile-formControl`
@@ -157,22 +218,28 @@ function Profile(props) {
               onChange={(event) => setGender(event.target.value)}
             />
           </FormControl>
-
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Email</InputLabel>
             <Input className="profile-input" value={email} disabled={true} />
           </FormControl>
-
+          {/* TODO: change day off */}
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">Day off</InputLabel>
             <Input className="profile-input" value={dayOff} disabled={true} />
           </FormControl>
-
-          <FormControl className="profile-formControl">
+          <FormControl
+            className={
+              update ? `profile-formControl toUpdate` : `profile-formControl`
+            }
+          >
             <InputLabel className="profile-inputLabel">Salary</InputLabel>
-            <Input className="profile-input" value={salary} disabled={true} />
+            <Input
+              className="profile-input"
+              value={salary}
+              disabled={update ? false : true}
+              onChange={(event) => setSalary(event.target.value)}
+            />
           </FormControl>
-
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">
               Deducted Salary
@@ -188,12 +255,9 @@ function Profile(props) {
             <InputLabel className="profile-inputLabel">Position</InputLabel>
             <Input className="profile-input" value={position} disabled={true} />
           </FormControl>
-
           <FormControl
             className={
-              update && HR
-                ? `profile-formControl toUpdate`
-                : `profile-formControl`
+              update ? `profile-formControl toUpdate` : `profile-formControl`
             }
           >
             <InputLabel className="profile-inputLabel">
@@ -206,7 +270,7 @@ function Profile(props) {
                 onChange={(event) => {
                   setRoomChosen(event.target.value);
                 }}
-                disabled={update && HR ? false : true}
+                disabled={update ? false : true}
               >
                 {update &&
                   rooms.length > 0 &&
@@ -228,7 +292,6 @@ function Profile(props) {
               />
             )}
           </FormControl>
-
           {position === "Academic Member" ? (
             <div>
               <FormControl
@@ -246,23 +309,81 @@ function Profile(props) {
                   onChange={(event) => setRole(event.target.value)}
                 />
               </FormControl>
-              <FormControl className="profile-formControl">
+              <FormControl
+                className={
+                  update
+                    ? `profile-formControl toUpdate`
+                    : `profile-formControl`
+                }
+              >
                 <InputLabel className="profile-inputLabel">Faculty</InputLabel>
-                <Input
-                  className="profile-input"
-                  value={faculty}
-                  disabled={true}
-                />
+                {update ? (
+                  <Select
+                    className="profile-select"
+                    value={facultyChosen}
+                    onChange={async (event) => {
+                      await handleFacOnChange(event);
+                    }}
+                    disabled={update ? false : true}
+                  >
+                    {update &&
+                      faculties.length > 0 &&
+                      faculties.map((fac) => (
+                        <MenuItem
+                          className="profile-menuItem"
+                          value={fac.code}
+                          key={fac.code}
+                        >
+                          {fac.code} - {fac.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                ) : (
+                  <Input
+                    className="profile-input"
+                    value={faculty}
+                    disabled={true}
+                  />
+                )}
               </FormControl>
-              <FormControl className="profile-formControl">
+              <FormControl
+                className={
+                  update
+                    ? `profile-formControl toUpdate`
+                    : `profile-formControl`
+                }
+              >
                 <InputLabel className="profile-inputLabel">
                   Department
                 </InputLabel>
-                <Input
-                  className="profile-input"
-                  value={department}
-                  disabled={true}
-                />
+                {update ? (
+                  <Select
+                    className="profile-select"
+                    value={departmentChosen}
+                    onChange={(event) => {
+                      setDepartmentChosen(event.target.value);
+                    }}
+                    disabled={update ? false : true}
+                  >
+                    {update &&
+                      deps.length > 0 &&
+                      deps.map((department) => (
+                        <MenuItem
+                          className="profile-menuItem"
+                          value={department._id}
+                          key={department._id}
+                        >
+                          {department.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                ) : (
+                  <Input
+                    className="profile-input"
+                    value={department}
+                    disabled={true}
+                  />
+                )}
               </FormControl>
             </div>
           ) : null}
@@ -279,10 +400,10 @@ function Profile(props) {
             className="profile-change-password-btn"
             onClick={() =>
               (document.location.href =
-                window.location.origin + "/changePassword")
+                window.location.origin + `/viewStaffAttendance/${gucId}`)
             }
           >
-            Change Password
+            View Attendance Records
           </button>
         </div>
       </div>
@@ -290,4 +411,4 @@ function Profile(props) {
   );
 }
 
-export default Profile;
+export default StaffProfile;
