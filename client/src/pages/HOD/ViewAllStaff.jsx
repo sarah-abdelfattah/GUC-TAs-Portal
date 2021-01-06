@@ -9,6 +9,9 @@ import { Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
+import { MyButton } from "../../styles/TableStyles";
+import { MyGrid } from "../../styles/TableStyles";
+
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
@@ -111,9 +114,12 @@ function ViewAllStaff() {
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />
-        <Grid container spacing={1}>
-          <Grid item xs={10}>
+        <Grid style={{display: 'flex', justifyContent: 'center'}}>
+          <MyGrid item xs={10}>
             <MaterialTable
+              style={{
+                borderRadius: '15px'
+              }}
               title=""
               columns={[
                 {
@@ -154,7 +160,7 @@ function ViewAllStaff() {
               }}
               components={{
                 Action: (props) => (
-                  <Button
+                  <MyButton
                     onClick={(event) => props.action.onClick(event, props.data)}
                     color="primary"
                     variant="contained"
@@ -162,7 +168,7 @@ function ViewAllStaff() {
                     size="small"
                   >
                     View schedule
-                  </Button>
+                  </MyButton>
                 ),
                 Toolbar: (props) => (
                   <Autocomplete
@@ -185,7 +191,7 @@ function ViewAllStaff() {
                 ),
               }}
             />
-          </Grid>
+          </MyGrid>
         </Grid>
       </Fade>
     </div>
