@@ -159,19 +159,37 @@ exports.sendRequest = async function (req, res) {
     if (type == 'Slot Request') {
       const coursename = req.body.course;
      
-      const date = req.body.date ;
+      const date = new Date (req.body.date) ;
       const locationType = req.body.locationType;
       if (!coursename || !date || !locationType) return res.send({ error: 'Please enter all the missing fields' });
       if (locationType !== 'Tutorial Room' && locationType !== 'Lecture Hall' && locationType !== 'Lab') return res.send({ error: 'Please enter a valid location type' });
 
       const course = await Course.findOne({ name: coursename });
       if (!course) return res.send({ error: 'This course is not found' });
-
+      if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });  
       const rec = course.courseCoordinator;
       if (!rec) return res.send({ error: 'This course has no course coordinator yet' });
 
-    
-      if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });
+        var flag = false;
+        const x1 = new Date(Date.now());
+         
+        if (date.getFullYear() == x1.getFullYear()) {
+          if (date.getMonth() == x1.getMonth()) {
+            if (date.getDate() > x1.getDate()) {
+              flag = true; //Ican accept annual leave
+            }
+          }
+          if (date.getMonth() > x1.getMonth()) {
+            flag = true;
+          }
+        }
+        if (date.getFullYear() > x1.getFullYear()) {
+          flag = true;
+        }
+        if (!flag) {
+          return res.send({ error: 'Sorry you cannot submit this request' });
+        }
+       
 
       var foundCourse = await Course.findOne({ name: coursename }).populate();
 
