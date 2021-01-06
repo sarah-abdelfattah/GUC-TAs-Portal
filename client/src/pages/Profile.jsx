@@ -89,12 +89,6 @@ function Profile(props) {
 
   const handleSubmit = async () => {
     try {
-      // const result = await axiosCall("get", "locations/room/all");
-
-      // let name;
-      // if (rooms) name = rooms.find(({ _id }) => _id === roomChosen).location;
-      // console.log(roomChosen);
-
       const body = {
         gucId: gucId,
         name: name,
@@ -103,10 +97,7 @@ function Profile(props) {
       };
 
       const res = await axiosCall("put", "staffMembers/profile", body);
-      console.log(
-        "🚀 ~ file: Profile.jsx ~ line 113 ~ handleSubmit ~ res",
-        res
-      );
+
       if (res.data.data) {
         addToast("Profile updated successfully", {
           appearance: "success",

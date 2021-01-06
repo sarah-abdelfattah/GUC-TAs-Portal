@@ -41,7 +41,7 @@ const updateSchema = Joi.object({
     .regex(/^(HR|AC)-\d{1,}/)
     .required(),
   name: Joi.string(),
-  role: Joi.string().valid('Teaching Assistant', 'Course Instructor'),
+  role: Joi.string().valid('Teaching Assistant', 'Course Instructor', ''),
   faculty: Joi.string(),
   department: Joi.string(),
   officeLocation: Joi.string().regex(/[ABCDGMN][1-7].[0-4][0-9][1-9] || ^H[1-9]{1,}/),

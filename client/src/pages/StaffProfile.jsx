@@ -108,23 +108,34 @@ function StaffProfile(props) {
     try {
       let locName;
       if (rooms) locName = rooms.find(({ _id }) => _id === roomChosen);
+      console.log(
+        "🚀 ~ file: StaffProfile.jsx ~ line 111 ~ handleSubmit ~ locName",
+        locName.location
+      );
 
       let facName;
-      if (faculties)
-        facName = faculties.find(({ code }) => code === facultyChosen);
-
       let depName;
-      if (deps) depName = deps.find(({ _id }) => _id === departmentChosen);
+      let body;
+      if (position === "Academic Member") {
+        console.log(
+          "🚀 ~ file: StaffProfile.jsx ~ line 120 ~ handleSubmit ~ position",
+          position
+        );
 
-      const body = {
+        if (faculties)
+          facName = faculties.find(({ code }) => code === facultyChosen).code;
+        if (deps)
+          depName = deps.find(({ _id }) => _id === departmentChosen).name;
+      }
+      body = {
         gucId,
         name,
         gender,
         role,
         salary,
         officeLocation: locName.location,
-        faculty: facName.code,
-        department: depName.name,
+        faculty: facName,
+        department: depName,
       };
 
       const res = await axiosCall("put", "staffMembers/staff", body);
@@ -135,9 +146,9 @@ function StaffProfile(props) {
           autoDismiss: true,
         });
         setBtn("Update Profile");
-        setLocation(locName.name);
-        setFaculty(facName.code);
-        setDepartment(depName.name);
+        setLocation(locName.location);
+        setFaculty(facName);
+        setDepartment(depName);
         setUpdate(false);
       }
       if (res.data.error) {
@@ -242,7 +253,7 @@ function StaffProfile(props) {
                 onChange={(event) => {
                   setRoomChosen(event.target.value);
                 }}
-                disabled={!update}
+                disabled={update ? false : true}
               >
                 {update &&
                   rooms.length > 0 &&
