@@ -56,7 +56,7 @@ function Homepage() {
       const daysRes = await axiosCall("get", "attendance/viewMissingDays");
       if (daysRes.data) setDays(daysRes.data);
 
-      //get days
+      //get hours
       const hoursRes = await axiosCall("get", "attendance/viewHours");
       if (hoursRes.data) setHours(hoursRes.data);
     }
@@ -163,13 +163,18 @@ function Homepage() {
           <div className="hompage-btns">
             <button
               className="attendanceRecord-btn"
-              onClick={() => (document.location.href = "/myAttendanceRecord")}
+              onClick={() =>
+                (document.location.href =
+                  window.location.origin + "/myAttendanceRecord")
+              }
             >
               View Attendance Record
             </button>
             <button
               className="attendanceRecord-btn"
-              onClick={() => (document.location.href = "/profile")}
+              onClick={() =>
+                (document.location.href = window.location.origin + "/profile")
+              }
             >
               View Profile
             </button>

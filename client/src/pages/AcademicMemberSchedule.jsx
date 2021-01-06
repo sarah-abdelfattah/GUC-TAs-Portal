@@ -77,7 +77,7 @@ function InstructorSlotsAssigned() {
       const loggedInUser = localStorage.getItem("user");
       console.log(loggedInUser);
       if (!loggedInUser) {
-        document.location.href = "/login";
+        document.location.href = window.location.origin + "/login";
       } else {
         try {
           const response = await axios.get(
@@ -129,7 +129,7 @@ function InstructorSlotsAssigned() {
           }
         } catch (e) {
           console.log("~ err", e);
-          // document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
     }

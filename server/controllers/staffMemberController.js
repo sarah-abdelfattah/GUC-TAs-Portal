@@ -14,24 +14,24 @@ const Notification = require('../models/Notification')
 const validation = require('../helpers/validation');
 
 const errorMsgs = {
-  notFound: (name, id) => {
-    return `There is no ${name} with this ${id}`;
-  },
-  notAssignedTo: (assignmentName, assignee) => {
-    return `There are no ${assignmentName} assigned to this ${assignee}`;
-  },
-  notAssigned: (assignmentName, extraInfo) => {
-    return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
-  },
-  notAuthorized: (action) => {
-    return `You are not authorized to ${action}`;
-  },
-  allAssigned: (assignmentName) => {
-    return `All the ${assignmentName} are already assigned`;
-  },
-  alreadyAssigned: (assignmentName) => {
-    return `The ${assignmentName} is already assigned`;
-  },
+    notFound: (name, id) => {
+        return `There is no ${name} with this ${id}`;
+    },
+    notAssignedTo: (assignmentName, assignee) => {
+        return `There are no ${assignmentName} assigned to this ${assignee}`;
+    },
+    notAssigned: (assignmentName, extraInfo) => {
+        return `The ${assignmentName} is not assigned. ${extraInfo ? extraInfo : ''}`;
+    },
+    notAuthorized: (action) => {
+        return `You are not authorized to ${action}`;
+    },
+    allAssigned: (assignmentName) => {
+        return `All the ${assignmentName} are already assigned`;
+    },
+    alreadyAssigned: (assignmentName) => {
+        return `The ${assignmentName} is already assigned`;
+    },
 };
 
 async function locationHelper(officeLocation) {
@@ -175,10 +175,19 @@ exports.getAcademicMembers = async function (req, res) {
 
 exports.registerStaff = async function (req, res) {
     try {
-        let JOI_Result = await validation.registerSchema.validateAsync(req.body)
-
-        if (req.body.type === 'Academic Member')
+        if (req.body.type === 'HR') {
+            req.body.role = undefined
+            req.body.faculty = undefined
+            req.body.department = undefined
+            req.body.courses = undefined
+            let JOI_Result = await validation.registerSchema.validateAsync(req.body)
+        } else if (req.body.type === 'Academic Member')
             JOI_Result = await validation.registerACSchema.validateAsync(req.body)
+        else {
+            return res.send({
+                error: 'Sorry, position of the staff is required',
+            });
+        }
 
         let {
             name,
@@ -194,79 +203,44 @@ exports.registerStaff = async function (req, res) {
         }
             = req.body;
 
-        faculty = faculty.toUpperCase();
 
         //check email is found and if he was deleted
         const foundMail = await StaffMember.findOne({ email: email });
         if (foundMail) {
-            if (foundMail.is_deleted) {
-                foundMail.is_deleted = false;
-                foundMail.name = name;
-                foundMail.gender = gender;
-                foundMail.dayOff = dayOff;
-                foundMail.salary = salary;
-                foundMail.type = type;
-                foundMail.courses = [];
-                foundMail.attendanceRecord = [];
-                foundMail.password = await bcrypt.hash('123456', 12);
-
-                const locResult = await locationHelper(officeLocation);
-
-                if (locResult.error) return res.send(locResult);
-                else foundMail.officeLocation = locResult;
-
-                if (type === 'Academic Member') {
-                    foundMail.role = role;
-
-                    const facultyResult = await facultyHelper(faculty);
-
-                    if (facultyResult.error) return res.send(facultyResult);
-                    else foundMail.faculty = facultyResult;
-
-                    const departmentResult = await departmentHelper(faculty, department);
-
-                    if (departmentResult.error) return res.send(departmentResult);
-                    else foundMail.department = departmentResult;
-                }
-                else {
-                    foundMail.dayOff = 'Saturday';
-                    foundMail.role = undefined;
-                    foundMail.faculty = undefined;
-                    foundMail.department = undefined;
-                }
-
-                const newStaffMember = await foundMail.save();
-                return res.send({ data: newStaffMember });
-            } else
-                return res.send({
-                    error: 'Email is already registered to another staff',
-                });
+            return res.send({
+                error: 'Email is already registered to another staff',
+            });
         }
+
+        const locResult = await locationHelper(req.body.officeLocation);
+        if (locResult.error) return res.send(locResult);
+        else officeLocation = locResult;
 
         if (type === 'Academic Member') {
-            req.body.role = role;
+            if (!role)
+                return res.send({
+                    error: 'Sorry role must be one of [Course Instructor,Teaching Assistant]'
+                });
 
+            // faculty
+            // const refFaculty = await Faculty.findOne({ _id: faculty }).populate('faculty')
+            // if (!refFaculty) return { error: 'Sorry Faculty not found' };
+            faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
-
             if (facultyResult.error) return res.send(facultyResult);
-            else req.body.faculty = facultyResult;
+            else faculty = facultyResult;
 
-
-            const departmentResult = await departmentHelper(faculty, department);
-
+            //department
+            const departmentResult = await departmentHelper(faculty.code, department);
             if (departmentResult.error) return res.send(departmentResult);
-            else req.body.department = departmentResult;
+            else department = departmentResult
         }
         else {
-            req.body.dayOff = 'Saturday';
-            req.body.role = undefined;
-            req.body.faculty = undefined;
-            req.body.department = undefined;
+            dayOff = 'Saturday';
+            role = undefined;
+            faculty = undefined;
+            department = undefined;
         }
-
-        const locResult = await locationHelper(officeLocation);
-        if (locResult.error) return res.send(locResult);
-        else req.body.officeLocation = locResult;
 
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
@@ -278,14 +252,31 @@ exports.registerStaff = async function (req, res) {
         }
 
         const temp = idRole + '-' + num;
-        req.body.gucId = temp;
+        const gucId = temp;
 
-        req.body.attendanceRecord = [];
-        req.body.courses = [];
-        req.body.password = await bcrypt.hash('123456', 12);;
+        const attendanceRecord = [];
+        const courses = [];
+        const password = await bcrypt.hash('123456', 12);;
+        console.log("🚀 ~ file: staffMemberController.js ~ line 278 ~ password", password);
 
-
-        const newStaffMember = await StaffMember.create(req.body);
+        // req.body.registeredDate = new Date()
+        const newStaffMember = await StaffMember.create({
+            gucId,
+            name,
+            gender,
+            email,
+            salary,
+            officeLocation,
+            type,
+            role,
+            dayOff,
+            faculty,
+            department,
+            attendanceRecord,
+            courses,
+            password
+        });
+        console.log("🚀 ~ file: staffMemberController.js ~ line 297 ~ newStaffMember", newStaffMember);
         return res.send({ data: newStaffMember });
     } catch (err) {
         if (err.isJoi) {
@@ -305,7 +296,7 @@ exports.updateStaff = async function (req, res) {
         const leaveBalance = req.body.leaveBalance;
         let faculty = req.body.faculty;
         const department = req.body.department;
-
+        const salary = req.body.salary;
 
         if (!req.body.gucId) return res.send({ error: 'Please enter the GUC-ID ' });
         const newStaff = await StaffMember.findOne({ gucId: req.body.gucId });
@@ -315,6 +306,7 @@ exports.updateStaff = async function (req, res) {
         if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
         if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
+            console.log(req.body.department)
             faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
             if (facultyResult.error) return res.send(facultyResult);
@@ -331,10 +323,16 @@ exports.updateStaff = async function (req, res) {
             return res.send({ error: 'Sorry Please the new department is required' });
 
         if (req.body.officeLocation) {
-            const locResult = await locationHelper(req.body.officeLocation);
-            if (locResult.error) return res.send(locResult);
-            else newStaff.officeLocation = locResult;
+            const refLocation = await Location.findOne({ location: req.body.officeLocation }).populate('officeLocation');
+            if (!refLocation) return { error: 'Sorry room not found' };
+            if (req.body.officeLocation !== refLocation.location) {
+                const locResult = await locationHelper(req.body.officeLocation);
+                if (locResult.error) return res.send(locResult);
+                else newStaff.officeLocation = locResult;
+            }
         }
+
+        if (req.body.salary) newStaff.salary = req.body.salary
 
         await newStaff.save();
 
@@ -491,14 +489,17 @@ exports.signIn = async function (req, res) {
 
             let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            let time = currentTime.getHours() +
-                ':' +
-                currentTime.getMinutes() +
-                ':' +
-                currentTime.getSeconds();
+            let hours = currentTime.getHours() > 9 ? currentTime.getHours() : "0" + currentTime.getHours();
+            let minutes = currentTime.getMinutes() > 9 ? currentTime.getMinutes() : "0" + currentTime.getMinutes();
+            let seconds = currentTime.getSeconds() > 9 ? currentTime.getSeconds() : "0" + currentTime.getSeconds();
+
+            let time = hours + ":" + minutes + ":" + seconds;
+
+            let month = (currentTime.getMonth() + 1) > 9 ? (currentTime.getMonth() + 1) : "0" + (currentTime.getMonth() + 1)
+            let day = currentTime.getDate() > 9 ? currentTime.getDate() : "0" + currentTime.getDate();
 
             if (currentTime.getHours() < 7)
-                time = '7:00:00'
+                time = '07:00:00'
             if (currentTime.getHours() > 19)
                 time = '19:00:00'
 
@@ -507,9 +508,9 @@ exports.signIn = async function (req, res) {
                 date:
                     currentTime.getFullYear() +
                     '-' +
-                    (currentTime.getMonth() + 1) +
+                    month +
                     '-' +
-                    currentTime.getDate(),
+                    day,
                 startTime: time,
                 status: 'Present',
             };
@@ -549,9 +550,22 @@ exports.signOut = async function (req, res) {
         else {
             const today = new Date();
 
-            const currentDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-            let currentTime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let hours = today.getHours() > 9 ? today.getHours() : "0" + today.getHours();
+            let minutes = today.getMinutes() > 9 ? today.getMinutes() : "0" + v.getMinutes();
+            let seconds = today.getSeconds() > 9 ? today.getSeconds() : "0" + today.getSeconds();
 
+            let time = hours + ":" + minutes + ":" + seconds;
+
+
+            let month = (today.getMonth() + 1) > 9 ? (today.getMonth() + 1) : "0" + (today.getMonth() + 1)
+            let day = today.getDate() > 9 ? today.getDate() : "0" + today.getDate();
+
+
+            const currentDate = today.getFullYear() + '-' + month + '-' + day;
+            let currentTime = hours + ":" + minutes + ":" + seconds;
+
+            if (today.getHours() < 7)
+                time = '07:00:00'
             if (today.getHours() > 19)
                 currentTime = '19:00:00'
 
@@ -718,43 +732,43 @@ exports.updateSalary = async function (req, res) {
 }
 
 exports.getSalary = async function (req, res) {
-  try {
-    const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
+    try {
+        const targetAc = await StaffMember.findOne({ gucId: req.params.gucId });
 
-    // Case: ac not found
-    if (!targetAc)
-      return res.status(404).send({
-        error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
-      });
+        // Case: ac not found
+        if (!targetAc)
+            return res.status(404).send({
+                error: errorMsgs.notFound('academic member', `id ${req.params.gucId}`),
+            });
 
-    allStaff = await StaffMember.find();
-    if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
-    const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
+        allStaff = await StaffMember.find();
+        if (!allStaff) return res.send({ error: 'There no staff in the system yet' });
+        const allMissing = await require('./attendanceController').getStaffMissingHoursDays(allStaff);
 
-    const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
+        const acIndex = allMissing.findIndex((staff) => staff.GUCID === targetAc.gucId);
 
-    // Case: AC is not on the returned array (does not have any missings)
-    if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
+        // Case: AC is not on the returned array (does not have any missings)
+        if (acIndex === -1) return res.status(200).send({ salary: targetAc.salary });
 
-    //Case: AC Exist => Get the salary
-    // MissingDays ==> Salary -= (Salary / 60 ) * days
-    // MissingHours ==> Salary -= (Salary / 180 ) * hours
-    // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
-    const missingDays = allMissing[acIndex].MissingDays;
-    const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
-    const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
-    const originalSalary = targetAc.salary;
-    const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
+        //Case: AC Exist => Get the salary
+        // MissingDays ==> Salary -= (Salary / 60 ) * days
+        // MissingHours ==> Salary -= (Salary / 180 ) * hours
+        // MissingMinutes ==> Salary -= (Salary / 10800 ) * minutes
+        const missingDays = allMissing[acIndex].MissingDays;
+        const missingHours = allMissing[acIndex].MissingHours.split(' ')[0] > 2 ? allMissing[acIndex].MissingHours.split(' ')[0] : 0;
+        const missingMinutes = missingHours > 2 ? allMissing[acIndex].MissingHours.split(' ')[2] : 0;
+        const originalSalary = targetAc.salary;
+        const newSalary = originalSalary - (originalSalary / 60) * missingDays - (originalSalary / 180) * missingHours - (originalSalary / 10800) * missingMinutes;
 
-    return res.status(200).send({ salary: newSalary });
-  } catch (err) {
-    if (err.isJoi) {
-      console.log(' JOI validation error: ', err);
-      return res.send({ JOI_validation_error: err.details[0].message });
+        return res.status(200).send({ salary: newSalary });
+    } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ JOI_validation_error: err.details[0].message });
+        }
+        console.log('~ err', err);
+        res.status(500).send({ err: `Internal Server Error: ${err}` });
     }
-    console.log('~ err', err);
-    res.status(500).send({ err: `Internal Server Error: ${err}` });
-  }
 };
 
 //Function 39: View their schedule. Schedule should show teaching activities and replacements if present. 

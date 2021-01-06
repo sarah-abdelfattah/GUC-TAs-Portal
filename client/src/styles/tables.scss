@@ -1,5 +1,5 @@
 @import "./colorSchema";
-.my-table{
+.my-table {
     .MuiGrid-spacing-xs-1>.MuiGrid-item {
         padding: 0px !important;
         margin: 0 auto !important;
@@ -23,5 +23,79 @@
 
     .MuiTableCell-alignLeft {
         text-align: center !important;
+    }
+
+
+    button[title="Delete Staff"] {
+        .MuiIconButton-label {
+            color: $primary-red !important;
+        }
+    }
+
+    .select-table-container {
+        .table-select {
+            margin: 20px 0 0 20px;
+        }
+
+        .month {
+            width: 145px;
+
+            .MuiSelect-select.MuiSelect-select {
+                width: 145px;
+                padding: 5px;
+            }
+        }
+
+        .year {
+            width: 80px;
+
+            .MuiSelect-select.MuiSelect-select {
+                width: 80px;
+                padding: 5px;
+            }
+        }
+
+        .filter-icon {
+            margin: 0 0 0 15px;
+            width: 20px;
+            height: 20px;
+            color: gray;
+
+            &:hover {
+                transform: scale(1.1);
+                color: black;
+            }
+        }
+    }
+
+    .add-new-staff {
+        width: 210px;
+        margin: 20px 0 0 20px;
+        border-radius: 10px;
+
+        .icon {
+            display: inline;
+            vertical-align: middle;
+            width: 25px;
+            height: 25px;
+            margin-right: 10px;
+        }
+
+        .text {
+            display: inline;
+            vertical-align: middle;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            text-align: end;
+        }
+
+        &:hover {
+            background: $secondary-green;
+        }
+    }
+
+    .MuiFormHelperText-root.Mui-error {
+        display: none !important;
     }
 }
