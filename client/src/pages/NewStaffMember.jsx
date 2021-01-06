@@ -11,7 +11,7 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { setgid } from "process";
+// import { setgid } from "process";
 
 function NewStaffMember(props) {
   const [disable, setDisable] = useState(false);
@@ -27,8 +27,6 @@ function NewStaffMember(props) {
     role: "",
     officeLocation: "",
   });
-
-  const [updated, setUpdated] = useState(false);
 
   const [rooms, setRooms] = useState({ rooms: [] });
   const [faculties, setFaculties] = useState([]);

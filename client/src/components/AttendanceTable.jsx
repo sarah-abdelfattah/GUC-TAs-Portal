@@ -3,14 +3,12 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
 import Fade from "react-reveal/Fade";
-import checkLogin from "../helpers/checkLogin";
 import { IoFilter, IoCloseSharp } from "react-icons/io5";
 import { Select, MenuItem } from "@material-ui/core";
 import MaterialTable, { MTableToolbar } from "material-table";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
   KeyboardDatePicker,
   TimePicker,
 } from "@material-ui/pickers";
@@ -22,7 +20,6 @@ function AttendanceTable(props) {
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
-  const [time, setTime] = useState(new Date("2014-08-18T21:11:54"));
 
   const { addToast } = useToasts();
 
