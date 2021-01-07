@@ -32,9 +32,9 @@ function ViewAllStaff() {
           );
           const courses = await axiosCall("get", `${link}/departments/courses`);
 
-          if (response.data.data.error) {
-            addToast(response.data.data.error, {
-              appearance: "warning",
+          if (response.data.error) {
+            addToast(response.data.error, {
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -65,7 +65,7 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = window.location.origin + "/unauthorized";
+          // document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();

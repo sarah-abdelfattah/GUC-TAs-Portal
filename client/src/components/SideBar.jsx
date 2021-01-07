@@ -25,17 +25,22 @@ function SideBar() {
   useEffect(() => {
     async function fetchData() {
       const res = await checkLogin();
-      setUser(res.type);
 
       const depResult = await axiosCall(
         "get",
         "departments/department/all/all"
       );
 
+      if (res.role === "Course Instructor") setUser("Course Instructor");
+      else if (res.role === "Teaching Assistant") setUser("Teaching Assistant");
+      else setUser("HR");
+
       if (depResult.data.data) {
         let HOD = await depResult.data.data.find(({ HOD }) => HOD === res.id);
 
-        if (HOD) setUser("HOD");
+        if (HOD) {
+          setUser("HOD");
+        }
       }
     }
     fetchData();
@@ -60,12 +65,13 @@ function SideBar() {
           <HRMenuItems />
         ) : (
           <MenuItem
+            className="last-menuItem"
             icon={<RiFolderWarningFill />}
             onMouseEnter={() => setRequest(true)}
             onMouseLeave={() => setRequest(false)}
             onClick={() => routeChange("request")}
           >
-            {showRequest ? "Requests" : ""}
+            {showRequest ? "My Requests" : ""}
           </MenuItem>
         )}
       </Menu>

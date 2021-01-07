@@ -8,7 +8,7 @@ const staffMemberController = require('../controllers/staffMemberController');
 router.post("/staff", auth.HRAuth, staffMemberController.registerStaff);
 router.put("/staff", auth.HRAuth, staffMemberController.updateStaff);
 router.delete("/staff", auth.HRAuth, staffMemberController.deleteStaff);
-router.get('/salary/:gucId', auth.HRAuth, staffMemberController.getSalary);
+router.get('/salary/:gucId', staffMemberController.getSalary);
 router.put('/updateSalary', auth.HRAuth, staffMemberController.updateSalary);
 
 //academic member
