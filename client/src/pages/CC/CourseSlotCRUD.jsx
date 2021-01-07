@@ -178,7 +178,7 @@ function CourseSlotCRUD() {
             }
         }catch(e){
             console.log('~ err', e);
-            document.location.href = '/unauthorized';
+            document.location.href = window.location.origin + "/unauthorized";
         }
     }
     const handleButtonEnable = () =>{
@@ -201,7 +201,7 @@ function CourseSlotCRUD() {
             }
         }catch(e){
             console.log('~ err', e);
-            document.location.href = '/unauthorized';
+            document.location.href = window.location.origin + "/unauthorized";
         }
     },[])
 

@@ -1,44 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import { link } from '../helpers/constants';
 
 import Button from '@material-ui/core/Button';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {
+    FormControl,
+    InputLabel,
+    Select,
+    FormHelperText,
+    MenuItem,
+    Input,
+  } from "@material-ui/core";
 
 import { useToasts } from 'react-toast-notifications'
+import {axiosCall} from "../helpers/axiosCall";
 
 
 import {axios} from '../helpers/axios';
 import "../styles/_colorSchema.scss";
 
+import Add from "../components/Add";
+import Update from "../components/Update";
+import Delete from "../components/Delete";
+
 function AcademicMemberCourseSlot() {
     const [courses,setCourses] = useState([]);
     const [course,setCourse] = useState("");
+    const [crudBtns, setBtns] = useState({
+        add: false,
+        update: false,
+        delete: false,
+      });
+    const [day,setDay] = useState("");
+    const [id,setID] = useState("");
+    const [timing,setTiming] = useState("");
+    const weekDays = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday"];
+    const slotTiming = ['1st slot (08:15 - 09:45)',
+    '2nd slot (10:00 - 11:30)',
+    '3rd slot (11:45 - 13:15)',
+    '4th slot (13:45 - 15:15)',
+    '5th slot (15:45 - 17:15)'];
+
+    
     const {addToast} = useToasts();
 
-    // const handleSelectChange = (e)=>{
-    //     setCourse(e.target.value);
-    // }
-    const useStyles = makeStyles((theme) => ({
-        // formControl: {
-        //   margin: theme.spacing(1),
-        //   minWidth: 120,
-        // },
-        // selectEmpty: {
-        //   marginTop: theme.spacing(2),
-        // },
-        button: {
-            // margin: theme.spacing(3),
-            backgroundColor: "#0087a2",
-            color: "white",
-            left: "400px",
-            bottom:"25px"
-        },
-    }));
-    const classes = useStyles();
+    const handleOnChange = (target) => {
+        setCourse(target.value);
+    };
 
     useEffect(async()=>{
         const loggedInUser = localStorage.getItem("user");
@@ -63,40 +70,191 @@ function AcademicMemberCourseSlot() {
         }
     },[]);
 
+    const handleSubmit = async()=>{
+        try{
+            let response = null;
+            let optionSelected = "";
+            if(crudBtns.add){
+                optionSelected = "post";
+            }else if(crudBtns.update){
+                optionSelected = "put";
+            }else if(crudBtns.delete){
+                optionSelected = "delete";
+            }else {
+                addToast("You should specify an option", {appearance: 'warning',autoDismiss: true});
+                return;
+            }
+            let slot = timing.substring(0,3);
+            let convertedTiming = "";
+            switch(slot){
+                case"1st":convertedTiming = "08:45 AM";break;
+                case"2nd":convertedTiming = "10:00 AM";break;
+                case"3rd":convertedTiming = "11:45 AM";break;
+                case"4th":convertedTiming = "01:45 PM";break;
+                case"5th":convertedTiming = "03:45 PM";break;
+            }
+            response = await axiosCall(optionSelected,`${link}/academicMember/courseInstructor/slotsAssignment`,
+            {
+                gucId: id,
+                courseName: course,
+                slot: {
+                  day: day,
+                  time: convertedTiming
+                }
+            });
+
+            if(response.data.error){
+                addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
+            }else{
+                // console.log(response.data.data);
+                if(optionSelected === "post")
+                    addToast("The slot assignment is added successfully", {appearance: 'success',autoDismiss: true});
+                else if(optionSelected === "put"){
+                    addToast("The slot assignment is updated successfully", {appearance: 'success',autoDismiss: true});
+                }else{
+                    addToast("The slot assignment is deleted successfully", {appearance: 'success',autoDismiss: true});
+                }
+            }
+        }catch(e){
+            console.log('~ err', e);
+            document.location.href = window.location.origin + "/unauthorized";
+        }
+    }
 
     return (
-        <div>
-            <div className = "course-slots-container">
-                {/* <FormControl required className={classes.formControl}>
-                    <InputLabel id="demo-simple-select-required-label">Course</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-required-label"
-                            id="demo-simple-select-required"
-                            value={course}
-                            onChange={handleSelectChange}
-                            className={classes.selectEmpty}
+        <div className="crud-outer-container">
+        <div className="crud-container">
+          <Add
+            text="Slot Assignment"
+            onClick={() =>
+              setBtns({
+                add: true,
+                update: false,
+                delete: false,
+              })
+            }
+          />
+          <Update
+            text="Slot Assignment"
+            onClick={() =>
+              setBtns({
+                add: false,
+                update: true,
+                delete: false,
+              })
+            }
+          />
+          <Delete
+            text="Slot Assignment"
+            onClick={() =>
+              setBtns({
+                add: false,
+                update: false,
+                delete: true,
+              })
+            }
+          />
+        </div>
+        {(!crudBtns.add && !crudBtns.update && !crudBtns.delete)?null:
+            <div className="crud-inner-container">
+                <div className="crud-form">
+                    <FormControl className="crud-formControl" required>
+                    <InputLabel className="crud-inputLabel">Course Name</InputLabel>
+                    <Select
+                        className="crud-select"
+                        value={course}
+                        onChange={(event) => {
+                        handleOnChange(event.target);
+                        }}
+                    >
+                        {courses.length > 0 &&
+                        courses.map((coursename) => (
+                            <MenuItem
+                            className="crud-menuItem"
+                            value={coursename}
+                            key={coursename}
                             >
-                            <MenuItem value="">
-                                <em>None</em>
+                            {coursename}
                             </MenuItem>
-                            {courses.map((coursename)=>{
-                                console.log(coursename);
-                                <MenuItem value={coursename}>{coursename}</MenuItem>
-                                })
-                            }
-                        </Select>
-                    <FormHelperText>Required</FormHelperText>
-                </FormControl> */}
-                <Autocomplete
-                    id="courses-dropdown"
-                    options={courses}
-                    getOptionLabel={(coursename) => coursename}
-                    onChange = {handleOnChange(e)}
-                    style={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Course" variant="outlined" />}
-                    className= "courses-dropdown"
-                />
-            </div>
+                        ))}
+                    </Select>
+                    <FormHelperText className="crud-helperText">
+                        This field is required
+                    </FormHelperText>
+                    </FormControl>
+
+                    <FormControl className="crud-formControl" required>
+                    <InputLabel className="crud-inputLabel">Slot Day</InputLabel>
+                    <Select
+                        className="crud-select"
+                        value={day}
+                        onChange={(event) => {
+                        setDay(event.target.value);
+                        }}
+                    >
+                        {weekDays.map((weekDay) => (
+                            <MenuItem
+                            className="crud-menuItem"
+                            value={weekDay}
+                            key={weekDay}
+                            >
+                            {weekDay}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText className="crud-helperText">
+                        This field is required
+                    </FormHelperText>
+                    </FormControl>
+
+                    <FormControl className="crud-formControl" required>
+                    <InputLabel className="crud-inputLabel">Slot Timing</InputLabel>
+                    <Select
+                        className="crud-select"
+                        value={timing}
+                        onChange={(event) => {
+                        setTiming(event.target.value);
+                        }}
+                    >
+                        {slotTiming.map((slotTime) => (
+                            <MenuItem
+                            className="crud-menuItem"
+                            value={slotTime}
+                            key={slotTime}
+                            >
+                            {slotTime}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText className="crud-helperText">
+                        This field is required
+                    </FormHelperText>
+                    </FormControl>
+
+                    <FormControl className="crud-formControl" required>
+                    <InputLabel className="crud-inputLabel">Member GUC ID</InputLabel>
+                    <Input
+                        className="crud-input"
+                        value={id}
+                        onChange={(event) => setID(event.target.value)}
+                    />
+                    <FormHelperText className="crud-helperText">
+                        This field is required
+                    </FormHelperText>
+                    </FormControl>
+                </div>
+
+                <Button
+                    variant={crudBtns.add?"success":crudBtns.update?"primary":"danger"}
+                    className= {crudBtns.add?"crud-submit crud-add-btn green":
+                                crudBtns.update?"crud-submit crud-update-btn blue":
+                                "crud-submit crud-delete-btn red"}
+                    disabled={id === "" || timing === "" || day === "" || course === ""? true : false}
+                    onClick={handleSubmit}
+                >
+                    {crudBtns.add? "Assign":crudBtns.update? "Update":"Delete"}
+                </Button>
+                </div>}
         </div>
     );
 }
