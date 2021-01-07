@@ -40,10 +40,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(4),
   },
   margin: {
     margin: theme.spacing(4),
+  },
+  text: {
+    margin: theme.spacing(1),
+    fontSize: 18
   },
 }));
 
@@ -122,10 +126,10 @@ function Request(props) {
             subheader={date}
           />
           <CardContent>
-            <Typography color="textPrimary" component="h5" variant="p">
+            <Typography className={classes.text} color="textPrimary" component="h5" variant="p">
               Sender: {request.sender}
             </Typography>
-            <Typography color="textPrimary" component="h6" variant="h6">
+            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
               Sender ID: {request.senderId}
             </Typography>
 

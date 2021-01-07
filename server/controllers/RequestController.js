@@ -1148,6 +1148,8 @@ exports.viewRequest = async (req, res) => {
         type: request.type,
         subject: request.subject,
         comment: request.comment,
+        document: request.document,
+        reason: request.reason,
       }
     });
   } catch (err) {
