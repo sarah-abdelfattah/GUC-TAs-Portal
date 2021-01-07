@@ -87,7 +87,7 @@ function AcademicMemberCourseSlot() {
             let slot = timing.substring(0,3);
             let convertedTiming = "";
             switch(slot){
-                case"1st":convertedTiming = "08:45 AM";break;
+                case"1st":convertedTiming = "08:15 AM";break;
                 case"2nd":convertedTiming = "10:00 AM";break;
                 case"3rd":convertedTiming = "11:45 AM";break;
                 case"4th":convertedTiming = "01:45 PM";break;
