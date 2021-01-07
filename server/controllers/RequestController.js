@@ -624,9 +624,10 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
 
     var NewRequest = await Request.findOne({ _id: Requestid }).populate();
+    console.log(NewRequest);
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
@@ -652,13 +653,20 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
 
       return res.send({ data: NewRequest });
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      console.log("here")
+      console.log(sender);
+
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
       });
+      console.log(newNotificatin);
       await newNotificatin.save();
       // updates
       NewRequest.status = 'rejected';
+      NewRequest.comment = req.body.comment;
       await NewRequest.save();
       return res.send({ data: NewRequest });
     }
@@ -731,7 +739,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
@@ -844,6 +852,10 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       await sender.save();
       await NewRequest.save();
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      console.log("here");
+      console.log(sender)
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',

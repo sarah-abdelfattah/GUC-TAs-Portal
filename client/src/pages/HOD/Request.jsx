@@ -57,6 +57,8 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
+  const [accept_or_reject_request, setAccept_or_reject_request] = useState([]);
+  const [comment, setComment] = useState([]);
   const { addToast } = useToasts();
   const classes = useStyles();
 
@@ -99,7 +101,7 @@ function Request(props) {
               let title = response.data.data.requestData.subject;
               setTitle(title);
             } else {
-              let title = response.data.data.requestData.subject.slice(0, 26);
+              let title = response.data.data.requestData.subject;
               setTitle(title);
             }
           }
@@ -112,9 +114,63 @@ function Request(props) {
     }
   }, []);
 
-  const handleAccept = async function () {};
+  const handleAccept = async function () {
+    setAccept_or_reject_request(true);
+    const rejectBody = {accept_or_reject_request, comment}
+    if(request.type === "Change DayOff"){
+      try{
+        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,rejectBody)
+        console.log(response);
 
-  const handleReject = async function () {};
+      } catch(err) {
+        console.error("~err", err);
+        addToast("Failed to accept request", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      }
+    } else {
+
+    }
+  };
+
+  // in case of rejection and optionally leave a comment
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAccept_or_reject_request(false);
+    const rejectBody = {accept_or_reject_request, comment}
+    if(request.type === "Change DayOff"){
+      try{
+        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,rejectBody)
+        console.log(response);
+        addToast("Request rejected successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      } catch(err) {
+        console.error("~err", err);
+        addToast("Failed to reject request", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      }
+    } else {
+      try{
+        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
+        console.log(response);
+        addToast("Request rejected successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      } catch(err) {
+        console.error("~err", err);
+        addToast("Failed to reject request", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      }
+    }
+  };
 
   return (
     <div className="request-card-center">
@@ -149,7 +205,15 @@ function Request(props) {
             component="h6"
             variant="h6"
           >
-            Reason: {request.reason}
+            Reason:
+          </Typography>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="p"
+            variant="h6"
+          >
+            {request.reason}
           </Typography>
           <Typography
             className={classes.text}
@@ -160,7 +224,11 @@ function Request(props) {
             Document: {request.document}
           </Typography>
         </CardContent>
-        <CardActions>
+        <div>
+        {(() => {
+        if (request.status === "pending") {
+          return (
+            <CardActions>
           <AcceptButton
             onClick={handleAccept}
             variant="contained"
@@ -183,18 +251,20 @@ function Request(props) {
           </RejectButton>
           <Popper id={id} open={open} anchorEl={anchorEl}>
             <div className={classes.paper}>
-              <form noValidate autoComplete="off">
+              <form onSubmit={handleSubmit} noValidate autoComplete="off">
                 <TextField
+                  value={comment}
+                  onChange={({ target }) => setComment(target.value)}
                   id="standard-multiline-static"
                   label="Reason for rejection"
                   multiline
                   rows={4}
                 />
                 <Button
+                  type="submit"
                   variant="contained"
                   color="primary"
                   className={classes.button}
-                  onClick={handleReject}
                 >
                   Confirm
                 </Button>
@@ -202,6 +272,12 @@ function Request(props) {
             </div>
           </Popper>
         </CardActions>
+          );
+        } else {
+          return (<div />);
+        }
+        })()}
+        </div>
       </Card>
     </div>
   );
