@@ -10,6 +10,9 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
 
+//Added for the CC
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
