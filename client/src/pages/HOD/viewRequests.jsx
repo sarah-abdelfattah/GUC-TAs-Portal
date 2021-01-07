@@ -9,7 +9,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { dateFormat } from "../../helpers/constants.js";
 import { MyButton } from "../../styles/StyledComponents";
-import Request from "../HOD/Request";
 
 function ViewRequests() {
   const [data, setData] = useState([]); //table data
@@ -58,7 +57,7 @@ function ViewRequests() {
           }
         } catch (err) {
           console.log("~ err", err);
-          //document.location.href = "/unauthorized";
+          document.location.href = "/unauthorized";
         }
       }
       fetchData();

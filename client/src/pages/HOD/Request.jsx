@@ -14,24 +14,22 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import Popper from "@material-ui/core/Popper";
 import TextField from "@material-ui/core/TextField";
-
 import { AcceptButton, RejectButton } from "../../styles/StyledComponents.js";
 import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 345,
+    maxWidth: 500,
     fontSize: 20,
     borderRadius: 10,
-  },
-  media: {
-    height: 0,
-    paddingTop: "56.25%", // 16:9
+    padding: "2%",
   },
   modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
+    padding: "5%",
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -40,10 +38,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
   button: {
-    margin: theme.spacing(4),
+    margin: "auto"
   },
   margin: {
-    margin: theme.spacing(4),
+   margin: "auto"
   },
   text: {
     margin: theme.spacing(1),
@@ -107,7 +105,7 @@ function Request(props) {
           }
         } catch (err) {
           console.log("~ err", err);
-          //document.location.href = "/unauthorized";
+          document.location.href = "/unauthorized";
         }
       }
       fetchData();
@@ -130,7 +128,17 @@ function Request(props) {
         });
       }
     } else {
+      try{
+        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
+        console.log(response);
 
+      } catch(err) {
+        console.error("~err", err);
+        addToast("Failed to accept request", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      }
     }
   };
 
@@ -173,7 +181,7 @@ function Request(props) {
   };
 
   return (
-    <div className="request-card-center">
+    <div className={classes.modal}>
       <Card className={classes.root}>
         <CardHeader
           avatar={
