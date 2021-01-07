@@ -47,7 +47,7 @@ function CourseSlotCRUD() {
     const useStyles = makeStyles((theme)=>({
         mainGridContainer:{
             marginTop:"150px",
-            marginLeft:"50px"
+            // marginLeft:"20px"
         },
         gridContainer:{
             backgroundColor: "white",
@@ -57,8 +57,11 @@ function CourseSlotCRUD() {
             // width:
         },
         courseSlotsDiv: {
-            width:"80%",
-            height:"80%"
+            width:"60%",
+            height:"80%",
+            marginLeft: "auto",
+            marginRight: "auto",
+            display: "block"
         },
         button:{
             backgroundColor: (optionSelected === "add")?"#058c42":(optionSelected === "update")? "#045CC8":" #C81927",
