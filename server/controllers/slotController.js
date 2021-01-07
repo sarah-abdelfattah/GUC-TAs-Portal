@@ -74,16 +74,19 @@ exports.addCourseSlot = async (req, res) => {
             if (slot.isAssigned) assignedCourseCount += 1
         });
 
-        courseCoverage = teachingCourseSlots.length == 0 ? 0 : Math.round((assignedCourseCount / teachingCourseSlots.length) * 100 * 100) / 100
-            ;
+        courseCoverage = teachingCourseSlots.length == 0 ? 0 : Math.round((assignedCourseCount / teachingCourseSlots.length) * 100 * 100) / 100;
         teachingCourse.slots = teachingCourseSlots;
         teachingCourse.coverage = courseCoverage;
         updatedSlots = await courses.findOneAndUpdate({ name: course }, { slots: teachingCourseSlots, coverage: courseCoverage });
         courseSlotsUpdated = await updatedSlots.save();
         res.send({ data: "The slot is added successfully" });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
-        res.status(500).send({ err: `Internal Server Error: ${err}` });
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
 }
 
@@ -100,7 +103,7 @@ exports.removeCourseSlot = async (req, res) => {
 
         const staff = await staffMember.findOne({ gucId: id });
         if (!staff) {
-            res.send("There is no staff with this ID: " + id);
+            res.send({error:"There is no staff with this ID: " + id});
             return;
         }
         if (staff.type !== 'Academic Member') {
@@ -167,9 +170,13 @@ exports.removeCourseSlot = async (req, res) => {
             courseCoverage = teachingCourseSlots.length == 0 ? 0 : (assignedCourseCount / teachingCourseSlots.length) * 100;
             updatedSlots = await courses.findOneAndUpdate({ name: course }, { slots: teachingCourseSlots, coverage: courseCoverage });
             courseSlotsUpdated = await updatedSlots.save();
-            res.send("The slot is deleted sucessfully");
+            res.send({data:"The slot is deleted sucessfully"});
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
@@ -184,12 +191,12 @@ exports.updateCourseSlot = async (req, res) => {
         const validNewSlot = await validation.validateSlotCC.validateAsync({day:dayNew,time:timeNew,location:locationNew})
 
         if (!course || !dayOld || !timeOld || !locationOld || !dayNew || !timeNew || !locationNew) {
-            res.send({ message: "You should specify all the data" });
+            res.send({ error: "You should specify all the data" });
         }
 
         const staff = await staffMember.findOne({ gucId: id });
         if (!staff) {
-            res.send("There is no staff with this ID: " + id);
+            res.send({error:"There is no staff with this ID: " + id});
             return;
         }
         const teachingCourse = await courses.findOne({ name: course });
@@ -279,10 +286,14 @@ exports.updateCourseSlot = async (req, res) => {
             });
             updatedSlots = await courses.findOneAndUpdate({ name: course }, { slots: teachingCourseSlots });
             courseSlotsUpdated = await updatedSlots.save();
-            res.send("The slot is updated successfully");
+            res.send({data: "The slot is updated successfully"});
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
-        res.status(500).send({ error: `Internal Server Error: ${err}` });
+        res.status(500).send({ errorJ: `Internal Server Error: ${err}` });
     }
 }

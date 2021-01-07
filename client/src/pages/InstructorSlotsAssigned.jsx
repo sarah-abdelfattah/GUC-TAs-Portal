@@ -12,6 +12,8 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 import { axios } from "../helpers/axios";
+import {makeStyles } from "@material-ui/core/styles";
+import Grid from '@material-ui/core/Grid';
 import "../styles/_colorSchema.scss";
 
 function InstructorSlotsAssigned() {
@@ -32,6 +34,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -39,6 +42,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -46,6 +50,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -53,6 +58,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -60,6 +66,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -71,6 +78,7 @@ function InstructorSlotsAssigned() {
     }
     return newArr;
   };
+
 
   useEffect(() => {
     async function fetchData() {
@@ -97,11 +105,13 @@ function InstructorSlotsAssigned() {
             var thurs = [];
             for (var i = 0; i < slotsDisplay.length; i++) {
               for (var j = 0; j < slotsDisplay[i].course_slots.length; j++) {
+                console.log(slotsDisplay[i].course_slots[j].assignedTo)
                 var obj = {
                   coursename: slotsDisplay[i].course_name,
                   day: slotsDisplay[i].course_slots[j].day,
                   time: slotsDisplay[i].course_slots[j].time,
                   location: slotsDisplay[i].course_slots[j].location,
+                  assignedTo: slotsDisplay[i].course_slots[j].assignedTo === "None"?"None": slotsDisplay[i].course_slots[j].assignedTo.name
                 };
                 switch (obj.day) {
                   case "Saturday":
@@ -141,139 +151,169 @@ function InstructorSlotsAssigned() {
       }
     }
     fetchData();
-  }, []);
+  },[]);
+  console.log(sats);
+  const useStyles = makeStyles({
+    table: {
+      minWidth: 600, //250 //400
+      // width: 1200
+    }
+  });
+  const classes = useStyles();
 
   return (
-    <div class="table-page-slots-style">
-      <h7 class="slots-title">Slots</h7>
-      <div class="slots-line"></div>
-      <TableContainer class="table-slots-container" component={Paper}>
-        <Table
-          class="table-slots-style border"
-          aria-label="customized table"
-          size="small"
-        >
-          <TableHead className="dark-blue">
-            <TableRow>
-              <TableCell className="border">Day/Slot</TableCell>
-              <TableCell className="border" align="center">
-                &nbsp;&nbsp;1st Slot <br /> (08:15 - 09:45)
-              </TableCell>
-              <TableCell className="border" align="center">
-                &nbsp;&nbsp;2nd Slot <br /> (10:00 - 11:30)
-              </TableCell>
-              <TableCell className="border" align="center">
-                &nbsp;&nbsp;3rd Slot <br /> (11:45 - 13:15)
-              </TableCell>
-              <TableCell className="border" align="center">
-                &nbsp;&nbsp;4th Slot <br /> (13:45 - 15:15)
-              </TableCell>
-              <TableCell className="border" align="center">
-                &nbsp;&nbsp;5th Slot <br /> (15:45 - 17:15)
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow key="Saturday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Saturday
-              </TableCell>
-              {sats.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
+    <Grid container style = {{marginLeft: "50px",left:"61px"}}>
+    {/* <div class="table-page-slots-styleS"> */}
+      <Grid item xs = {12} sm = {12} md = {9} style = {{marginTop: "20px"}}>
+        <h7 class="slots-title">Course(s) Slots</h7>
+      </Grid>
+      <Grid item xs = {12} sm = {12} md = {9}>
+        <div class="slots-line"></div>
+      </Grid>
+        <Grid item container xs = {10} sm = {10} md = {9} style = {{marginTop: "30px"}}>
+          <Grid item class="table-slots-container" xs = {5} sm = {5} md = {9} style = {{backgroundColor: "white"}}>
+              <TableContainer component = {Paper} className = {classes.table}>
+                <Table
+                  // class="table-slots-style border"
+                  
+                  aria-label="customized table"
+                  size="small"
                 >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow key="Sunday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Sunday
-              </TableCell>
-              {suns.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
-                >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow key="Monday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Monday
-              </TableCell>
-              {mons.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
-                >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow key="Tuesday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Tuesday
-              </TableCell>
-              {tuess.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
-                >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow key="Wednesday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Wednesday
-              </TableCell>
-              {weds.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
-                >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-            <TableRow key="Thursday">
-              <TableCell component="th" scope="row" className="dark-blue">
-                Thursday
-              </TableCell>
-              {thurss.map((day) => (
-                <TableCell
-                  align="center"
-                  className={
-                    typeof day === "string" ? "border" : "border occupied"
-                  }
-                >
-                  {typeof day === "string" ? day : day.Location} <br />
-                  &nbsp;{typeof day === "string" ? "\t" : day.Course}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+                  <TableHead className="dark-blue">
+                    <TableRow>
+                      <TableCell className="border">Day/Slot</TableCell>
+                      <TableCell className="border" align="center">
+                        &nbsp;&nbsp;1st
+                        <br /> 08:15 - 09:45
+                      </TableCell>
+                      <TableCell className="border" align="center">
+                        &nbsp;&nbsp;2nd
+                        <br /> 10:00 - 11:30
+                      </TableCell>
+                      <TableCell className="border" align="center">
+                        &nbsp;&nbsp;3rd
+                        <br /> 11:45 - 13:15
+                      </TableCell>
+                      <TableCell className="border" align="center">
+                        &nbsp;&nbsp;4th
+                        <br /> 13:45 - 15:15
+                      </TableCell>
+                      <TableCell className="border" align="center">
+                        &nbsp;&nbsp;5th
+                        <br /> 15:45 - 17:15
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow key="Saturday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Saturday
+                      </TableCell>
+                      {sats.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow key="Sunday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Sunday
+                      </TableCell>
+                      {suns.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course} <br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow key="Monday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Monday
+                      </TableCell>
+                      {mons.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow key="Tuesday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Tuesday
+                      </TableCell>
+                      {tuess.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow key="Wednesday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Wednesday
+                      </TableCell>
+                      {weds.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow key="Thursday">
+                      <TableCell component="th" scope="row" className="dark-blue">
+                        Thursday
+                      </TableCell>
+                      {thurss.map((day) => (
+                        <TableCell
+                          align="center"
+                          className={
+                            typeof day === "string" ? "border" : "border occupied"
+                          }
+                        >
+                          {typeof day === "string" ? day : day.Location} <br />
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+          </Grid>
+        </Grid>
+      {/* </div> */}
+    </Grid>
   );
 }
 
