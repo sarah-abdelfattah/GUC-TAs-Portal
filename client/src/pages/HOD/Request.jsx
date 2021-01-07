@@ -213,6 +213,14 @@ function Request(props) {
             component="h6"
             variant="h6"
           >
+            status: {request.status}
+          </Typography>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="h6"
+            variant="h6"
+          >
             Reason:
           </Typography>
           <Typography
