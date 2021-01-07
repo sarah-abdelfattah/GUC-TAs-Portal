@@ -19,9 +19,23 @@ const [date,setDate]=useState( );
 const [Reason,setReason]=useState(" ");
 const [DocLink,setDoc]=useState("");
 const { addToast } = useToasts();
+ 
+ 
+ 
+
  const handleSubmit = async () => {
     try {
-      
+  var re1 = new RegExp('https:\//drive.google.com\/', 'y');
+  var OK = DocLink.match(re1);
+
+  if (!OK) {
+  addToast("please enter correct drive link", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+        
+}
+else{
  const body = {
         type:"Leave Request",
         leaveType:"Maternity",
@@ -50,7 +64,7 @@ const { addToast } = useToasts();
         });
       }
 
-         
+     }    
     } catch (err) {
       console.log("~err: ", err);
     }
@@ -60,7 +74,7 @@ const { addToast } = useToasts();
 
      <div className="crud-innerS-container">
       <div className="crud-form">
-      <FormGroup className="crud-form">
+      
       <FormControl className="crud-formControl" required >
       <InputLabel className="crud-inputLabel">Maternity Date</InputLabel>
             
@@ -71,9 +85,10 @@ const { addToast } = useToasts();
        value={date}
        onChange={setDate}
       />
+         </FormControl>
   
      <FormControl className="crud-formControl"  >
-    <InputLabel className="crud-inputLabel">Document</InputLabel>
+    <InputLabel className="crud-inputLabel">Document Drive Link</InputLabel>
      
        <Input
             className="crud-input"
@@ -84,7 +99,7 @@ const { addToast } = useToasts();
             onChange={(event) => setDoc(event.target.value)}
           />
      
-     </FormControl>
+  
 
       </FormControl>
        <FormControl className="crud-formControl"  >
@@ -95,7 +110,7 @@ const { addToast } = useToasts();
               setReason(event.target.value);
             }}></textarea>
       </FormControl>
- </FormGroup>
+  
         
         </div>
          <Button
