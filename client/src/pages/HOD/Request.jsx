@@ -56,6 +56,8 @@ function Request(props) {
   const [request, setRequest] = useState([]);
   const [date, setDate] = useState([]);
   const [title, setTitle] = useState([]);
+  const [sender, setSender] = useState([]);
+  const [gucId, setId]= useState([]);
   const { addToast } = useToasts();
   const classes = useStyles();
 
@@ -77,15 +79,19 @@ function Request(props) {
               autoDismiss: true,
             });
           } else {
-            let date = dateFormat(response.data.data.date);
+            let sender = response.data.data.sender;
+            setSender(sender);
+            let gucId = response.data.data.senderId;
+            setId(gucId);
+            let date = dateFormat(response.data.data.requestData.date);
             setDate(date);
-            let data = response.data.data;
+            let data = response.data.data.requestData;
             setRequest(data);
-            if (response.data.data.type === "Change DayOff") {
-              let title = response.data.data.subject;
+            if (response.data.data.requestData.type === "Change DayOff") {
+              let title = response.data.data.requestData.subject;
               setTitle(title);
             } else {
-              let title = response.data.data.subject.slice(0, 26);
+              let title = response.data.data.requestData.subject.slice(0, 26);
               setTitle(title);
             }
           }
@@ -107,7 +113,7 @@ function Request(props) {
                 maxInitials={1}
                 size={45}
                 round={true}
-                name={request.sender}
+                name={sender}
               />
             }
             title={title}
@@ -115,10 +121,10 @@ function Request(props) {
           />
           <CardContent>
             <Typography className={classes.text} color="textPrimary" component="h5" variant="p">
-              Sender: {request.sender}
+              Sender: {sender}
             </Typography>
             <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
-              Sender ID: {request.senderId}
+              Sender ID: {gucId}
             </Typography>
             <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
               Reason: {request.reason}
