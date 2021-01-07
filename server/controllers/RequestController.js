@@ -219,13 +219,15 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Leave Request') {
       //const department =sender.department;
-      var department = await Department.findOne({ _id: sender.department._id });
-      if (!department) return res.status(400).send({ error: 'This department does not exist' });
-      if (!department.HOD === null) return res.status(400).send({ error: 'This department does not have a HOD yet' });
-      const recid = department.HOD._id;
-      const rec = await StaffMember.findOne({ _id: recid });
+      var department = await  Department.findOne({ _id: sender.department._id }).populate();
+
+      if (!department) return res.send({ error: 'This department does not exist' });
+       
+      if (!department.HOD) return res.send({ error: 'This department does not have a HOD yet' });
+      const recid = department.HOD._id; 
+      const rec = await StaffMember.findOne({ _id: recid }); 
       const leaveType = req.body.leaveType;
-      if (!leaveType) return res.send({ error: 'Please enter all the missing fields' });
+      if (!leaveType) return res.send({ error: 'Please enter leave type' });
 
       if (leaveType == 'Sick') {
         const SickDayDate = new Date(Date.parse(req.body.SickDayDate));
@@ -279,11 +281,12 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Compensation') {
-        const cdate = req.body.CompensationDate;
+         
+       
         const CompensationDate = new Date( req.body.CompensationDate); //date
-        const LeaveDate = new Date(Date.parse(req.body.LeaveDate));
+        const LeaveDate = new Date(req.body.LeaveDate);
         const reason = req.body.reason;
-
+      
         //date
         if (!CompensationDate || !LeaveDate || !reason) return res.send({ error: 'Please enter all the missing fields' });
 
@@ -300,6 +303,7 @@ exports.sendRequest = async function (req, res) {
         } else {
           if (LeaveDate.getFullYear() == CompensationDate.getFullYear()) {
             if (LeaveDate.getMonth() == CompensationDate.getMonth()) {
+                  
               if (CompensationDate.getDate() > LeaveDate.getDate()) {
                 flag = true;
               }
@@ -311,7 +315,8 @@ exports.sendRequest = async function (req, res) {
             }
           }
         }
-        if (!flag) return res.status(400).send({ error: 'Please enter a valid compensation date & leave date' });
+           
+        if (!flag) return res.send({ error: 'Please enter a valid compensation & leave date' });
 
         const AttendanceRecord = sender.attendanceRecords;
 
@@ -321,15 +326,17 @@ exports.sendRequest = async function (req, res) {
         var recdate;
         var f3;
         for (i = 0; i < AttendanceRecord.length; i++) {
-          if (AttendanceRecord[i].date == cdate) {
-            record = AttendanceRecord[i].date;
-            recdate = new Date(Date.parse(record));
+             record = AttendanceRecord[i].date;
+             recdate = new Date(Date.parse(record));
+          if ( recdate==CompensationDate) { 
             recordDay = recdate.getDay();
-            console.log(recordDay);
+           // console.log(recordDay);
             f3 = true;
             break;
           }
         }
+        if(!f3) return res.send({ error: 'Sorry you did not attend this Day' })
+         
         var Day;
         switch (recordDay) {
           case 1:
@@ -354,8 +361,8 @@ exports.sendRequest = async function (req, res) {
             Day = 'Sunday';
             break;
         }
-
-        if (Day != sender.dayOff) return res.status(400).send({ error: 'Please enter a valid compensation date' });
+        
+        if (Day != sender.dayOff) return res.send({ error: 'Please enter a valid compensation date' });
 
         // search in his requests that there is no compensation request on the same day
         var f1 = false;
@@ -365,7 +372,8 @@ exports.sendRequest = async function (req, res) {
           if (leavetype && request.leavetype == 'Compensation') f1 = true;
         }
 
-        if (f1) return res.status(400).send({ error: 'Sorry you have submitted for with this compensation date before' });
+        if (f1) return res.send({ error: 'Sorry you have submitted for with this compensation date before'
+      });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.CompensationDate;
         const newRequest = new Request({
@@ -380,7 +388,7 @@ exports.sendRequest = async function (req, res) {
           subject: subject,
         });
         await newRequest.save();
-        return res.status(200).send({ data: newRequest });
+        return res.send({ data: newRequest });
       }
 
       if (leaveType == 'Annual') {
@@ -448,7 +456,7 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Maternity') {
-        if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry this type of request is only for females' });
+        if (sender.gender !== 'female') return res.send({ error: 'Sorry this type of request is only for females' });
         var reason = req.body.reason || '';
         const doc = req.body.document;
         const startDate = new Date( req.body.startDate);
@@ -473,6 +481,7 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Accidental') {
+         
         var reason = req.body.reason || '';
 
         if (sender.leaveBalance === 0) return res.send({ error: 'Sorry you cannot because your balance is 0' });

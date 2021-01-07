@@ -24,9 +24,9 @@ function Accidental(){
     try {
       
  const body = {
-        type:"Slot Request",
+        type:"Leave Request",
         leaveType:"Accidental",
-        date: date , 
+        AccidentDate: date , 
         reason:Reason
         
       }; 
@@ -37,9 +37,10 @@ function Accidental(){
           autoDismiss: true,
         });
         setDate();
-         
+        setReason("");
       }
 
+      
       if (res.data.error) {
         addToast(res.data.error, {
           appearance: "error",
@@ -58,7 +59,7 @@ function Accidental(){
      <div className="crud-innerS-container">
       <div className="crud-form">
       <FormControl className="crud-formControl" required >
-      <InputLabel className="crud-inputLabel">Date and Time </InputLabel>
+      <InputLabel className="crud-inputLabel">Accident Date</InputLabel>
             
             <br/>
             <br/>

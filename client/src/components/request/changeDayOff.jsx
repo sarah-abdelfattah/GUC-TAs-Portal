@@ -40,6 +40,7 @@ const handleSubmit = async () => {
           autoDismiss: true,
         });
         setDayOff("")
+        setReason("")
       }
 
            
