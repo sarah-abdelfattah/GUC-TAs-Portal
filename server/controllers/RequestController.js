@@ -1123,18 +1123,6 @@ exports.slotLinkingReqResponse = async (req, res) => {
 
 exports.viewRequest = async (req, res) => {
   try {
-    let departmentFound = await Department.findOne({
-      _id: req.user.department,
-    }).populate('department');
-
-    // if there's no department found
-    if (!departmentFound) {
-      return res
-        .status(404)
-        .send({
-          error: `No department found with this id ${req.user.department}`,
-        });
-    }
 
     let request = await Request.findOne({ _id: req.params.id });
 
