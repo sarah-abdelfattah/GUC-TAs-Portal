@@ -65,7 +65,7 @@ const { addToast } = useToasts();
    var str=  date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+"T"+date.getHours()+":"+date.getMinutes()+":00"
     ;
     //  console.log(dates);
-     var body1={
+     const body1={
         id:TAID,
         date:str,
         courseName:courseChosen, 
@@ -75,7 +75,7 @@ const { addToast } = useToasts();
       setCheck(resp1.data)
       
   if(check=="success"){
-    
+      console.log(object);
     setRep({ reps: rep.reps.concat([object])})
     
     addToast(" replacement added successfully,add another one if you want", {

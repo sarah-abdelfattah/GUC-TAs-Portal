@@ -19,7 +19,7 @@ router.put('/AcceptOrRejectSlot/:_id', auth.CCAuth, RequestController.AcceptOrRe
 router.put('/AcceptOrRejectLeave/:_id', auth.HODAuth, RequestController.AcceptOrRejectLeave);
 router.delete('/CancelRequest/:_id', auth.AcademicMemberAuth, RequestController.CancelRequest);
 
-
+router.post('/checkRep',RequestController.chechRep);
 router.get('/dayOff',RequestController.getDayOff);
 router.get('/hisCourses',RequestController.getCourses);
 

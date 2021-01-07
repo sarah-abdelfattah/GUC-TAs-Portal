@@ -34,13 +34,14 @@ exports.sendRequest = async function (req, res) {
       const coursename = req.body.course;
 
       //const course=await Course.findOne({name:coursename})
-      const x = req.body.replacementDate;
-
-      const date = new Date(Date.parse(x));
+     
+ 
+      const date = new  Date(Date.parse(req.body.replacementDate));
+        
       if (!date) return res.send({ error: 'Please enter a valid date' });
 
       // const departmentt=senderInfo. !replacementdate
-      if (!recieverId || !location || !coursename || !x) {
+      if (!recieverId || !location || !coursename || !date) {
         return res.send({ error: 'Please enter all the missing fields' });
       }
 
@@ -91,12 +92,14 @@ exports.sendRequest = async function (req, res) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
       const subject = type + ' with ' + rec.name + ' for course ' + coursename + ' at ' + req.body.replacementDate;
+      const x= date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+"T"+date.getHours()+":"+date.getMinutes()+":00"
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
         reciever: rec,
         type: type,
         replacemntDate: date,
+        string: x,
         location: location,
         coursename: coursename,
         subject: subject,
@@ -159,7 +162,7 @@ exports.sendRequest = async function (req, res) {
     if (type == 'Slot Request') {
       const coursename = req.body.course;
      
-      const date = new Date (req.body.date) ;
+      const date = new Date (Date.parse(req.body.date)) ;
       const locationType = req.body.locationType;
       if (!coursename || !date || !locationType) return res.send({ error: 'Please enter all the missing fields' });
       if (locationType !== 'Tutorial Room' && locationType !== 'Lecture Hall' && locationType !== 'Lab') return res.send({ error: 'Please enter a valid location type' });
@@ -283,8 +286,8 @@ exports.sendRequest = async function (req, res) {
       if (leaveType == 'Compensation') {
          
        
-        const CompensationDate = new Date( req.body.CompensationDate); //date
-        const LeaveDate = new Date(req.body.LeaveDate);
+        const CompensationDate = new Date( Date.parse(req.body.CompensationDate)); //date
+        const LeaveDate = new Date(Date.parse(req.body.LeaveDate));
         const reason = req.body.reason;
       
         //date
@@ -396,29 +399,27 @@ exports.sendRequest = async function (req, res) {
 
         //should be submitted before targeted day
         const x = req.body.AnnualLeaveDate;
-        const AnnualLeaveDate = new Date( x);
+        const AnnualLeaveDate = new Date( Date.parse(x));
         const replacement = req.body.rep || [];
 
         if (!AnnualLeaveDate) return res.status(400).send({ error: 'Please enter all the required fields' });
         if (`${AnnualLeaveDate}` === 'Invalid Date') return res.status(400).send({ error: 'Please enter the date in the correct format' });
 
-        for (i = 0; i < replacement.length; i++) {
-          var object = replacement[i];
-          if (!object.id || !object.date || !object.courseName) return res.status(400).send({ error: 'Please enter all data' });
-          const objectDate = new Date(Date.parse(object.date));
-          const rec = await StaffMember.findOne({ gucId: object.id }).populate();
-          const course = await Course.findOne({ name: object.courseName }).populate();
-          if (`${objectDate}` === 'Invalid Date' || !rec || !course) return res.status(400).send({ error: 'Please enter correct replacement data' });
-          if (objectDate.getFullYear() != AnnualLeaveDate.getFullYear() || objectDate.getMonth() != AnnualLeaveDate.getMonth() || objectDate.getDate() != AnnualLeaveDate.getDate())
-            return res.status(400).send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
-          foundReplacementRequest = await Request.findOne(
-            //a7ot status tany
-            { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate, coursename: object.courseName }
-          );
-          if (!foundReplacementRequest) {
-            return res.status(400).send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
-          }
-        }
+        // for (i = 0; i < replacement.length; i++) {
+        //   var object = replacement[i];
+        //   if (!object.id || !object.courseName) return res.status(400).send({ error: 'Please enter all data' });
+        
+        //   const rec = await StaffMember.findOne({ gucId: object.id }).populate();
+        //   const course = await Course.findOne({ name: object.courseName }).populate();
+        //   if ( !rec || !course) return res.send({ error: 'Please enter correct replacement data' }); 
+        //   foundReplacementRequest = await Request.findOne(
+        //     //a7ot status tany
+        //     { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: AnnualLeaveDate, coursename: object.courseName }
+        //   );
+        //   if (!foundReplacementRequest) {
+        //     return res.send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
+        //   }
+       // }
 
         var flag = false;
         const x1 = new Date(Date.now());
@@ -459,7 +460,7 @@ exports.sendRequest = async function (req, res) {
         if (sender.gender !== 'female') return res.send({ error: 'Sorry this type of request is only for females' });
         var reason = req.body.reason || '';
         const doc = req.body.document;
-        const startDate = new Date( req.body.startDate);
+        const startDate = new Date( Date.parse(req.body.startDate));
         if (!doc || !startDate) return res.send({ error: 'Please enter all the missing fields' });
         if (`${startDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
@@ -541,7 +542,37 @@ exports.sendRequest = async function (req, res) {
 //     }
 
 // }
+exports.chechRep=async function (req, res) {
+  try {
+     const id=req.body.id;
+     const courseName=req.body.courseName;
+     const senderid=req.user.gucId;
+     const dat=req.body.date
+   
+     
+     
+     const sender=await StaffMember.findOne({ gucId:  senderid }).populate();
+         const rec = await StaffMember.findOne({ gucId:  id }).populate();
+          const course = await Course.findOne({ name:  courseName }).populate();
+          if ( !rec || !course) return res.send({ error: 'Please enter correct replacement data' }); 
+        
+        
+          foundReplacementRequest = await Request.findOne(
+            //a7ot status tany
+            { type: 'Replacement Request', reciever: rec, sender: sender, coursename:  courseName , string:dat , status:'accepted'}
+          );
+          console.log(foundReplacementRequest );
+          if (!foundReplacementRequest) {
+            return res.send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
+          }
+          
+      return res.send( "success")
 
+  }
+catch (err) { 
+    console.log('~ err', err);
+    return res.status(500).send({ error: err });
+  }};
 exports.AcceptOrRejectRep = async function (req, res) {
   try {
     const Requestid = req.params._id;
