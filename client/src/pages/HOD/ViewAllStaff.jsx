@@ -141,7 +141,8 @@ function ViewAllStaff() {
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
                     document.location.href =
-                      window.location.origin + `/${rowData.id}/viewSchedule`;
+                      window.location.origin +
+                      `/viewStaffSchedule/${rowData.id}`;
                   },
                 },
               ]}

@@ -15,7 +15,7 @@ router.put('/updateSalary', auth.HRAuth, staffMemberController.updateSalary);
 router.get('/viewMySchedule', auth.AcademicMemberAuth, staffMemberController.viewMySchedule);
 
 //HOD and CC 
-router.get('/viewStaffSchedule/:id', auth.HODAuth && auth.CIAuth, staffMemberController.viewStaffSchedule);
+router.get('/viewStaffSchedule/:id', auth.CIAuth, staffMemberController.viewStaffSchedule);
 
 //all users
 router.post("/signIn", staffMemberController.signIn);

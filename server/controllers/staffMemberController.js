@@ -906,7 +906,7 @@ exports.updateLogin = async function (req, res) {
 
 exports.viewStaffSchedule = async (req, res) => {
     try {
-        const id = new object(req.params.id);
+        const id = req.params.id;
         const user = req.user;
 
         const requester = await StaffMember.findOne({ gucId: user.gucId });
