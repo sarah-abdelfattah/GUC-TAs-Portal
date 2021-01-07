@@ -80,7 +80,7 @@ function InstructorSlotsAssigned() {
   };
 
 
-  useEffect(async() => {
+  useEffect(() => {
     async function fetchData() {
       const loggedInUser = localStorage.getItem("user");
       if (!loggedInUser) {
