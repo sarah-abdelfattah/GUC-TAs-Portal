@@ -19,3 +19,11 @@ export const MyGrid = styled(Grid)({
   textAlign: 'center',
   justifyContent: 'center',
 })
+
+export const AcceptButton = styled(Button)({ 
+  background: ' #058c42',
+});
+
+export const RejectButton = styled(Button)({ 
+  background: '#C81927',
+});

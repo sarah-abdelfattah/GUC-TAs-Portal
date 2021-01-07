@@ -8,7 +8,7 @@ import { link } from "../../helpers/constants.js";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
-import { MyButton } from "../../styles/TableStyles";
+import { MyButton } from "../../styles/StyledComponents";
 
 
 //Added for the CC

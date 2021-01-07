@@ -17,6 +17,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 // modal component
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
+import { AcceptButton, RejectButton } from "../../styles/StyledComponents.js";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,8 +57,8 @@ function Request(props) {
   const [date, setDate] = useState([]);
   const [title, setTitle] = useState([]);
   const { addToast } = useToasts();
-
   const classes = useStyles();
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
@@ -84,7 +85,6 @@ function Request(props) {
               let title = response.data.data.subject;
               setTitle(title);
             } else {
-              console.log("here");
               let title = response.data.data.subject.slice(0, 26);
               setTitle(title);
             }
@@ -100,18 +100,6 @@ function Request(props) {
 
   return (
     <div className="request-card-center">
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        className={classes.modal}
-        open
-        //onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
         <Card className={classes.root}>
           <CardHeader
             avatar={
@@ -132,10 +120,15 @@ function Request(props) {
             <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
               Sender ID: {request.senderId}
             </Typography>
-
+            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
+              Reason: {request.reason}
+            </Typography>
+            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
+              Document: {request.document}
+            </Typography>
           </CardContent>
           <CardActions>
-            <Button
+            <AcceptButton
               variant="contained"
               color="primary"
               className={classes.margin}
@@ -143,8 +136,8 @@ function Request(props) {
             >
               {" "}
               Accept
-            </Button>
-            <Button
+            </AcceptButton>
+            <RejectButton
               variant="contained"
               color="secondary"
               className={classes.button}
@@ -152,10 +145,9 @@ function Request(props) {
             >
               {" "}
               Reject
-            </Button>
+            </RejectButton>
           </CardActions>
         </Card>
-      </Modal>
     </div>
   );
 }
