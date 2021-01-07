@@ -21,6 +21,8 @@ import Backdrop from "@material-ui/core/Backdrop";
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
+    fontSize: 20,
+    borderRadius: 10,
   },
   media: {
     height: 0,
@@ -111,7 +113,7 @@ function Request(props) {
             avatar={
               <Avatar
                 maxInitials={1}
-                size={43}
+                size={45}
                 round={true}
                 name={request.sender}
               />
@@ -120,7 +122,7 @@ function Request(props) {
             subheader={date}
           />
           <CardContent>
-            <Typography color="textPrimary" component="h6" variant="h6">
+            <Typography color="textPrimary" component="h5" variant="p">
               Sender: {request.sender}
             </Typography>
             <Typography color="textPrimary" component="h6" variant="h6">
