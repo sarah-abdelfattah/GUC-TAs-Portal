@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
 import Fade from "react-reveal/Fade";
+import { Button } from "@material-ui/core";
+import { MyButton } from "../../styles/StyledComponents";
 
 function ViewCourseCoverage() {
   const [data, setData] = useState([]); //table data
@@ -55,9 +57,26 @@ function ViewCourseCoverage() {
               data={data}
               options={{
                 headerStyle: {
-                  backgroundColor: "#045CC8",
-                  color: "#FFF",
+                  backgroundColor: "#ECEFF4",
+                  color: "#000000",
+                  fontSize: 16
                 },
+              }}
+              components={{
+                Toolbar: (props) => (
+                  <div style={{padding: '10px 10px', margin: 'auto'}}>
+                  <MyButton
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                      (document.location.href =
+                        window.location.origin + "/CourseCoverage")
+                    }
+                  >
+                   My course coverage
+                  </MyButton>
+                  </div>
+                ),
               }}
             />
           </Grid>

@@ -152,15 +152,15 @@ function ViewRequests() {
                 ),
                 Toolbar: (props) => (
                   <Autocomplete
+                    className="crud-select"
                     size="small"
                     id="debug"
                     options={requestType}
                     onChange={(event, newValue) => {
                       handleOnChange(newValue);
-                      //console.log(newValue);
                     }}
                     getOptionLabel={(option) => option.type}
-                    style={{ width: "30%", margin: "auto" }}
+                    style={{ width: 200, margin: "auto" }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
