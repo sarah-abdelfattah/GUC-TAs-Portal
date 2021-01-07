@@ -13,7 +13,7 @@ function ViewCourseCoverage() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -32,7 +32,7 @@ function ViewCourseCoverage() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();

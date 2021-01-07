@@ -17,7 +17,7 @@ async function auth(types) {
     if (found)
         return true;
     else {
-        document.location.href = '/unauthorized'
+        document.location.href = window.location.origin + '/unauthorized'
     }
 }
 

@@ -11,6 +11,9 @@ import Fade from "react-reveal/Fade";
 import { MyButton } from "../../styles/TableStyles";
 
 
+//Added for the CC
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
@@ -19,7 +22,7 @@ function ViewAllStaff() {
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
@@ -66,7 +69,7 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();
@@ -107,7 +110,6 @@ function ViewAllStaff() {
   }
 
   return (
-    // styling
     <div className="my-table">
       <Fade>
         <h3 className="general-header">Staff Members</h3>
@@ -142,7 +144,8 @@ function ViewAllStaff() {
                   icon: "save",
                   tooltip: "view schedule",
                   onClick: (event, rowData) => {
-                    document.location.href = `/viewSchedule/${rowData.id}`;
+                    document.location.href =
+                      window.location.origin + `/${rowData.id}/viewSchedule`;
                   },
                 },
               ]}

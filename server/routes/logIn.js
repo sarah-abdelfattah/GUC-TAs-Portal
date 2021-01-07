@@ -36,6 +36,7 @@ router.post("", async function (req, res) {
 
         if (match) {
             let payload = {
+                id: staff._id,
                 gucId: staff.gucId,
                 gender: staff.gender,
                 name: staff.name,

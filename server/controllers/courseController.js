@@ -4,6 +4,7 @@ const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
 const Location = require('../models/Location');
+const StaffMember = require('../models/StaffMember');
 
 const validation = require('../helpers/validation');
 
@@ -235,5 +236,21 @@ exports.deleteCourse = async function (req, res) {
         }
         console.log('~ err', err);
         return res.send({ error: err });
+    }
+}
+
+//Additional routes (used for frontend)
+exports.viewCoursesCC = async function(req,res){
+    try{
+        const id = req.user.gucId;
+        const staff = await StaffMember.findOne({ gucId: id });
+        const courses = await Course.find({ courseCoordinator: staff._id});
+        courseNames = courses.map((course)=>{
+            return course.name;
+        })
+        res.send({data:courseNames});
+    }catch(e){
+        console.log('~ err', e);
+        res.status(500).send({ error: `Internal Server Error: ${e}` });
     }
 }

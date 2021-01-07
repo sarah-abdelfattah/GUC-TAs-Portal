@@ -13,7 +13,7 @@ export async function axiosCall(requestType, url, body) {
     let result;
     switch (requestType) {
       case "get": {
-        result = await axios.get(url, body);
+        result = await axios.get(url, body, config);
         break;
       }
       case "post": {

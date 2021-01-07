@@ -13,7 +13,9 @@ import Paper from "@material-ui/core/Paper";
 
 import { axios } from "../helpers/axios";
 import "../styles/_colorSchema.scss";
-
+import { Grid } from "@material-ui/core";
+import MaterialTable from "material-table";
+import Fade from "react-reveal/Fade";
 // import {axiosInstance} from '../helpers/setAuthToken'
 
 function InstCourseCoverage() {
@@ -24,7 +26,7 @@ function InstCourseCoverage() {
     async function fetchData() {
       const loggedInUser = localStorage.getItem("user");
       if (!loggedInUser) {
-        document.location.href = "/login";
+        document.location.href = window.location.origin + "/login";
       } else {
         try {
           const response = await axios.get(
@@ -37,11 +39,12 @@ function InstCourseCoverage() {
             });
           } else {
             const coverageDisplay = response.data.data;
+            console.log(coverageDisplay);
             setRows(coverageDisplay);
           }
         } catch (e) {
           console.log("~ err", e);
-          document.location.href = "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
     }
@@ -49,29 +52,29 @@ function InstCourseCoverage() {
   }, []);
 
   return (
-    <div class="table-page-style">
-      <h7 class="coverage-title">Courses Coverage</h7>
-      <div class="line"></div>
-      <TableContainer class="table-container" component={Paper}>
-        <Table class="table-style" aria-label="customized table">
-          <TableHead className="dark-blue">
-            <TableRow>
-              <TableCell>Course Name</TableCell>
-              <TableCell align="center">Coverage</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.course_name}>
-                <TableCell component="th" scope="row">
-                  {row.course_name}
-                </TableCell>
-                <TableCell align="center">{row.course_coverage}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <div className="my-table">
+      <Fade>
+        <h3 className="general-header">View course coverage</h3>
+        <hr className="general-line" />
+        <Grid container spacing={1}>
+          <Grid item xs={8}>
+            <MaterialTable
+              title=""
+              columns={[
+                { title: "Course name", field: "course_name" },
+                { title: "Coverage %", field: "course_coverage" },
+              ]}
+              data={rows}
+              options={{
+                headerStyle: {
+                  backgroundColor: "#045CC8",
+                  color: "#FFF",
+                },
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Fade>
     </div>
   );
 }
