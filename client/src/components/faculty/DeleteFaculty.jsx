@@ -52,7 +52,7 @@ function DeleteFaculty() {
         });
       }
     } catch (err) {
-      console.log("~err: ", err);
+      console.log("~error: ", err);
     }
   };
 

@@ -164,7 +164,7 @@ function StaffProfile(props) {
         });
       }
     } catch (err) {
-      console.log("~err: ", err);
+      console.log("~error: ", err);
     }
   };
 
@@ -180,7 +180,7 @@ function StaffProfile(props) {
 
       await setDeps(depResult.data.data);
     } catch (err) {
-      console.log("~err:", err);
+      console.log("~error:", err);
     }
   };
 
