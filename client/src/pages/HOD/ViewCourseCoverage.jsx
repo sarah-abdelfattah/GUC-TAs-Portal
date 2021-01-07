@@ -73,7 +73,7 @@ function ViewCourseCoverage() {
                         window.location.origin + "/CourseCoverage")
                     }
                   >
-                   My course coverage
+                   My courses coverage
                   </MyButton>
                   </div>
                 ),
