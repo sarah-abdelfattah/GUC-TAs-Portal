@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
 
-import '../src/styles/courseCoverageTable.scss'
 import '../src/styles/slotsAssignedTable.scss'
 // import '../src/styles/courseSlot.scss'
 import '../src/styles/courseSlotCRUDCC.scss'
