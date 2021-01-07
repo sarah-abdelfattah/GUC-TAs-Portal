@@ -10,14 +10,13 @@ import { link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import { dateFormat } from "../../helpers/constants.js";
-import { Button } from "@material-ui/core";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
+import Popper from "@material-ui/core/Popper";
+import TextField from "@material-ui/core/TextField";
 
-// modal component
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
 import { AcceptButton, RejectButton } from "../../styles/StyledComponents.js";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     margin: theme.spacing(1),
-    fontSize: 18
+    fontSize: 18,
   },
 }));
 
@@ -57,9 +56,18 @@ function Request(props) {
   const [date, setDate] = useState([]);
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
-  const [gucId, setId]= useState([]);
+  const [gucId, setId] = useState([]);
   const { addToast } = useToasts();
   const classes = useStyles();
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popper" : undefined;
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
@@ -104,56 +112,97 @@ function Request(props) {
     }
   }, []);
 
+  const handleAccept = async function () {};
+
+  const handleReject = async function () {};
+
   return (
     <div className="request-card-center">
-        <Card className={classes.root}>
-          <CardHeader
-            avatar={
-              <Avatar
-                maxInitials={1}
-                size={45}
-                round={true}
-                name={sender}
-              />
-            }
-            title={title}
-            subheader={date}
-          />
-          <CardContent>
-            <Typography className={classes.text} color="textPrimary" component="h5" variant="p">
-              Sender: {sender}
-            </Typography>
-            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
-              Sender ID: {gucId}
-            </Typography>
-            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
-              Reason: {request.reason}
-            </Typography>
-            <Typography className={classes.text} color="textPrimary" component="h6" variant="h6">
-              Document: {request.document}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <AcceptButton
-              variant="contained"
-              color="primary"
-              className={classes.margin}
-              startIcon={<CheckCircleIcon />}
-            >
-              {" "}
-              Accept
-            </AcceptButton>
-            <RejectButton
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              startIcon={<CancelIcon />}
-            >
-              {" "}
-              Reject
-            </RejectButton>
-          </CardActions>
-        </Card>
+      <Card className={classes.root}>
+        <CardHeader
+          avatar={
+            <Avatar maxInitials={1} size={45} round={true} name={sender} />
+          }
+          title={title}
+          subheader={date}
+        />
+        <CardContent>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="h5"
+            variant="p"
+          >
+            Sender: {sender}
+          </Typography>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="h6"
+            variant="h6"
+          >
+            Sender ID: {gucId}
+          </Typography>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="h6"
+            variant="h6"
+          >
+            Reason: {request.reason}
+          </Typography>
+          <Typography
+            className={classes.text}
+            color="textPrimary"
+            component="h6"
+            variant="h6"
+          >
+            Document: {request.document}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <AcceptButton
+            onClick={handleAccept}
+            variant="contained"
+            color="primary"
+            className={classes.margin}
+            startIcon={<CheckCircleIcon />}
+          >
+            {" "}
+            Accept
+          </AcceptButton>
+          <RejectButton
+            onClick={handleClick}
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<CancelIcon />}
+          >
+            {" "}
+            Reject
+          </RejectButton>
+          <Popper id={id} open={open} anchorEl={anchorEl}>
+            <div className={classes.paper}>
+              <form noValidate autoComplete="off">
+                <TextField
+                  id="standard-multiline-static"
+                  label="Reason for rejection"
+                  multiline
+                  rows={4}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleReject}
+                >
+                  Confirm
+                </Button>
+              </form>
+            </div>
+          </Popper>
+        </CardActions>
+      </Card>
     </div>
   );
 }
