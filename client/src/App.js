@@ -22,6 +22,7 @@ import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
 import './styles/ChangePassword.scss';
 import './styles/tables.scss';
+import './styles/Modal.scss';
 
 //Import the pages
 import NavBar from './components/NavBar';
@@ -48,6 +49,7 @@ import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
 import StaffAttendance from './pages/Staff/StaffAttendance';
+import StaffSchedule from './pages/Staff/StaffSchedule';
 
 import Test from './pages/test';
 
@@ -90,6 +92,8 @@ function App() {
                   <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                   <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
+                  <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
+
                 </div>
               )}
           </ToastProvider>

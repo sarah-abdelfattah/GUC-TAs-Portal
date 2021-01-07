@@ -83,7 +83,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -219,21 +219,21 @@ const courseInstructorController = {
         staff.length === 0
           ? { data: errorMsgs.notAssignedTo('staff', 'course') }
           : {
-              data: staff.map((member) => {
-                return {
-                  gucId: member.gucId,
-                  name: member.name,
-                  email: member.email,
-                  dayOff: member.dayOff,
-                  courses: member.courses.map(({ name }) => name),
-                  officeLocation: member.officeLocation.location,
-                  gender: member.gender,
-                };
-              }),
-            }
+            data: staff.map((member) => {
+              return {
+                gucId: member.gucId,
+                name: member.name,
+                email: member.email,
+                dayOff: member.dayOff,
+                courses: member.courses.map(({ name }) => name),
+                officeLocation: member.officeLocation.location,
+                gender: member.gender,
+              };
+            }),
+          }
       );
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -398,7 +398,7 @@ const courseInstructorController = {
         );
         // return res.send({ JOI_validation_error: err });
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -725,7 +725,7 @@ const courseInstructorController = {
           })
         );
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -823,7 +823,7 @@ const courseInstructorController = {
           })
         );
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 };
