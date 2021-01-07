@@ -140,22 +140,22 @@ function InstructorSlotsAssigned() {
 
   const useStyles = makeStyles({
     table: {
-      minWidth: 250,
+      minWidth: 600, //250 //400
       // width: 1200
     }
   });
   const classes = useStyles();
 
   return (
-    <Grid container style = {{marginLeft: "50px",left:"61px",top:"60"}}>
+    <Grid container style = {{marginLeft: "50px",left:"61px"}}>
       {/* <div class="table-page-slots-styleS"> */}
-        <Grid item xs = {12} sm = {12} md = {9} style = {{marginTop: "50px"}}>
+        <Grid item xs = {12} sm = {12} md = {9} style = {{marginTop: "20px"}}>
           <h7 class="slots-titleS">Academic Schedule</h7>
         </Grid>
         <Grid item xs = {12} sm = {12} md = {9}>
           <div class="slots-lineS"></div>
         </Grid>
-          <Grid item container xs = {10} sm = {10} md = {9} style = {{marginTop: "50px"}}>
+          <Grid item container xs = {10} sm = {10} md = {9} style = {{marginTop: "30px"}}>
             <Grid item class="table-slots-containerS" xs = {5} sm = {5} md = {9} style = {{backgroundColor: "white"}}>
                 <TableContainer component = {Paper} className = {classes.table}>
                   <Table

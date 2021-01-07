@@ -22,19 +22,20 @@
 .slots-titleS {
     color: $secondary-yellow;
     font-size: 40px;
-    // position: relative;
-    // top: 40px;
-    // left: 60px;
+    position: relative;
+    top: 40px;
+    left: 60px;
 }
 
 .slots-lineS {
     border-bottom: 1px solid $secondary-yellow;
-    // position: relative;
-    // top: 40px;
-    // width: 569.6px;
-    // left: 60px;
+    position: relative;
+    top: 40px;
+    width: 569.6px;
+    // width: 85%;
+    left: 60px;
     height: 10px;
-    // min-width: 85%;
+    min-width: 85%;
 }
 
 .table-page-slots-style {
@@ -47,14 +48,14 @@
 }
 
 .table-slots-container {
-    width: 590px;
-    height: 560px;
-    background-color: white;
-    border-radius: 10px;
-    border: 2px solid #e3fbff;
+    // width: 590px;
+    // height: 560px;
+    // background-color: white;
+    // border-radius: 10px;
+    // border: 2px solid #e3fbff;
     min-width: 70%;
     position: relative;
-    top: 85px;
+    top: 30px;
     left: 60px;
 }
 
@@ -65,19 +66,19 @@
 //     min-width: 100%;
 //     position: relative;
 //     background-color: #fff6e8;
-// }
+// } #ffeed1
 
-// .table-slots-containerS {
-//     width: 590px;
-//     height: 560px;
-//     background-color: white;
-//     border-radius: 10px;
-//     border: 2px solid #ffeed1;
-//     min-width: 70%;
-//     position: relative;
-//     top: 85px;
-//     left: 60px;
-// }
+.table-slots-containerS {
+    // width: 590px;
+    // height: 350px;
+    // background-color: white;
+    // border-radius: 10px;
+    // border: 2px solid#ffeed1;
+    min-width: 70%;
+    position: relative;
+    top: 30px;
+    left: 60px;
+}
 
 .table-slots-style {
     background-color: white;

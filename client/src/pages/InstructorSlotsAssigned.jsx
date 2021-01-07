@@ -12,6 +12,8 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 import { axios } from "../helpers/axios";
+import {makeStyles } from "@material-ui/core/styles";
+import Grid from '@material-ui/core/Grid';
 import "../styles/_colorSchema.scss";
 
 function InstructorSlotsAssigned() {
@@ -32,6 +34,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -39,6 +42,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -46,6 +50,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -53,6 +58,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -60,6 +66,7 @@ function InstructorSlotsAssigned() {
           newArr[i] = {
             Course: arr[j].coursename,
             Location: arr[j].location,
+            assignedTo: arr[j].assignedTo
           };
           found = true;
           break;
@@ -72,7 +79,8 @@ function InstructorSlotsAssigned() {
     return newArr;
   };
 
-  useEffect(() => {
+
+  useEffect(async() => {
     async function fetchData() {
       const loggedInUser = localStorage.getItem("user");
       if (!loggedInUser) {
@@ -97,11 +105,13 @@ function InstructorSlotsAssigned() {
             var thurs = [];
             for (var i = 0; i < slotsDisplay.length; i++) {
               for (var j = 0; j < slotsDisplay[i].course_slots.length; j++) {
+                console.log(slotsDisplay[i].course_slots[j].assignedTo)
                 var obj = {
                   coursename: slotsDisplay[i].course_name,
                   day: slotsDisplay[i].course_slots[j].day,
                   time: slotsDisplay[i].course_slots[j].time,
                   location: slotsDisplay[i].course_slots[j].location,
+                  assignedTo: slotsDisplay[i].course_slots[j].assignedTo === "None"?"None": slotsDisplay[i].course_slots[j].assignedTo.name
                 };
                 switch (obj.day) {
                   case "Saturday":
@@ -141,18 +151,26 @@ function InstructorSlotsAssigned() {
       }
     }
     fetchData();
-  }, []);
+  },[]);
+  console.log(sats);
+  const useStyles = makeStyles({
+    table: {
+      minWidth: 600, //250 //400
+      // width: 1200
+    }
+  });
+  const classes = useStyles();
 
   return (
-    <Grid container style = {{marginLeft: "50px",left:"61px",top:"60"}}>
+    <Grid container style = {{marginLeft: "50px",left:"61px"}}>
     {/* <div class="table-page-slots-styleS"> */}
-      <Grid item xs = {12} sm = {12} md = {9} style = {{marginTop: "50px"}}>
+      <Grid item xs = {12} sm = {12} md = {9} style = {{marginTop: "20px"}}>
         <h7 class="slots-title">Course(s) Slots</h7>
       </Grid>
       <Grid item xs = {12} sm = {12} md = {9}>
         <div class="slots-line"></div>
       </Grid>
-        <Grid item container xs = {10} sm = {10} md = {9} style = {{marginTop: "50px"}}>
+        <Grid item container xs = {10} sm = {10} md = {9} style = {{marginTop: "30px"}}>
           <Grid item class="table-slots-container" xs = {5} sm = {5} md = {9} style = {{backgroundColor: "white"}}>
               <TableContainer component = {Paper} className = {classes.table}>
                 <Table
@@ -199,7 +217,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -215,7 +234,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course} <br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -231,7 +251,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -247,7 +268,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -263,7 +285,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -279,7 +302,8 @@ function InstructorSlotsAssigned() {
                           }
                         >
                           {typeof day === "string" ? day : day.Location} <br />
-                          &nbsp;{typeof day === "string" ? "\t" : day.Course}
+                          &nbsp;{typeof day === "string" ? "\t" : day.Course}<br/>
+                          &nbsp;{day.assignedTo}
                         </TableCell>
                       ))}
                     </TableRow>

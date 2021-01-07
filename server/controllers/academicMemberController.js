@@ -137,7 +137,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
