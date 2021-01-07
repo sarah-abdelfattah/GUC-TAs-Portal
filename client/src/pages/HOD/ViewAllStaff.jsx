@@ -158,10 +158,10 @@ function ViewAllStaff() {
                     onClick={(event) => props.action.onClick(event, props.data)}
                     color="primary"
                     variant="contained"
-                    style={{ textTransform: "none" }}
+                    style={{ textTransform: "none", background: "#045CC8" }}
                     size="small"
                   >
-                    View schedule
+                    schedule
                   </Button>
                 ),
                 Toolbar: (props) => (

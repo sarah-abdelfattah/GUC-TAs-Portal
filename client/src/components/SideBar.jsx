@@ -5,6 +5,7 @@ import axiosCall from "../helpers/axiosCall";
 
 //icons
 import { AiFillHome } from "react-icons/ai";
+import { RiFolderWarningFill } from "react-icons/ri";
 
 //users
 import HRMenuItems from "./sidebar/HRMenuItems";
@@ -15,6 +16,7 @@ import TAMenuItems from "./sidebar/TAMenuItems";
 function SideBar() {
   const [user, setUser] = useState("");
   const [showHome, setHome] = useState(false);
+  const [showRequest, setRequest] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = window.location.origin + `/${path}`;
@@ -51,10 +53,21 @@ function SideBar() {
           {showHome ? "Home" : ""}
         </MenuItem>
 
-        {user === "HR" ? <HRMenuItems /> : <p />}
         {user === "HOD" ? <HODMenuItems /> : <p />}
         {user === "Course Instructor" ? <CIMenuItems /> : <p />}
         {user === "Teaching Assistant" ? <TAMenuItems /> : <p />}
+        {user === "HR" ? (
+          <HRMenuItems />
+        ) : (
+          <MenuItem
+            icon={<RiFolderWarningFill />}
+            onMouseEnter={() => setRequest(true)}
+            onMouseLeave={() => setRequest(false)}
+            onClick={() => routeChange("request")}
+          >
+            {showRequest ? "Requests" : ""}
+          </MenuItem>
+        )}
       </Menu>
     </ProSidebar>
   );

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const objectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -777,11 +778,11 @@ exports.viewMySchedule = async (req, res) => {
         const id = req.user.gucId;
         const staff = await StaffMember.findOne({ gucId: id });
         if (!staff) {
-            res.send({ msg: `There is no staff member with ID ${id}` })
+            res.send({ error: `There is no staff member with ID ${id}` })
             return;
         }
         if (staff.type !== 'Academic Member') {
-            res.send({ msg: 'You are not authorized to go this page' });
+            res.send({ error: 'You are not authorized to go this page' });
             return;
         }
         originalSlots = await this.viewOriginalSchedule(staff._id);
@@ -897,6 +898,35 @@ exports.updateLogin = async function (req, res) {
         const result = await staff.save();
         return res.send({ data: `updated lastLogin successfully ${result.lastLogin}` });
 
+    } catch (err) {
+        console.log('~ err', err);
+        res.status(500).send({ error: `Internal Server Error: ${err}` });
+    }
+}
+
+exports.viewStaffSchedule = async (req, res) => {
+    try {
+        const id = new object(req.params.id);
+        const user = req.user;
+
+        const requester = await StaffMember.findOne({ gucId: user.gucId });
+        if (requester.type !== 'Academic Member' && requester.role !== 'Course Instructor') {
+            res.send({ error: 'You are not authorized to go this page' });
+            return;
+        }
+
+        const staff = await StaffMember.findOne({ _id: id });
+        if (!staff) {
+            res.send({ error: `There is no staff member with ID ${id}` })
+            return;
+        }
+
+        originalSlots = await this.viewOriginalSchedule(staff._id);
+        if (typeof (originalSlots) !== 'string') {
+            res.json(originalSlots);
+        } else {
+            res.send(originalSlots);
+        }
     } catch (err) {
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
