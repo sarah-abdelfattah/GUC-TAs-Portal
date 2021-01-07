@@ -82,7 +82,7 @@ useEffect(() => {
           <DateTimePicker
           className="crud-input" 
 
-            value={date}
+            value={ date}
             onChange={setDate}
       /> 
          
