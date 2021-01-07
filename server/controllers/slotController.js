@@ -81,6 +81,10 @@ exports.addCourseSlot = async (req, res) => {
         courseSlotsUpdated = await updatedSlots.save();
         res.send({ data: "The slot is added successfully" });
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
@@ -169,6 +173,10 @@ exports.removeCourseSlot = async (req, res) => {
             res.send({data:"The slot is deleted sucessfully"});
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
         res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
@@ -281,7 +289,11 @@ exports.updateCourseSlot = async (req, res) => {
             res.send({data: "The slot is updated successfully"});
         }
     } catch (err) {
+        if (err.isJoi) {
+            console.log(' JOI validation error: ', err);
+            return res.send({ errorJ: err.details[0].message });
+        }
         console.log('~ err', err);
-        res.status(500).send({ error: `Internal Server Error: ${err}` });
+        res.status(500).send({ errorJ: `Internal Server Error: ${err}` });
     }
 }

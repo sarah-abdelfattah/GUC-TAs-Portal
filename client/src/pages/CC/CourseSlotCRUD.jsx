@@ -172,7 +172,10 @@ function CourseSlotCRUD() {
             }
             if(response.data.error){
                 addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
-            }else{
+            }else if(response.data.errorJ){
+                addToast("The location should be written in the format: 'Building.RoomNumber' e.g.'C7.209'", {appearance: 'warning',autoDismiss: true});
+            }
+            else{
                 console.log(response.data.data);
                 addToast(response.data.data, {appearance: 'success',autoDismiss: true});
             }
