@@ -34,11 +34,13 @@ function AcademicMemberCourseSlot() {
     const [id,setID] = useState("");
     const [timing,setTiming] = useState("");
     const weekDays = ["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday"];
-    const slotTiming = ['1st slot (08:15 - 09:45)',
+    const slotTiming = [
+    '1st slot (08:15 - 09:45)',
     '2nd slot (10:00 - 11:30)',
     '3rd slot (11:45 - 13:15)',
     '4th slot (13:45 - 15:15)',
-    '5th slot (15:45 - 17:15)'];
+    '5th slot (15:45 - 17:15)'
+    ];
 
     
     const {addToast} = useToasts();
@@ -47,7 +49,8 @@ function AcademicMemberCourseSlot() {
         setCourse(target.value);
     };
 
-    useEffect(async()=>{
+    useEffect(()=>{
+        async function fetchData() {
         const loggedInUser = localStorage.getItem("user");
 		if (!loggedInUser) {
 		  document.location.href = window.location.origin + "/login"; 
@@ -68,6 +71,8 @@ function AcademicMemberCourseSlot() {
                 document.location.href = window.location.origin + "/unauthorized";
             }
         }
+    }
+    fetchData();
     },[]);
 
     const handleSubmit = async()=>{
@@ -87,7 +92,7 @@ function AcademicMemberCourseSlot() {
             let slot = timing.substring(0,3);
             let convertedTiming = "";
             switch(slot){
-                case"1st":convertedTiming = "08:45 AM";break;
+                case"1st":convertedTiming = "08:15 AM";break;
                 case"2nd":convertedTiming = "10:00 AM";break;
                 case"3rd":convertedTiming = "11:45 AM";break;
                 case"4th":convertedTiming = "01:45 PM";break;
