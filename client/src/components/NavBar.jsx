@@ -5,6 +5,7 @@ import checkLogin from "../helpers/checkLogin";
 //assets
 import profileIcon from "../assets/profileIcon.svg";
 import logout from "../assets/logout.svg";
+import logo from "../assets/logo.svg";
 
 function NavBar() {
   const [name, setName] = useState("");
@@ -19,7 +20,7 @@ function NavBar() {
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
-    document.location.href = "/login";
+    document.location.href = window.location.origin + "/login";
   };
 
   return (
@@ -35,6 +36,7 @@ function NavBar() {
           {name}
         </a>
       </Navbar.Brand>
+      <img src={logo} alt="logo" className="nav-logo" />
       <img
         alt="logout icon"
         src={logout}

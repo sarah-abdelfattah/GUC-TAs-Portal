@@ -489,7 +489,7 @@ exports.sendRequest = async function (req, res) {
     // const NewRequest = await Request.post(senderID,recieverId,req.body);
 
     console.log('~ err', err);
-    return res.status(500).send({ err: err });
+    return res.status(500).send({ error: err });
   }
 };
 
@@ -507,7 +507,7 @@ exports.sendRequest = async function (req, res) {
 //   }
 //     catch (err) {
 //         console.log(err)
-//         return res.send({ err: err })
+//         return res.send({ error: err })
 //     }
 
 // }
@@ -596,7 +596,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 
@@ -664,7 +664,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
     }
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 
@@ -704,7 +704,7 @@ exports.AcceptOrRejectSlot = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.AcceptOrRejectLeave = async function (req, res) {
@@ -857,7 +857,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
     return res.send({ data: NewRequest });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.CancelRequest = async function (req, res) {
@@ -884,7 +884,7 @@ exports.CancelRequest = async function (req, res) {
     return res.send({ data: 'Request deleted successfully' });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewmyReequestsByStatus = async function (req, res) {
@@ -899,7 +899,7 @@ exports.viewmyReequestsByStatus = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewmyReequestsByType = async function (req, res) {
@@ -915,7 +915,7 @@ exports.viewmyReequestsByType = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewRecievedReplacementRequest = async function (req, res) {
@@ -929,7 +929,7 @@ exports.viewRecievedReplacementRequest = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewRecievedRequest = async function (req, res) {
@@ -943,7 +943,7 @@ exports.viewRecievedRequest = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewSlotRequest = async function (req, res) {
@@ -954,7 +954,7 @@ exports.viewSlotRequest = async function (req, res) {
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewNotification = async function (req, res) {
@@ -972,7 +972,7 @@ exports.viewNotification = async function (req, res) {
     });
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 exports.viewmyRequests = async function (req, res) {
@@ -998,7 +998,7 @@ exports.viewmyRequests = async function (req, res) {
     //   }
   } catch (err) {
     console.log(err);
-    return res.send({ err: err });
+    return res.send({ error: err });
   }
 };
 

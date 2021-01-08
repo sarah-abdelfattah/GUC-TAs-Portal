@@ -83,7 +83,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -137,7 +137,7 @@ const courseInstructorController = {
         }),
       });
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -161,7 +161,7 @@ const courseInstructorController = {
 
       // Case: instructor not found
       if (!instructor)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
@@ -196,7 +196,7 @@ const courseInstructorController = {
 
         // Case: course not found
         if (!courseFound) {
-          return res.status(404).send({
+          return res.send({
             error: errorMsgs.notFound('course', req.params.courseName),
           });
         }
@@ -219,21 +219,21 @@ const courseInstructorController = {
         staff.length === 0
           ? { data: errorMsgs.notAssignedTo('staff', 'course') }
           : {
-              data: staff.map((member) => {
-                return {
-                  gucId: member.gucId,
-                  name: member.name,
-                  email: member.email,
-                  dayOff: member.dayOff,
-                  courses: member.courses.map(({ name }) => name),
-                  officeLocation: member.officeLocation.location,
-                  gender: member.gender,
-                };
-              }),
-            }
+            data: staff.map((member) => {
+              return {
+                gucId: member.gucId,
+                name: member.name,
+                email: member.email,
+                dayOff: member.dayOff,
+                courses: member.courses.map(({ name }) => name),
+                officeLocation: member.officeLocation.location,
+                gender: member.gender,
+              };
+            }),
+          }
       );
     } catch (err) {
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -262,7 +262,7 @@ const courseInstructorController = {
 
       // Case: instructor not found
       if (!instructor)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
@@ -281,7 +281,7 @@ const courseInstructorController = {
 
       // Case: course not found
       if (!course)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name (${req.body.courseName})`),
         });
 
@@ -289,7 +289,7 @@ const courseInstructorController = {
 
       // Case: this courseInstructor does not have this course
       if (instructorCourse.length === 0)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name ${req.body.courseName} assigned to this instructor`),
         });
 
@@ -332,7 +332,7 @@ const courseInstructorController = {
 
       // Case: AC not found
       if (!targetAC)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('academic member', `id ${req.body.gucId}`),
         });
 
@@ -398,7 +398,7 @@ const courseInstructorController = {
         );
         // return res.send({ JOI_validation_error: err });
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -427,7 +427,7 @@ const courseInstructorController = {
 
       // Case: instructor not found
       if (!instructor)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
@@ -455,7 +455,7 @@ const courseInstructorController = {
 
       // Case: AC not found
       if (!targetAC)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('Academic Member', `id ${req.body.gucId}`),
         });
 
@@ -468,7 +468,7 @@ const courseInstructorController = {
 
       // Case: course not found
       if (!course)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name (${req.body.courseName})`),
         });
 
@@ -476,7 +476,7 @@ const courseInstructorController = {
 
       // Case: this courseInstructor does not have this course
       if (instructorCourse.length === 0)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name ${req.body.courseName} assigned to this instructor`),
         });
 
@@ -546,7 +546,7 @@ const courseInstructorController = {
 
         // Case: target slot is not found
         if (targetSlotIndex === -1)
-          return res.status(404).send({
+          return res.send({
             error: errorMsgs.notFound('slot', `time ${req.body.slot.time} on ${req.body.slot.day}`),
           });
 
@@ -618,7 +618,7 @@ const courseInstructorController = {
 
       // Case: instructor not found
       if (!instructor)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
@@ -646,7 +646,7 @@ const courseInstructorController = {
 
       // Case: AC not found
       if (!targetAC)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('academic member', `id ${req.body.gucId}`),
         });
 
@@ -659,7 +659,7 @@ const courseInstructorController = {
 
       // Case: course not found
       if (!course)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name (${req.body.courseName})`),
         });
 
@@ -667,7 +667,7 @@ const courseInstructorController = {
 
       // Case: this courseInstructor does not have this course
       if (instructorCourse.length === 0)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `name ${req.body.courseName} assigned to this instructor`),
         });
 
@@ -725,7 +725,7 @@ const courseInstructorController = {
           })
         );
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 
@@ -750,7 +750,7 @@ const courseInstructorController = {
 
       // Case: instructor not found
       if (!instructor)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('instructor', `id ${req.user.gucId}`),
         });
 
@@ -762,7 +762,7 @@ const courseInstructorController = {
 
       // Case: instructor is not assigned to this courses
       const insIsAssigned = instructor.courses.findIndex(({ name }) => name.toLowerCase() === req.body.courseName.toLowerCase()) !== -1;
-      if (!insIsAssigned) return res.status(403).send({ error: errorMsgs.notAuthorized('assign this Academic Member') });
+      if (!insIsAssigned) return res.send({ error: errorMsgs.notAuthorized('assign this Academic Member') });
 
       // * Get AC
       const targetAC = await StaffMember.findOne({
@@ -783,7 +783,7 @@ const courseInstructorController = {
 
       // Case: AC not found
       if (!targetAC)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('Teaching Assistant', `id ${req.body.gucId}`),
         });
 
@@ -791,13 +791,13 @@ const courseInstructorController = {
 
       // Case: course not found
       if (!course)
-        return res.status(404).send({
+        return res.send({
           error: errorMsgs.notFound('course', `id ${req.body.courseName}`),
         });
 
       // Case: course is already assigned
-      if (course.courseCoordinator !== null)
-        return res.status(404).send({
+      if (course.courseCoordinator)
+        return res.send({
           error: errorMsgs.alreadyAssigned('course coordinator'),
         });
 
@@ -814,7 +814,7 @@ const courseInstructorController = {
     } catch (err) {
       if (err.isJoi) {
         console.log(' JOI validation error: ', err);
-        return res.status(400).send(
+        return res.send(
           err['details'].map((err) => {
             return {
               path: err.path.join('.'),
@@ -823,7 +823,7 @@ const courseInstructorController = {
           })
         );
       }
-      return res.status(500).send({ err: `Internal Server Error: ${err}` });
+      return res.status(500).send({ error: `Internal Server Error: ${err}` });
     }
   },
 };

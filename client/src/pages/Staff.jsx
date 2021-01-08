@@ -5,21 +5,23 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
 import { link } from "../helpers/constants.js";
-import { Button } from "@material-ui/core";
+import Button from "react-bootstrap/Button";
 import Fade from "react-reveal/Fade";
+import add from "../assets/add.svg";
+import auth from "../helpers/auth";
 
 function Staff() {
   const [data, setData] = useState([]); //table data
-  const [courses, setCourses] = useState([]); //table data
   const { addToast } = useToasts();
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
-      document.location.href = "/login";
+      document.location.href = window.location.origin + "/login";
     } else {
       async function fetchData() {
         try {
+          await auth(["HR"]);
           const response = await axiosCall("get", `/staffMembers/all/all`);
 
           const locations = await axiosCall(
@@ -33,7 +35,13 @@ function Staff() {
               autoDismiss: true,
             });
           } else {
-            let data = response.data.data.map((staff) => {
+            //get missing hours and days
+            const missingRes = await axiosCall(
+              "get",
+              "attendance/viewStaffMissing"
+            );
+
+            let data = await response.data.data.map((staff) => {
               return {
                 name: staff.name,
                 gucId: staff.gucId,
@@ -50,13 +58,24 @@ function Staff() {
                     } else return null;
                   })
                   .filter((location) => location !== null),
+                missingHours: missingRes.data.data
+                  .map((rec) => {
+                    if (rec.GUCID === staff.gucId) {
+                      return rec.MissingHours;
+                    } else return null;
+                  })
+                  .filter((rec) => rec !== null),
+                missingDays: missingRes.data.data
+                  .map((rec) => {
+                    if (rec.GUCID === staff.gucId) {
+                      return rec.MissingDays;
+                    } else return null;
+                  })
+                  .filter((rec) => rec !== null),
               };
             });
-            setData(data);
-            let data2 = courses.data.data;
-            let data3 = data2.push({ course: "all" });
-            console.log(data3);
-            setCourses(data2);
+
+            await setData(data);
           }
         } catch (err) {
           console.log("~ err", err);
@@ -67,8 +86,39 @@ function Staff() {
     }
   }, []);
 
+  const handleDelete = async (gucId) => {
+    try {
+      const res = await axiosCall("delete", "staffMembers/staff", {
+        gucId: gucId,
+      });
+
+      if (res.data.data) {
+        addToast("Staff deleted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+
+        // delete from table
+        const filtered = await data.filter((staff) => staff.gucId !== gucId);
+        setData(filtered);
+      }
+
+      if (res.data.error) {
+        addToast(res.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast(error, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  };
+
   return (
-    <div>
+    <div className="my-table">
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />
@@ -95,17 +145,23 @@ function Staff() {
                 { title: "Email", field: "email" },
                 { title: "Day off", field: "dayOff" },
                 { title: "office", field: "location" },
+                { title: "Missing Days", field: "missingDays" },
+                { title: "Missing Hours", field: "missingHours" },
               ]}
+              onRowClick={(event, rowData) =>
+                // <StaffProfile gucId={rowData.gucId} />
+                (document.location.href =
+                  window.location.origin + `/staffProfile/${rowData.gucId}`)
+              }
               align="center"
               data={data}
               actions={[
                 {
-                  icon: "save",
-                  tooltip: "Save User",
+                  title: "Delete",
+                  icon: "delete",
+                  tooltip: "Delete Staff",
                   onClick: (event, rowData) => {
-                    document.location.href =
-                      window.location.origin +
-                      `/viewAttendanceRecord/${rowData.id}`;
+                    handleDelete(rowData.gucId);
                   },
                 },
               ]}
@@ -124,18 +180,17 @@ function Staff() {
                 },
               }}
               components={{
-                Action: (props) => (
+                Toolbar: (props) => (
                   <Button
-                    onClick={(event) => props.action.onClick(event, props.data)}
-                    variant="contained"
-                    style={{
-                      textTransform: "none",
-                      background: "#045CC8",
-                      color: "#fff",
-                    }}
-                    size="small"
+                    variant="success"
+                    className="add-new-staff green"
+                    onClick={() =>
+                      (document.location.href =
+                        window.location.origin + "/newStaffMember")
+                    }
                   >
-                    Attendance
+                    <img src={add} alt="add-icon" className="icon" />
+                    <h5 className="text">New Staff Member </h5>
                   </Button>
                 ),
               }}
