@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import Send from"../../components/Send"
 import {
   FormControl,
   InputLabel,
@@ -16,7 +17,7 @@ function ChangeDayOff(){
  const [NewDayOff,setDayOff]=useState("");
  const [Reason,setReason]=useState(" ");
 const [CurDayOff,setCurDayOff]=useState("");
-
+const [flag,SetFlag]=useState(false);
  const { addToast } = useToasts();
 
 useEffect(() => {
@@ -61,6 +62,7 @@ const handleSubmit = async () => {
           autoDismiss: true,
         });
       }
+      SetFlag(true);
     } catch (err) {
       console.log("~err: ", err);
     }
@@ -68,7 +70,7 @@ const handleSubmit = async () => {
  
 
   return(
-
+  <div>
      <div className="crud-innerS-container">
       <div className="crud-form">
           <FormControl className="crud-formControl" required >
@@ -108,6 +110,18 @@ const handleSubmit = async () => {
       >
       Send
       </Button>
+      <Button
+        variant="success"
+        className="crud-submit crud-view-btn blue"
+        disabled={ NewDayOff === "" ? true : false}
+        onClick={SetFlag(true)}
+      >
+      Cancel
+      </Button>
+      </div>
+       {flag==true?
+        (<Send/>):null
+       }
       </div>
   )
 }
