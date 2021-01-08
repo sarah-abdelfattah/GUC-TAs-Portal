@@ -189,7 +189,7 @@ function StaffProfile(props) {
       <div className="profile-all">
         <div className="profile-form">
           <FormControl className="profile-formControl">
-            <InputLabel className="profile-inputLabel">GUC Id</InputLabel>
+            <InputLabel className="profile-inputLabel">GUC ID</InputLabel>
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
           <FormControl

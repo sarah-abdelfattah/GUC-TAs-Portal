@@ -79,7 +79,6 @@ function Homepage() {
         if (hoursRes.data) setHours(hoursRes.data);
 
         const res = await axiosCall("put", "staffMembers/lastLogin");
-        console.log("🚀 ~ file: Homepage.jsx ~ line 82 ~ fetchData ~ res", res);
         if (res.data.error) {
           addToast(res.data.error, {
             appearance: "error",
@@ -149,7 +148,7 @@ function Homepage() {
         <div className="inner-homepage-box">
           <ul>
             <li>
-              <h5>Guc-Id: </h5>
+              <h5>GUC ID: </h5>
               <h6>{user.gucId} </h6>
             </li>
             <li>
