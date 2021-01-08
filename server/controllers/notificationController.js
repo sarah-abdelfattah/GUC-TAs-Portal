@@ -42,11 +42,13 @@ exports.updateSeen = async function (req, res) {
 
 exports.updateAll = async function (req, res) {
     try {
-        const receiverNotifications = await Notification.find({ gucId: req.user.gucId });
-        if (!result)
+        const receiverNotifications = await StaffMember.findOne({ gucId: req.user.gucId });
+        if (!receiverNotifications)
             return res.send({ error: "Sorry no staff with this Id" });
 
-        receiverNotifications.forEach((notif) => {
+        const allNotifications = await Notification.find({});
+
+        allNotifications.forEach((notif) => {
             notif.is_seen = true;
             notif.save();
         })

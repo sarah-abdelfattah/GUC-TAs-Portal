@@ -7,14 +7,11 @@ import Avatar from "react-avatar";
 function Notification(props) {
   let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const [data, setData] = useState({ data: [] });
+  const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
       const res = await checkLogin();
-      console.log(
-        "🚀 ~ file: Notification.jsx ~ line 13 ~ fetchData ~ res",
-        res.gucId
-      );
 
       const notifications = (
         await axiosCall("get", `notifications/${res.gucId}`)
@@ -43,6 +40,19 @@ function Notification(props) {
       });
 
       setData(results);
+
+      const result = (
+        await axiosCall("put", `notifications/notification/updateAll`)
+      ).data;
+      if (result.error) {
+        return addToast(
+          "Sorry an error occurred in notifications, please try again later ",
+          {
+            appearance: "error",
+            autoDismiss: true,
+          }
+        );
+      }
     }
     fetchData();
   }, []);

@@ -21,7 +21,6 @@ function AttendanceTable(props) {
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
-
   const { addToast } = useToasts();
 
   const month = [
