@@ -75,7 +75,7 @@ function Annual() {
       var resp1 = await axiosCall("post", "requests/checkRep", body1);
       setCheck(resp1.data);
 
-      if (check == "success") {
+      if (resp1.data == "success") {
         console.log(object);
         setRep({ reps: rep.reps.concat([object]) });
 
@@ -91,12 +91,13 @@ function Annual() {
         setCourseChosen("");
         //ha3mlha add f el array w h set kol 7aga b 0 tany w hatl3lh toast by2olh added successfully
         //click add if you have another replacement
-      } else {
-        addToast(res.data.error, {
+      }  
+         if (resp1.data.error) {
+        addToast(resp1.data.error, {
           appearance: "error",
           autoDismiss: true,
-        });
-      }
+        }); 
+      } 
     } catch (err) {
       console.log("~err: ", err);
     }

@@ -407,8 +407,8 @@ exports.sendRequest = async function (req, res) {
         const AnnualLeaveDate = new Date(Date.parse(x));
         const replacement = req.body.rep || [];
 
-        if (!AnnualLeaveDate) return res.status(400).send({ error: 'Please enter all the required fields' });
-        if (`${AnnualLeaveDate}` === 'Invalid Date') return res.status(400).send({ error: 'Please enter the date in the correct format' });
+        if (!AnnualLeaveDate) return res.send({ error: 'Please enter all the required fields' });
+        if (`${AnnualLeaveDate}` === 'Invalid Date') return res.send({ error: 'Please enter the date in the correct format' });
 
         // for (i = 0; i < replacement.length; i++) {
         //   var object = replacement[i];
@@ -442,7 +442,7 @@ exports.sendRequest = async function (req, res) {
           flag = true;
         }
         if (!flag) {
-          return res.status(400).send({ error: 'Sorry you cannot submit this request' });
+          return res.send({ error: 'Sorry you cannot submit this request' });
         }
         const subject = type + ' (' + leaveType + ') at ' + req.body.AnnualLeaveDate;
 
