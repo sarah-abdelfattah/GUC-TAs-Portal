@@ -753,11 +753,9 @@ exports.viewTeachingAssignments = async (req, res) => {
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate(
       "HOD"
     );
-    console.log(HOD)
     let departmentFound = await Department.findOne({
       _id: req.user.department,
     }).populate("department");
-    console.log(departmentFound)
     // if there's no department found
     if (!departmentFound) {
       return res.status(404).send({
@@ -817,7 +815,8 @@ exports.viewTeachingAssignments = async (req, res) => {
     else {
       const courseToFind = await Course.findOne({
         name: req.params.course,
-      }).populate({ path: "slots.isAssigned" });
+      }).populate({ path: "slots.isAssigned" })
+        .populate({ path: "slots.location" });
       return res.status(200).send({
         data: {
           course: courseToFind.name,
@@ -829,6 +828,9 @@ exports.viewTeachingAssignments = async (req, res) => {
                   name: slot.isAssigned.name,
                   gucId: slot.isAssigned.gucId,
                 },
+                Day: slot.day,
+                Location: slot.location.location,
+                Time: `${slot.time.toLocaleString('en-EG').split(',')[1].trim() || slot.time.getHours() + ':' + slot.time.getMinutes()}`,
               };
             }),
         },

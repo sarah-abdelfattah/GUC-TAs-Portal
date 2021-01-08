@@ -56,6 +56,7 @@ import StaffSchedule from './pages/Staff/StaffSchedule';
 import Test from './pages/test';
 import ViewRequests from './pages/HOD/viewRequests';
 import Request from './pages/HOD/Request';
+import ViewTeachingAssignments from './pages/HOD/ViewTeachingAssignments';
 
 function App() {
   // eslint-disable-next-line
@@ -100,6 +101,8 @@ function App() {
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                   <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
                   <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
+                  <Route exact path='/teachingAssignments' render={(props) => <ViewTeachingAssignments {...props} />} />
+
 
                 </div>
               )}
