@@ -49,13 +49,13 @@ import StaffAttendance from './pages/Staff/StaffAttendance';
 import Test from './pages/test';
 
 function App() {
-  
+
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
-  
+
   var t = (document.title = 'GUC Portal');
-  
+
   //var user = checkLogin() ;  //a3ml wait 1000 seconds msln
   // const [flag, setFlag] = useState(false);
   // useEffect(async () => {
@@ -66,12 +66,12 @@ function App() {
   //   setFlag(true);
   // }
   //      } }
-    
+
   // }, []);
 
 
   return (
-       
+
     <div className='App'>
       <Router>
         <Switch>
@@ -87,8 +87,7 @@ function App() {
                   <Route exact path='/location' render={(props) => <Location {...props} />} />
                   <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                   <Route exact path='/department' render={(props) => <Department {...props} />} />
-                  <Route exact path='/request' render={(props) => <Request {...props} />} />  
-                  
+                  <Route exact path='/request' render={(props) => <Request {...props} />} />
                   <Route exact path='/course' render={(props) => <Course {...props} />} />
                   <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                   <Route exact path='/profile' render={(props) => <Profile {...props} />} />

@@ -1,59 +1,55 @@
 import React, { useState, useEffect } from "react";
-  
+
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-import Send from"../../components/Send"
+import Send from "../../components/Send";
 import {
   FormControl,
   InputLabel,
   Select,
   Input,
   FormHelperText,
-
   MenuItem,
 } from "@material-ui/core";
-function ChangeDayOff(){
- const [NewDayOff,setDayOff]=useState("");
- const [Reason,setReason]=useState(" ");
-const [CurDayOff,setCurDayOff]=useState("");
-const [flag,SetFlag]=useState(false);
- const { addToast } = useToasts();
+function ChangeDayOff() {
+  const [NewDayOff, setDayOff] = useState("");
+  const [Reason, setReason] = useState(" ");
+  const [CurDayOff, setCurDayOff] = useState("");
+  const { addToast } = useToasts();
 
-useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
-      const Day = await axiosCall('get', 'requests/dayOff'); 
-      setCurDayOff(Day.data.data); 
+      const Day = await axiosCall("get", "requests/dayOff");
+      setCurDayOff(Day.data.data);
     }
     fetchData();
   }, []);
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     try {
-      
       const body = {
-        type:"Change DayOff",
-        newDayOff:NewDayOff,
-        reason: Reason
+        type: "Change DayOff",
+        newDayOff: NewDayOff,
+        reason: Reason,
       };
-      if(NewDayOff==CurDayOff){
-       addToast("already Your Current DayOff", {
+      if (NewDayOff == CurDayOff) {
+        addToast("already Your Current DayOff", {
           appearance: "warning",
           autoDismiss: true,
         });
-        setDayOff("")
-        setReason("")
+        setDayOff("");
+        setReason("");
       }
 
-           
-      const res = await axiosCall('post', 'requests/sendrequest', body);
-       
+      const res = await axiosCall("post", "requests/sendrequest", body);
+
       if (res.data.data) {
         addToast("Your Request has been sent successfully", {
           appearance: "success",
           autoDismiss: true,
         });
         setReason("");
-        setDayOff("")
+        setDayOff("");
       }
 
       if (res.data.error) {
@@ -62,68 +58,78 @@ const handleSubmit = async () => {
           autoDismiss: true,
         });
       }
-      SetFlag(true);
     } catch (err) {
       console.log("~err: ", err);
     }
   };
- 
 
-  return(
-  <div>
-     <div className="crud-innerS-container">
-      <div className="crud-form">
-          <FormControl className="crud-formControl" required >
-             <InputLabel className="crud-inputLabel">New DayOff</InputLabel>
-          <Select
-            className="crud-select"
-            value={NewDayOff}
-            onChange={(event) => {
-              setDayOff(event.target.value);
-            }}
-          >
-       <MenuItem className="crud-menuItem"value="Saturday" >Saturday</MenuItem>
-       <MenuItem className="crud-menuItem"value="Sunday" >Sunday</MenuItem>
-       <MenuItem className="crud-menuItem"value="Monday" >Monday</MenuItem>
-       <MenuItem className="crud-menuItem"value="Tuesday" >Tuesday</MenuItem>
-       <MenuItem className="crud-menuItem"value="Wednesday" >Wednesday</MenuItem>
-       <MenuItem className="crud-menuItem"value="Thursday" >Thursday</MenuItem>
-
-
-          </Select>
+  return (
+    <div>
+      <div className="crud-innerS-container">
+        <div className="crud-form">
+          <FormControl className="crud-formControl" required>
+            <InputLabel className="crud-inputLabel">New DayOff</InputLabel>
+            <Select
+              className="crud-select"
+              value={NewDayOff}
+              onChange={(event) => {
+                setDayOff(event.target.value);
+              }}
+            >
+              <MenuItem className="crud-menuItem" value="Saturday">
+                Saturday
+              </MenuItem>
+              <MenuItem className="crud-menuItem" value="Sunday">
+                Sunday
+              </MenuItem>
+              <MenuItem className="crud-menuItem" value="Monday">
+                Monday
+              </MenuItem>
+              <MenuItem className="crud-menuItem" value="Tuesday">
+                Tuesday
+              </MenuItem>
+              <MenuItem className="crud-menuItem" value="Wednesday">
+                Wednesday
+              </MenuItem>
+              <MenuItem className="crud-menuItem" value="Thursday">
+                Thursday
+              </MenuItem>
+            </Select>
           </FormControl>
-      <FormControl className="crud-formControl"  >
-      <InputLabel className="crud-inputLabel">Reason</InputLabel>
-      <br/>
-      <br/>
-       <textarea  className="crud-input"   rows="3" cols="40" value={Reason} onChange={(event) => {
-              setReason(event.target.value);
-            }}></textarea>
-      </FormControl>
-     
+          <FormControl className="crud-formControl">
+            <InputLabel className="crud-inputLabel">Reason</InputLabel>
+            <br />
+            <br />
+            <textarea
+              className="crud-input"
+              rows="3"
+              cols="40"
+              value={Reason}
+              onChange={(event) => {
+                setReason(event.target.value);
+              }}
+            ></textarea>
+          </FormControl>
+        </div>
+        <Button
+          variant="success"
+          className="crud-submit crud-add-btn green"
+          disabled={NewDayOff === "" ? true : false}
+          onClick={handleSubmit}
+        >
+          Send
+        </Button>
+        <Button
+          variant="success"
+          className="crud-submit crud-view-btn blue"
+          onClick={() =>
+            (document.location.href = window.location.origin + "/request")
+          }
+        >
+          Cancel
+        </Button>
       </div>
-       <Button
-        variant="success"
-        className="crud-submit crud-add-btn green"
-        disabled={ NewDayOff === "" ? true : false}
-        onClick={handleSubmit}
-      >
-      Send
-      </Button>
-      <Button
-        variant="success"
-        className="crud-submit crud-view-btn blue"
-        disabled={ NewDayOff === "" ? true : false}
-        onClick={SetFlag(true)}
-      >
-      Cancel
-      </Button>
-      </div>
-       {flag==true?
-        (<Send/>):null
-       }
-      </div>
-  )
+    </div>
+  );
 }
-  export default  ChangeDayOff
- 
+export default ChangeDayOff;
