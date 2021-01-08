@@ -723,13 +723,9 @@ exports.deleteInstructor = async function (req, res) {
 
     // case he have already assigned courses
     else {
-      const found = instructor.courses.some((course) => {
-        return course === course._id
-      })
-      if (found) {
-        instructor.courses.splice(course, 1)
-        await instructor.save();
-      }
+      const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
+      instructor.courses.splice(InstructorIndex, 1);
+      await instructor.save();
     }
 
     return res.status(200).send({
