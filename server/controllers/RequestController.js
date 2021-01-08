@@ -13,6 +13,7 @@ const Location = require('../models/Location');
 const { request } = require('express');
 //const { find } = require('../models/Request');
 //const { appendFileSync } = require('fs');
+const { populate } = require('./../models/StaffMember');
 
 exports.sendRequest = async function (req, res) {
   try {
@@ -949,8 +950,10 @@ exports.viewRecievedRequest = async function (req, res) {
 exports.viewSlotRequest = async function (req, res) {
   try {
     var recId = req.user.gucId;
-    var rec = await StaffMember.findOne({ gucId: recId }).populate();
-    var searchQuery = await Request.find({ reciever: rec, type: 'Slot Request' }).populate();
+    var rec = await StaffMember.findOne({ gucId: recId });
+    console.log("HERES")
+    var searchQuery = await Request.find({ reciever: rec._id, type: 'Slot Request' }).populate('sender');
+    console.log(searchQuery)
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
