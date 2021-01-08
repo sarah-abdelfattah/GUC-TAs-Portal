@@ -125,9 +125,9 @@ exports.sendRequest = async function (req, res) {
       if (!department.HOD === null) return res.status(400).send({ error: 'This department has no HOD yet.' });
        
       const recid = department.HOD ;
-       
-      const rec = await StaffMember.findOne({recid});
-        
+       console.log(recid);
+      const rec = await StaffMember.findOne({ _id: recid});
+          console.log(rec);
       const currentDayOff = sender.dayOff;
 
       if (newDayOff !== 'Saturday' && newDayOff !== 'Sunday' && newDayOff !== 'Monday' && newDayOff !== 'Tuesday' && newDayOff !== 'Wednesday' && newDayOff !== 'Thursday')
