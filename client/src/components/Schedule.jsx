@@ -76,7 +76,7 @@ function Schedule(props) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await checkLogin();
+        await checkLogin();
         await auth(["Course Instructor"]);
 
         let response;
