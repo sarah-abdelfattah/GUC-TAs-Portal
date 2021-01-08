@@ -28,6 +28,15 @@ function HRMenuItems() {
   return (
     <Menu iconShape="round" className="first-new">
       <MenuItem
+        icon={<MdPersonAdd />}
+        onMouseEnter={() => showTag("staff")}
+        onMouseLeave={() => setIcons(false)}
+        onClick={() => routeChange("staff")}
+      >
+        {icons.staff ? "Staff " : ""}
+      </MenuItem>
+
+      <MenuItem
         icon={<MdLocationOn />}
         onMouseEnter={() => showTag("location")}
         onMouseLeave={() => setIcons(false)}
@@ -61,15 +70,6 @@ function HRMenuItems() {
         onClick={() => routeChange("course")}
       >
         {icons.course ? "Course" : ""}
-      </MenuItem>
-
-      <MenuItem
-        icon={<MdPersonAdd />}
-        onMouseEnter={() => showTag("staff")}
-        onMouseLeave={() => setIcons(false)}
-        onClick={() => routeChange("staff")}
-      >
-        {icons.staff ? "Staff " : ""}
       </MenuItem>
     </Menu>
   );

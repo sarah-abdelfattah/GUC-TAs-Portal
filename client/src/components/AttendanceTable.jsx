@@ -11,6 +11,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
   TimePicker,
+  KeyboardTimePicker,
 } from "@material-ui/pickers";
 
 function AttendanceTable(props) {
@@ -59,6 +60,10 @@ function AttendanceTable(props) {
       async function fetchData() {
         try {
           let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
+          console.log(
+            "🚀 ~ file: AttendanceTable.jsx ~ line 63 ~ fetchData ~ temp",
+            temp
+          );
           let staff = "";
           if (temp.data.data) staff = temp.data.data;
 
@@ -142,6 +147,16 @@ function AttendanceTable(props) {
   };
 
   const handleRowUpdate = async (newData, oldData) => {
+    if (oldData.startTime && oldData.endTime) {
+      return addToast(
+        "Sorry you cannot update a record with no missing sign in/out",
+        {
+          appearance: "error",
+          autoDismiss: true,
+          autoDismissTimeout: 2000,
+        }
+      );
+    }
     //get number
     const filtered = originalData.filter((rec) => rec.date === oldData.date);
     let numberHere = 0;
@@ -156,7 +171,7 @@ function AttendanceTable(props) {
     const newSignOut = newData.endTime;
 
     if (typeof newSignIn === "object" && typeof newSignOut === "object") {
-      return addToast("Sorry you cannot both signIn and sign Out", {
+      return addToast("Sorry you cannot change both signIn and sign Out", {
         appearance: "error",
         autoDismiss: true,
         autoDismissTimeout: 2000,
@@ -439,6 +454,7 @@ function AttendanceTable(props) {
                   {
                     title: "Day",
                     field: "day",
+                    editable: false,
                   },
                   {
                     title: "Date",
@@ -446,7 +462,7 @@ function AttendanceTable(props) {
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
-                          value={value}
+                          value={value ? value : ""}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -459,8 +475,9 @@ function AttendanceTable(props) {
                     filtering: false,
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <TimePicker
+                        <KeyboardTimePicker
                           value={value}
+                          defaultValue="00:00 "
                           onChange={onChange}
                           ampm={false}
                         />
