@@ -35,9 +35,9 @@ function ViewAllStaff() {
           );
           const courses = await axiosCall("get", `${link}/departments/courses`);
 
-          if (response.data.data.error) {
-            addToast(response.data.data.error, {
-              appearance: "warning",
+          if (response.data.error) {
+            addToast(response.data.error, {
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -68,7 +68,7 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          document.location.href = window.location.origin + "/unauthorized";
+          // document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();
@@ -144,7 +144,8 @@ function ViewAllStaff() {
                   tooltip: "Save User",
                   onClick: (event, rowData) => {
                     document.location.href =
-                      window.location.origin + `/${rowData.id}/viewSchedule`;
+                      window.location.origin +
+                      `/viewStaffSchedule/${rowData.id}`;
                   },
                 },
               ]}
@@ -161,10 +162,10 @@ function ViewAllStaff() {
                     onClick={(event) => props.action.onClick(event, props.data)}
                     color="primary"
                     variant="contained"
-                    style={{ textTransform: "none" }}
+                    style={{ textTransform: "none", background: "#045CC8" }}
                     size="small"
                   >
-                    View schedule
+                    schedule
                   </Button>
                 ),
                 Toolbar: (props) => (

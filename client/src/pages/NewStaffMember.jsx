@@ -88,7 +88,7 @@ function NewStaffMember(props) {
         });
       }
     } catch (err) {
-      console.log("~err: ", err);
+      console.log("~error: ", err);
     }
   };
 
@@ -104,7 +104,7 @@ function NewStaffMember(props) {
 
       await setDeps(depResult.data.data);
     } catch (err) {
-      console.log("~err:", err);
+      console.log("~error:", err);
     }
   };
 
