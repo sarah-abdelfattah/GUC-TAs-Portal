@@ -894,7 +894,7 @@ exports.updateLogin = async function (req, res) {
     try {
         let user = req.user;
         const staff = await StaffMember.findOne({ gucId: user.gucId })
-        staff.lastLogin = new Date();
+        staff.lastLogIn = new Date();;
         const result = await staff.save();
         return res.send({ data: `updated lastLogin successfully ${result.lastLogin}` });
 

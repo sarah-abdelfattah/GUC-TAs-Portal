@@ -31,14 +31,11 @@ function Homepage() {
         setUser(user);
 
         if (!user.lastLogIn || user.lastLogIn === null) {
+          console.log(
+            "🚀 ~ file: Homepage.jsx ~ line 34 ~ fetchData ~ user",
+            user.lastLogIn
+          );
           setmodal(true);
-          const res = await axiosCall("put", "staffMembers/lastLogin");
-          if (res.data.error) {
-            addToast(res.data.error, {
-              appearance: "error",
-              autoDismiss: true,
-            });
-          }
         }
 
         //get location
@@ -80,6 +77,15 @@ function Homepage() {
         //get hours
         const hoursRes = await axiosCall("get", "attendance/viewHours");
         if (hoursRes.data) setHours(hoursRes.data);
+
+        const res = await axiosCall("put", "staffMembers/lastLogin");
+        console.log("🚀 ~ file: Homepage.jsx ~ line 82 ~ fetchData ~ res", res);
+        if (res.data.error) {
+          addToast(res.data.error, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
