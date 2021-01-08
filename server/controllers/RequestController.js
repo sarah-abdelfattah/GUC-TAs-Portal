@@ -543,7 +543,7 @@ exports.sendRequest = async function (req, res) {
 //   }
 //     catch (err) {
 //         console.log(err)
-//         return res.send({ err: err })
+//         return res.send({ error: err })
 //     }
 
 // }
@@ -1009,7 +1009,7 @@ exports.viewRecievedRequest = async function (req, res) {
     var searchQuery = await Request.find({ reciever: rec, type: req.params.type }).populate();
     return res.send({ data: searchQuery });
   } catch (err) {
-
+    console.log(err);
     return res.send({ error: err });
   }
 };
