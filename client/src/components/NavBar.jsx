@@ -5,7 +5,7 @@ import checkLogin from "../helpers/checkLogin";
 //assets
 import profileIcon from "../assets/profileIcon.svg";
 import logout from "../assets/logout.svg";
-import logo from "../assets/logo.svg";
+import logo from "../assets/logo2.png";
 
 function NavBar() {
   const [name, setName] = useState("");

@@ -14,6 +14,10 @@ const { request } = require('express');
 //const { find } = require('../models/Request');
 //const { appendFileSync } = require('fs');
 
+//Added
+const { populate } = require('./../models/StaffMember');
+const validation = require('../helpers/validation');
+
 exports.sendRequest = async function (req, res) {
   try {
     const type = req.body.type;
@@ -961,8 +965,8 @@ exports.viewRecievedRequest = async function (req, res) {
 exports.viewSlotRequest = async function (req, res) {
   try {
     var recId = req.user.gucId;
-    var rec = await StaffMember.findOne({ gucId: recId }).populate();
-    var searchQuery = await Request.find({ reciever: rec, type: 'Slot Request' }).populate();
+    var rec = await StaffMember.findOne({ gucId: recId });
+    var searchQuery = await Request.find({ reciever: rec._id, type: 'Slot Request' }).populate('sender');
     return res.send({ data: searchQuery });
   } catch (err) {
     console.log(err);
@@ -1021,38 +1025,38 @@ exports.slotLinkingReqResponse = async (req, res) => {
     const id = req.user.gucId;
     const { reqNumber, status } = req.body;
     if (!reqNumber || !status) {
-      res.status(400).send({ error: 'You should specify all the data' });
+      res.send({ error: 'You should specify all the data' });
       return;
     }
     const slotLinkingValid = await validation.validateSlotLinking.validateAsync(req.body);
     course = '';
     const staff = await StaffMember.findOne({ gucId: id });
     if (!staff) {
-      res.status(404).send({ error: `There is no staff member with ID: ${id}` });
+      res.send({ error: `There is no staff member with ID: ${id}` });
       return;
     }
     if (staff.type !== 'Academic Member') {
-      res.status(403).send({ error: 'You are not authorized to go this page' });
+      res.send({ error: 'You are not authorized to go this page' });
       return;
     }
 
     slotRequests = await Request.find({ reciever: staff._id, type: 'Slot Request' }).lean();
     if (!slotRequests) {
-      res.status(200).send({ message: 'There is no slot-linking requests yet.' });
+      res.send({ error: 'There is no slot-linking requests yet.' });
       return;
     }
     if (reqNumber > slotRequests.length) {
-      res.status(400).send({ error: 'You must specify a correct slot request number' });
+      res.send({ error: 'You must specify a correct slot request number' });
       return;
     }
     const courseCC = await Course.findOne({ name: slotRequests[reqNumber - 1].coursename });
     // console.log(courseCC);
     if (!courseCC.courseCoordinator.equals(staff._id)) {
-      res.status(403).send({ error: 'You are not authorized to go to this page.' });
+      res.send({ error: 'You are not authorized to go to this page.' });
       return;
     }
     if (slotRequests[reqNumber - 1].status !== 'pending') {
-      res.status(200).send({ message: `You have already responded to this request with ${slotRequests[reqNumber - 1].status}` });
+      res.status(200).send({ error: `You have already responded to this request with ${slotRequests[reqNumber - 1].status}` });
       return;
     }
     slotRequests[reqNumber - 1].status = status;
@@ -1089,7 +1093,7 @@ exports.slotLinkingReqResponse = async (req, res) => {
       }
       slotLocation = await Location.find({ type: slotRequests[reqNumber - 1].locationType });
       if (!slotLocation) {
-        res.status(404).send({ error: `The slot location ${slotRequests[reqNumber - 1].locationType} does not exist` });
+        res.send({ error: `The slot location ${slotRequests[reqNumber - 1].locationType} does not exist` });
         return;
       }
       assignedCourses = 0;
@@ -1126,10 +1130,14 @@ exports.slotLinkingReqResponse = async (req, res) => {
       message: `Your ${slotRequests[reqNumber - 1].subject} was ${status}`,
     });
     await newNotification.save();
-    res.status(200).send({ message: `The slot-linking request is ${slotRequests[reqNumber - 1].status} successfully` });
+    res.status(200).send({ data: `The slot-linking request is ${slotRequests[reqNumber - 1].status} successfully` });
   } catch (err) {
-    console.log('~ err', err);
-    res.status(500).send({ message: `Internal Server Error: ${err}` });
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+  }
+      console.log('~ err', err);
+      res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 
