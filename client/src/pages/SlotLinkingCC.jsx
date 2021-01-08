@@ -11,6 +11,18 @@ import Fade from "react-reveal/Fade";
 function SlotLinkingCC() {
     const {addToast} = useToasts(); 
     const [rows,setRows] = useState([]);
+    const [reqIDRes,setReqIDRes] = useState(0);
+    const switchDay = (day)=>{
+        switch(day){
+            case 1: return "Monday";
+            case 2: return "Tuesday";
+            case 3: return "Wednesday";
+            case 4: return "Thursday";
+            case 5: return "Friday";
+            case 6: return "Saturday";
+            default: return "Sunday"
+        }
+    }
     useEffect(async()=>{
         try{
             const response = await axios.get(`${link}/requests/viewSlotRequest`);
@@ -18,17 +30,23 @@ function SlotLinkingCC() {
                 addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
             }else{
                 let myRequests = response.data.data;
-                // myRequests.map((req)=>{
-                //     req.tableData = req.tableData.id
-                // })
-                // console.log(myRequests)
+                let index = 1;
+                myRequests.map((req)=>{
+                    req.id = index++;
+                    let dateConvert = new Date(req.date);
+                    req.time =  (dateConvert.getHours()<10?"0":"") + dateConvert.getHours() +":"
+                                + (dateConvert.getMinutes()<10?"0":"") + dateConvert.getMinutes();
+                    req.day = switchDay(dateConvert.getDay());
+
+                })
+                console.log(myRequests);
                 setRows(myRequests)
             }
         }catch(e){
             console.log('~ err', e);
             document.location.href = window.location.origin + "/unauthorized";
         }
-    },[])
+    },[reqIDRes])
     const useStyles = makeStyles((theme)=>({
         acceptButton:{
             backgroundColor:"#00c458",
@@ -41,6 +59,31 @@ function SlotLinkingCC() {
             // marginLeft:"20px"
         },
     }))
+
+    const handleSubmit = async (e,rowData) =>{
+        let submittedStatus = e.currentTarget.value;
+        try{
+            const response = await axios.put(`${link}/requests/acceptRejectSlotLinking`,
+            {
+                reqNumber: rowData.id,
+                status: submittedStatus
+            });
+            if(response.data.error){
+                addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
+            }else{
+                if(submittedStatus === "accepted" && response.data.data === "The slot-linking request is rejected successfully"){
+                    addToast(`The slot-linking request is rejected since there is no locations of type ${rowData.locationType} at the requested time.`,
+                    {appearance: 'warning',autoDismiss: true});
+                }else{
+                    addToast(response.data.data, {appearance: 'success',autoDismiss: true});
+                }
+                setReqIDRes(rowData.id)
+            }
+        }catch(e){
+            console.log('~ err', e);
+            document.location.href = window.location.origin + "/unauthorized";
+        }
+    }
     const classes = useStyles();
     return (
         <div className="my-table">
@@ -48,13 +91,13 @@ function SlotLinkingCC() {
         <h3 className="general-header">Slot Requests</h3>
         <hr className="general-line" />
         <Grid container justify = "center" alignItems = "center" spacing = {2}>
-            <Grid item xs = {10} sm ={10} md = {9}>
+            <Grid item xs = {10} sm ={10} md = {10}>
                 <MaterialTable
                     title=""
                     columns={[
-                        // { title: 'Number', field: 'tableData'},
                         { title: "Course name", field: "coursename" },
-                        { title: "Date", field: "date" },
+                        { title: "Day", field: "day" },
+                        { title: "Time", field: "time" },
                         { title: "Location type", field: "locationType"},
                         { title: "Sender", field: "sender.gucId"},
                         { title: "Status", field: "status"},
@@ -65,7 +108,7 @@ function SlotLinkingCC() {
                         {
                         icon: 'save',
                         tooltip: 'Save User',
-                        onClick: (event, rowData) => console.log("You saved " + rowData.sender.gucId)
+                        onClick: (event, rowData) => handleSubmit(event,rowData)
                         }
                     ]}
                     options={{
@@ -86,7 +129,8 @@ function SlotLinkingCC() {
                                     variant="contained"
                                     style={{textTransform: 'none'}}
                                     size="small"
-                                    value = "accept"
+                                    value = "accepted"
+                                    disabled = {props.data.status === "pending"?false:true}
                                 >
                                     Accept
                                 </Button>
@@ -98,7 +142,8 @@ function SlotLinkingCC() {
                                     variant="contained"
                                     style={{textTransform: 'none'}}
                                     size="small"
-                                    value = "reject"
+                                    value = "rejected"
+                                    disabled = {props.data.status === "pending"?false:true}
                                 >
                                     Reject
                                 </Button>
