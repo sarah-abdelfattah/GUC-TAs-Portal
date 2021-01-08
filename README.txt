@@ -740,7 +740,7 @@ Success Response Example
 ### 45
 Functionality: Accept/reject “slot linking” requests from academic members linked to his/her course. 
 Note that once a “slot linking” request is accepted, it should be automatically added to the sender’s schedule.
-Route: /requests/cc/acceptRejectSlotLinking
+Route: /requests/acceptRejectSlotLinking
 Request type: PUT
 Request body:
 {

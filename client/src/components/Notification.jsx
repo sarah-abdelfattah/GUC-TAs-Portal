@@ -38,7 +38,7 @@ function Notification(props) {
         return {
           message: notification.message,
           date: date,
-          isSeen: notification.is_Seen,
+          isSeen: notification.is_seen,
         };
       });
 
@@ -54,7 +54,13 @@ function Notification(props) {
       <div className="all-notifications">
         {data.length > 0 &&
           data.map((notification) => (
-            <div className="notification-inner-container">
+            <div
+              className={
+                notification.isSeen
+                  ? `notification-inner-container`
+                  : `notification-inner-container not-seen`
+              }
+            >
               <Avatar
                 maxInitials={1}
                 size={35}

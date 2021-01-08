@@ -796,7 +796,7 @@ const courseInstructorController = {
         });
 
       // Case: course is already assigned
-      if (course.courseCoordinator !== null)
+      if (course.courseCoordinator)
         return res.send({
           error: errorMsgs.alreadyAssigned('course coordinator'),
         });
@@ -814,7 +814,7 @@ const courseInstructorController = {
     } catch (err) {
       if (err.isJoi) {
         console.log(' JOI validation error: ', err);
-        return res.status(400).send(
+        return res.send(
           err['details'].map((err) => {
             return {
               path: err.path.join('.'),
