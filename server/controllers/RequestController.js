@@ -122,7 +122,7 @@ exports.sendRequest = async function (req, res) {
     if (type == 'Change DayOff') {
       //TODO to be changed
       const newDayOff = req.body.newDayOff;
-      if (!newDayOff) return res.status(400).send({ error: 'Please enter all the missing fields' });
+      if (!newDayOff) return res.send({ error: 'Please enter all the missing fields' });
 
       var department = await Department.findOne({ _id: sender.department._id }).populate();
       if (!department) return res.status(400).send({ error: 'This department does not exist.' });
@@ -199,6 +199,11 @@ exports.sendRequest = async function (req, res) {
       }
       if (!flag) {
         return res.send({ error: 'Sorry you cannot submit this request' });
+      }
+      //check for the time
+      //console.log(date.get)
+      if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
+      return res.send({ error: 'Please Enter correct Slot Time' });
       }
 
 
@@ -1090,28 +1095,20 @@ exports.getCourses = async function (req, res) {
 exports.viewmyRequests = async function (req, res) {
   try {
     var senderId = req.user.gucId;
-    var sender = await StaffMember.findOne({ gucId: senderId }).populate();
+    const sender = await StaffMember.findOne({ gucId: senderId }).populate();
     ////if(!req.params){
-    console.log(sender);
-    var searchQuery = await Request.find({ sender: sender }).populate(); //or something
-    //var Arr=[];
-    // for(i=0;i<searchQuery.length;i++){
-    // Arr[i]=searchQuery[i].subject
-    // }
-    return res.send({ data: searchQuery });
-    //}
-    // else{
+     
 
-    //   var ObjectId=req.params.id;
-    //  console.log("hnaa "+ObjectId);
-    //   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate()
-    //   console.log(searchQuery);
-    //   return res.send({data: searchQuery  });
-    //   }
+    var searchQuery = await Request.find({ sender: sender }).populate(); //or something
+   
+
+    console.log(searchQuery)
+    return res.send({ data: searchQuery });
+    
   } catch (err) {
     console.log(err);
     return res.send({ error: err });
-  }
+  }  
 };
 
 // Function 37: Accept/reject “slot linking” requests from academic members linked to his/her course.

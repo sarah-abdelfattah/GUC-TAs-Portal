@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import auth from "../helpers/auth";
+import auth from "../../helpers/auth";
 
-import Add from "../components/Add";
-import View from "../components/View";
+import Add from "../../components/Add";
+import View from "../../components/View";
 
 //components
-import RequestsDropDown from "../components/RequestsDropDown";
-import ViewRequestsDropDown from "../components/ViewRequestsDropDown";
+import RequestsDropDown from "../../components/RequestsDropDown";
+import ViewRequestsDropDown from "../../components/ViewRequestsDropDown";
 
 function Request() {
   //var user = checkLogin() ;

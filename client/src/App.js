@@ -33,7 +33,7 @@ import Homepage from './pages/Homepage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import Login from './pages/Login';
 import Location from './pages/Location';
-import Request from "./pages/Request";
+import Request from "./pages/Request/Request";
 import Faculty from './pages/Faculty';
 import Department from './pages/Department';
 import Course from './pages/Course';
@@ -49,17 +49,18 @@ import CourseSlotCC from './pages/CC/CourseSlotCRUD';
 import CourseSlot from './pages/AcademicMemberCourseSlot';
 import AssignCC from './pages/InstrCourseAssignCC';
 import SlotLinkingCC from './pages/SlotLinkingCC';
-
+import viewReqest from './pages/Request/viewReq';
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
 import StaffAttendance from './pages/Staff/StaffAttendance';
 import StaffSchedule from './pages/Staff/StaffSchedule';
 
+
 import Test from './pages/test';
 
 function App() {
-
+  console.log("hna 1")
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
@@ -98,6 +99,7 @@ function App() {
                   <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                   <Route exact path='/department' render={(props) => <Department {...props} />} />
                   <Route exact path='/request' render={(props) => <Request {...props} />} />
+                  <Route exact path='/viewReq/:id' render={(props) => <viewReqest {...props} />} />
                   <Route exact path='/course' render={(props) => <Course {...props} />} />
                   <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                   <Route exact path='/profile' render={(props) => <Profile {...props} />} />
