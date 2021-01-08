@@ -55,7 +55,7 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
-  const [accept_or_reject_request, setAccept_or_reject_request] = useState([]);
+  const [accept_or_reject_request, setAccept_or_reject_request] = useState(false);
   const [comment, setComment] = useState([]);
   const { addToast } = useToasts();
   const classes = useStyles();

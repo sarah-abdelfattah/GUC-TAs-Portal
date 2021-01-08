@@ -116,7 +116,7 @@ exports.sendRequest = async function (req, res) {
       return res.send({ data: newRequest });
     }
 
-    if (type == 'Change DayOff') {
+    if (type === 'Change DayOff') {
       //TODO to be changed
       const newDayOff = req.body.newDayOff;
       if (!newDayOff) return res.status(400).send({ error: 'Please enter all the missing fields' });
@@ -644,6 +644,8 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       var senderId = NewRequest.sender._id;
       var sender = await StaffMember.findOne({ _id: senderId }).populate();
 
+      console.log(sender)
+
       sender.dayOff = NewRequest.newDayOff;
       await sender.save();
       await NewRequest.save();
@@ -659,19 +661,16 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
     } else {
       var senderId = NewRequest.sender._id;
       var sender = await StaffMember.findOne({ _id: senderId }).populate();
-      console.log("here")
-      console.log(sender);
+      // updates
+      NewRequest.status = 'rejected';
+      NewRequest.comment = req.body.comment;
+      await NewRequest.save();
 
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
       });
-      console.log(newNotificatin);
       await newNotificatin.save();
-      // updates
-      NewRequest.status = 'rejected';
-      NewRequest.comment = req.body.comment;
-      await NewRequest.save();
       return res.send({ data: NewRequest });
     }
   } catch (err) {
@@ -744,7 +743,9 @@ exports.AcceptOrRejectLeave = async function (req, res) {
     }
 
     const Requestid = req.params.id;
-    var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
+    const reciever1 = await StaffMember.findOne({_id: req.user.id})
+    console.log(req.user.id);
+    var NewRequest = await Request.findOne({ _id: Requestid, reciever: reciever1 }).populate();
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
