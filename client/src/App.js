@@ -23,6 +23,7 @@ import './styles/profile.scss';
 import './styles/ChangePassword.scss';
 import './styles/tables.scss';
 import './styles/Modal.scss';
+import './styles/notifications.scss';
 
 //Import the pages
 import NavBar from './components/NavBar';
@@ -44,7 +45,6 @@ import SlotsAssigned from './pages/InstructorSlotsAssigned';
 import Schedule from './pages/AcademicMemberSchedule';
 import CourseSlotCC from './pages/CC/CourseSlotCRUD';
 import CourseSlot from './pages/AcademicMemberCourseSlot';
-
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
@@ -61,6 +61,8 @@ function App() {
 
   return (
     <div className='App'>
+      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar notify={false} />}
+      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
       <Router>
         <Switch>
           <ToastProvider>
@@ -98,8 +100,6 @@ function App() {
           </ToastProvider>
         </Switch>
       </Router>
-      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar />}
-      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
     </div>
   );
 }

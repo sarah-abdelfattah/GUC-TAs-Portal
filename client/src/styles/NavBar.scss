@@ -4,11 +4,12 @@
     background-color: #343434;
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
     padding: 3px;
     z-index: 999;
     border-top: none;
-    border-bottom-right-radius: 12px;
+    // border-bottom-right-radius: 12px;
 
     // background: rgb(91, 91, 91);
     // background: linear-gradient(270deg, rgba(91, 91, 91, 1) 0%, rgba(29, 29, 29, 1) 96%);
@@ -38,6 +39,15 @@
         margin: 0 auto;
     }
 
+    .notification {
+        position: absolute;
+        right: 60px;
+        width: 40px;
+        height: 30px;
+        margin: 0;
+        cursor: pointer;
+    }
+
     .logout-icon {
         position: fixed;
         right: 10px;
@@ -45,6 +55,16 @@
         height: 30px;
         cursor: pointer;
     }
+}
+
+.arrow-icon {
+    color: #343434;
+    position: absolute;
+    right: 60px;
+    top: 38px;
+    width: 40px;
+    height: 45px;
+    z-index: 997;
 }
 
 @media only screen and (max-width: 380px) {
@@ -56,8 +76,19 @@
 
         .navbar-name {
             margin-left: 5px;
-
             font-size: 16px;
+        }
+
+        .nav-logo {
+            left: 41%;
+            width: 80px;
+            height: 30px;
+        }
+
+        .notification {
+            right: 45px;
+            width: 35px;
+            height: 25px;
         }
 
         .logout-icon {
@@ -66,6 +97,12 @@
             height: 20px;
         }
     }
+
+    .arrow-icon {
+        top: 34px;
+        right: 43px;
+    }
+
 }
 
 @media only screen and (max-width: 300px) {
@@ -74,9 +111,27 @@
             font-size: 14px;
         }
 
+        .nav-logo {
+            left: 41%;
+            width: 70px;
+            height: 28px;
+        }
+
+        .notification {
+            right: 43px;
+            width: 25px;
+            height: 23px;
+        }
+
         .logout-icon {
             width: 20px;
             height: 20px;
         }
     }
+
+    .arrow-icon {
+        top: 32px;
+        right: 30px;
+    }
+
 }

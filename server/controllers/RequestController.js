@@ -577,7 +577,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
 
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Accepted',
+        message: 'your ' + NewRequest.subject + ' was Accepted.',
       });
       await newNotificatin.save();
       await NewRequest.save();
@@ -585,7 +585,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
     } else {
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Rejected',
+        message: 'your ' + NewRequest.subject + ' was Rejected.',
       });
       await newNotificatin.save();
       // updates
@@ -646,7 +646,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       //notification
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your Change DayOFF Request was Accepted',
+        message: 'Your Change day off Request was Accepted.',
       });
       await newNotificatin.save();
 
@@ -654,7 +654,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
     } else {
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Rejected',
+        message: 'Your ' + NewRequest.subject + 'was Rejected.',
       });
       await newNotificatin.save();
       // updates
@@ -688,13 +688,13 @@ exports.AcceptOrRejectSlot = async function (req, res) {
       await NewRequest.save();
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your  Slot Request at' + NewRequest.date + ' was Accepted',
+        message: 'Your Slot Request at' + NewRequest.date + ' was Accepted.',
       });
       await newNotificatin.save();
     } else {
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Rejected',
+        message: 'Your ' + NewRequest.subject + ' was Rejected.',
       });
       await newNotificatin.save();
       // updates
@@ -747,7 +747,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
 
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Accepted',
+        message: 'Your' + NewRequest.subject + ' was Accepted.',
       });
       await newNotificatin.save();
       if (NewRequest.leaveType == 'Sick') {
@@ -846,7 +846,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
     } else {
       const newNotificatin = new Notification({
         reciever: sender,
-        message: '  your' + NewRequest.subject + 'was Rejected',
+        message: 'Your ' + NewRequest.subject + ' was Rejected.',
       });
       await newNotificatin.save();
       // updates
@@ -878,7 +878,7 @@ exports.CancelRequest = async function (req, res) {
 
     // }
     if (!(searchQuery.status == 'pending')) {
-      return res.send({ error: ' Soryy you cannot cancel this request' });
+      return res.send({ error: 'Sorry you cannot cancel this request' });
     }
     await Request.deleteOne({ _id: id });
     return res.send({ data: 'Request deleted successfully' });

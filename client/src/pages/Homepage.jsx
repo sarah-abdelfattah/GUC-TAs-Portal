@@ -21,17 +21,16 @@ function Homepage() {
   useEffect(() => {
     async function fetchData() {
       setmodal(false);
-
       //get user
       try {
-        const user = await checkLogin();
+        const temp = await checkLogin();
+
+        const user = (await axiosCall("get", `staffMembers/all/${temp.gucId}`))
+          .data.data;
+
         setUser(user);
 
-        const dbUser = (
-          await axiosCall("get", `staffMembers/all/${user.gucId}`)
-        ).data.data;
-
-        if (!dbUser.lastLogIn || dbUser.lastLogIn === null) {
+        if (!user.lastLogIn || user.lastLogIn === null) {
           setmodal(true);
           const res = await axiosCall("put", "staffMembers/lastLogin");
           if (res.data.error) {

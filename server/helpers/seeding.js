@@ -4,6 +4,7 @@ const Location = require('../models/Location');
 const Faculty = require('../models/Faculty');
 const Department = require('../models/Department');
 const Course = require('../models/Course');
+const Notification = require('../models/Notification');
 
 const bcrypt = require('bcryptjs');
 
@@ -719,4 +720,25 @@ exports.seedDB = async function () {
 
     await StaffMember.insertMany(TA);
     console.log('Seeded TA successfully');
+
+
+    const staff = await StaffMember.findOne({ gucId: "AC-1" });
+
+    const notifications = [
+        {
+            reciever: staff._id,
+            message: "seeded message 1",
+        },
+        {
+            reciever: staff._id,
+            message: "seeded message 3",
+        },
+        {
+            reciever: staff._id,
+            message: "seeded message 3",
+        }
+    ]
+
+    await Notification.insertMany(notifications);
+    console.log('Seeded Notifications successfully');
 }
