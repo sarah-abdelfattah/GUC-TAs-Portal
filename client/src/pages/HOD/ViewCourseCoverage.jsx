@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable from "material-table";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
 import Fade from "react-reveal/Fade";
-import { Button } from "@material-ui/core";
 import { MyButton } from "../../styles/StyledComponents";
 
 function ViewCourseCoverage() {
