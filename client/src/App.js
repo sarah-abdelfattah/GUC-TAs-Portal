@@ -106,7 +106,6 @@ function App() {
                   <Route exact path='/teachingAssignments' render={(props) => <ViewTeachingAssignments {...props} />} />
 
 
-                  //to be last
                   <Route exact path='/' render={(props) => <Homepage {...props} />} />
                 </div>
               )}
