@@ -46,6 +46,7 @@ router.post("", async function (req, res) {
                 role: staff.role,
                 salary: staff.salary,
                 officeLocation: staff.officeLocation,
+                lastLogin: staff.lastLogIn,
                 faculty: staff.type === 'Academic Member' ? staff.faculty : undefined,
                 department: staff.type === 'Academic Member' ? staff.department : undefined
             }
@@ -54,7 +55,6 @@ router.post("", async function (req, res) {
             await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {
-                staff.registeredDate = new Date();
                 console.log("not logged in before")
                 await readline.question('Do you want to change your password (Y/N): ', async (answer) => {
                     if (answer === 'Y' || answer === 'y') {
@@ -75,7 +75,7 @@ router.post("", async function (req, res) {
                     }
                 })
 
-                staff.lastLogIn = new Date();
+                // staff.lastLogIn = new Date();
                 await staff.save();
                 return res.header("auth-token", token).send({ token: token, fistLogIn: true, message: "PLEASE update your password in the console (later it will be handled in frontend)" });
             }
@@ -92,7 +92,7 @@ router.post("", async function (req, res) {
             return res.send({ JOI_validation_error: err.details[0].message });
         }
         console.log(err)
-        return res.send({ err: err })
+        return res.send({ error: err })
     }
 }
 );

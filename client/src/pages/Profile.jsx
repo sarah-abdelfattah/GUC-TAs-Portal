@@ -46,6 +46,10 @@ function Profile(props) {
       setPosition(user.type);
 
       let dSalary = await axiosCall("get", `staffMembers/salary/${user.gucId}`);
+      console.log(
+        "🚀 ~ file: Profile.jsx ~ line 49 ~ fetchData ~ dSalary",
+        dSalary
+      );
       setDeductedSalary(dSalary.data.salary.toFixed(2));
 
       //get location
@@ -117,7 +121,7 @@ function Profile(props) {
         });
       }
     } catch (err) {
-      console.log("~err: ", err);
+      console.log("~error: ", err);
     }
   };
 

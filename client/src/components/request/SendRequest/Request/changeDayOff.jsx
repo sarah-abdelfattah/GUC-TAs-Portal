@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import Button from "react-bootstrap/Button";
-import axiosCall from "../../helpers/axiosCall";
+import axiosCall from "../../../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-import Send from "../../components/Send";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  Input,
-  FormHelperText,
-  MenuItem,
-} from "@material-ui/core";
+
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+
 function ChangeDayOff() {
   const [NewDayOff, setDayOff] = useState("");
   const [Reason, setReason] = useState(" ");
@@ -25,6 +19,7 @@ function ChangeDayOff() {
     }
     fetchData();
   }, []);
+
   const handleSubmit = async () => {
     try {
       const body = {
@@ -65,7 +60,7 @@ function ChangeDayOff() {
 
   return (
     <div>
-      <div className="crud-innerS-container">
+      <div className="crud-inner-container">
         <div className="crud-form">
           <FormControl className="crud-formControl" required>
             <InputLabel className="crud-inputLabel">New DayOff</InputLabel>
@@ -118,15 +113,6 @@ function ChangeDayOff() {
           onClick={handleSubmit}
         >
           Send
-        </Button>
-        <Button
-          variant="success"
-          className="crud-submit crud-view-btn blue"
-          onClick={() =>
-            (document.location.href = window.location.origin + "/request")
-          }
-        >
-          Cancel
         </Button>
       </div>
     </div>

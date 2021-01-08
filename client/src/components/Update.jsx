@@ -6,7 +6,11 @@ function Update(props) {
   return (
     <div className="crud-button crud-update blue" onClick={props.onClick}>
       <img src={update} alt="Update-icon" className="icon" />
-      <h5 className="text">Update {props.text} </h5>
+      {props.textClassified ? (
+        <h5 className="text">{props.textClassified} </h5>
+      ) : (
+        <h5 className="text">Add {props.text} </h5>
+      )}{" "}
     </div>
   );
 }

@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import checkLogin from "../helpers/checkLogin";
 import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
-
 import id from "../assets/id2.svg";
 import signIn from "../assets/signin.svg";
 import signOut from "../assets/signout.svg";
@@ -15,50 +14,76 @@ function Homepage() {
   const [department, setDepartment] = useState("");
   const [days, setDays] = useState("");
   const [hours, setHours] = useState("");
+  const [modal, setmodal] = useState(false);
+
   const { addToast } = useToasts();
 
   useEffect(() => {
     async function fetchData() {
+      setmodal(false);
+
       //get user
-      const user = await checkLogin();
-      setUser(user);
+      try {
+        const user = await checkLogin();
+        setUser(user);
 
-      //get location
-      const locationRes = await axiosCall("get", "locations/room/all");
-      let office;
-      if (locationRes.data.data) {
-        office = locationRes.data.data.find(
-          ({ _id }) => _id === user.officeLocation
-        );
+        const dbUser = (
+          await axiosCall("get", `staffMembers/all/${user.gucId}`)
+        ).data.data;
 
-        setLocation(office.location);
-      }
-
-      if (user.type === "Academic Member") {
-        //get faculty
-        const facultyRes = await axiosCall("get", "faculties/faculty/all");
-        let fac;
-        if (facultyRes.data.data) {
-          fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
-          setFaculty(fac.code);
+        if (!dbUser.lastLogIn || dbUser.lastLogIn === null) {
+          setmodal(true);
+          const res = await axiosCall("put", "staffMembers/lastLogin");
+          if (res.data.error) {
+            addToast(res.data.error, {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          }
         }
 
-        //get department
-        const depRes = await axiosCall("get", "departments/department/all/all");
-        let dep;
-        if (depRes.data.data) {
-          dep = depRes.data.data.find(({ _id }) => _id === user.department);
-          setDepartment(dep.name);
+        //get location
+        const locationRes = await axiosCall("get", "locations/room/all");
+        let office;
+        if (locationRes.data.data) {
+          office = locationRes.data.data.find(
+            ({ _id }) => _id === user.officeLocation
+          );
+
+          setLocation(office.location);
         }
+
+        if (user.type === "Academic Member") {
+          //get faculty
+          const facultyRes = await axiosCall("get", "faculties/faculty/all");
+          let fac;
+          if (facultyRes.data.data) {
+            fac = facultyRes.data.data.find(({ _id }) => _id === user.faculty);
+            setFaculty(fac.code);
+          }
+
+          //get department
+          const depRes = await axiosCall(
+            "get",
+            "departments/department/all/all"
+          );
+          let dep;
+          if (depRes.data.data) {
+            dep = depRes.data.data.find(({ _id }) => _id === user.department);
+            setDepartment(dep.name);
+          }
+        }
+
+        //get days
+        const daysRes = await axiosCall("get", "attendance/viewMissingDays");
+        if (daysRes.data) setDays(daysRes.data);
+
+        //get hours
+        const hoursRes = await axiosCall("get", "attendance/viewHours");
+        if (hoursRes.data) setHours(hoursRes.data);
+      } catch (error) {
+        console.log(error);
       }
-
-      //get days
-      const daysRes = await axiosCall("get", "attendance/viewMissingDays");
-      if (daysRes.data) setDays(daysRes.data);
-
-      //get hours
-      const hoursRes = await axiosCall("get", "attendance/viewHours");
-      if (hoursRes.data) setHours(hoursRes.data);
     }
     fetchData();
   }, []);
@@ -200,6 +225,30 @@ function Homepage() {
           <h6> Sign Out</h6>
         </Button>
       </div>
+
+      {modal ? (
+        <div className="modal-outer-container">
+          <div className="modal-container">
+            <p>Do you want to change your default password?</p>
+            <div className="modal-button-area">
+              <button
+                className="green"
+                onClick={() => {
+                  setmodal(false)(
+                    (document.location.href =
+                      window.location.origin + "/changePassword")
+                  );
+                }}
+              >
+                YES
+              </button>
+              <button className="red" onClick={() => setmodal(false)}>
+                NO
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
