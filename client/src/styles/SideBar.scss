@@ -25,7 +25,7 @@
 }
 
 .pro-sidebar .pro-menu .pro-menu-item>.pro-inner-item {
-    padding: 8px 10px;
+    padding: 6px 10px;
 }
 
 .pro-sidebar .pro-menu .pro-menu-item>.pro-inner-item>.pro-item-content {
@@ -44,6 +44,12 @@
 
 .first-new {
     padding-top: 0 !important;
+}
+
+.last-menuItem {
+    // transform: translateY(-10px);
+    margin-top: -10px !important;
+
 }
 
 //responsiveness

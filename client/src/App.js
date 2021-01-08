@@ -2,8 +2,10 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
 import React, { useState, useEffect } from "react";
-import '../src/styles/courseCoverageTable.scss';
 import '../src/styles/slotsAssignedTable.scss';
+// import '../src/styles/courseSlot.scss'
+import '../src/styles/courseSlotCRUDCC.scss'
+
 
 //Import the styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,6 +22,7 @@ import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
 import './styles/ChangePassword.scss';
 import './styles/tables.scss';
+import './styles/Modal.scss';
 
 //Import the pages
 import checkLogin from "./helpers/checkLogin";
@@ -41,10 +44,15 @@ import ViewCourseCoverage from './pages/HOD/ViewCourseCoverage';
 import CourseCoverage from './pages/InstCourseCoverage';
 import SlotsAssigned from './pages/InstructorSlotsAssigned';
 import Schedule from './pages/AcademicMemberSchedule';
+import CourseSlotCC from './pages/CC/CourseSlotCRUD';
+import CourseSlot from './pages/AcademicMemberCourseSlot';
+import AssignCC from './pages/InstrCourseAssignCC';
+
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
 import StaffAttendance from './pages/Staff/StaffAttendance';
+import StaffSchedule from './pages/Staff/StaffSchedule';
 
 import Test from './pages/test';
 
@@ -100,9 +108,15 @@ function App() {
                   <Route exact path='/viewMySchedule' render={(props) => <Schedule {...props} />} />
                   <Route exact path='/staff' render={(props) => <Staff {...props} />} />
                   <Route exact path='/test' render={(props) => <Test {...props} />} />
+                  <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
+                  <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
+                  <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
+
                   <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                   <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
+                  <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
+
                 </div>
               )}
           </ToastProvider>
