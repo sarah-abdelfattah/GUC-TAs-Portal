@@ -1,12 +1,12 @@
 @import "./colorSchema";
- 
+
 .crud-button {
     min-width: 200px;
     padding: 8px 10px 8px 15px;
     border-radius: 10px;
     margin: 30px 20px 20px 20px;
     box-shadow: 8px 8px 10px 0px rgba(0, 0, 0, 0.64);
-  
+
     cursor: pointer;
 
     .icon {
@@ -24,12 +24,12 @@
         font-weight: bold;
         color: white;
         text-align: end;
-        
+
     }
 
     #dropdown-menu-align-right {
-  background-color: green;
-}
+        background-color: green;
+    }
 
     &:hover {
         transform: scale(1.1);
@@ -43,11 +43,12 @@
     justify-content: center;
 }
 
-.dropbox{
-    
+.dropbox {
+
     background-color: green;
     background-clip: green;
 }
+
 .crud-inner-container {
     width: 60%;
     min-height: 380px;
@@ -81,9 +82,10 @@
         border: none;
     }
 
-    
+
 
     .crud-add-btn {
+        background: $primary-green !important;
 
         &:hover,
         &:active,
@@ -118,7 +120,8 @@
             background: $secondary-lightblue;
         }
     }
-        .crud-view-btn {
+
+    .crud-view-btn {
 
         &:hover,
         &:active,
@@ -151,6 +154,7 @@
         box-shadow: 0px 0px 23px 2px rgba(0, 0, 0, 0.42);
     }
 }
+
 .crud-innerS-container {
     width: 160%;
     min-height: 380px;
@@ -160,9 +164,11 @@
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    #date{
-        color:grey;
+
+    #date {
+        color: grey;
     }
+
     .crud-form {
         margin-bottom: 25px;
 
@@ -171,14 +177,15 @@
             width: 70%;
             margin: 10px auto;
 
-            .crud-input{
-               
-                 
-                 width: 100%;
+            .crud-input {
+
+
+                width: 100%;
             }
+
             .crud-select {
                 width: 100%;
-            
+
             }
         }
     }
@@ -191,7 +198,7 @@
         border: none;
     }
 
-    
+
 
     .crud-add-btn {
 
@@ -228,7 +235,8 @@
             background: $secondary-lightblue;
         }
     }
-        .crud-view-btn {
+
+    .crud-view-btn {
 
         &:hover,
         &:active,
@@ -284,7 +292,7 @@
         }
     }
 }
- 
+
 
 
 @media only screen and (max-width: 300px) {
