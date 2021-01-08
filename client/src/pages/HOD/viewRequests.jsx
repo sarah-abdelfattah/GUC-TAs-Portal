@@ -8,7 +8,7 @@ import Fade from "react-reveal/Fade";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { dateFormat } from "../../helpers/constants.js";
-import { MyButton } from "../../styles/TableStyles";
+import { MyButton } from "../../styles/StyledComponents";
 
 function ViewRequests() {
   const [data, setData] = useState([]); //table data
@@ -57,7 +57,7 @@ function ViewRequests() {
           }
         } catch (err) {
           console.log("~ err", err);
-          //document.location.href = "/unauthorized";
+          document.location.href = "/unauthorized";
         }
       }
       fetchData();
@@ -74,6 +74,7 @@ function ViewRequests() {
         "get",
         `${link}/departments/getAllStaffMembers/all`
       );
+      console.log(res);
       let data = res.data.data.map((request) =>{
         return {
             sender: staff.data.data.map((staff) =>{
@@ -151,15 +152,15 @@ function ViewRequests() {
                 ),
                 Toolbar: (props) => (
                   <Autocomplete
+                    className="crud-select"
                     size="small"
                     id="debug"
                     options={requestType}
                     onChange={(event, newValue) => {
                       handleOnChange(newValue);
-                      console.log(newValue);
                     }}
                     getOptionLabel={(option) => option.type}
-                    style={{ width: "30%", margin: "auto" }}
+                    style={{ width: 200, margin: "auto" }}
                     renderInput={(params) => (
                       <TextField
                         {...params}

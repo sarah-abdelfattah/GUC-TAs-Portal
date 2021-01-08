@@ -22,6 +22,7 @@ import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
 import './styles/ChangePassword.scss';
 import './styles/tables.scss';
+import './styles/Request.scss';
 import './styles/Modal.scss';
 
 //Import the pages
@@ -54,6 +55,7 @@ import StaffSchedule from './pages/Staff/StaffSchedule';
 
 import Test from './pages/test';
 import ViewRequests from './pages/HOD/viewRequests';
+import Request from './pages/HOD/Request';
 
 function App() {
   // eslint-disable-next-line
@@ -89,6 +91,8 @@ function App() {
                   <Route exact path='/staff' render={(props) => <Staff {...props} />} />
                   <Route exact path='/test' render={(props) => <Test {...props} />} />
                   <Route exact path='/viewRequests' render={(props) => <ViewRequests {...props} />} />
+                  <Route exact path='/viewRequest/:id' render={(props) => <Request {...props} />} />
+
                   <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
                   <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
                   <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>

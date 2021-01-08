@@ -624,9 +624,10 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
 
     var NewRequest = await Request.findOne({ _id: Requestid }).populate();
+    console.log(NewRequest);
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
@@ -652,13 +653,20 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
 
       return res.send({ data: NewRequest });
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      console.log("here")
+      console.log(sender);
+
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
       });
+      console.log(newNotificatin);
       await newNotificatin.save();
       // updates
       NewRequest.status = 'rejected';
+      NewRequest.comment = req.body.comment;
       await NewRequest.save();
       return res.send({ data: NewRequest });
     }
@@ -731,7 +739,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
@@ -844,6 +852,10 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       await sender.save();
       await NewRequest.save();
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      console.log("here");
+      console.log(sender)
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
@@ -1121,38 +1133,38 @@ exports.slotLinkingReqResponse = async (req, res) => {
   }
 };
 
-// exports.viewRequest = async (req, res) => {
-//   try {
-//     let departmentFound = await Department.findOne({
-//       _id: req.user.department,
-//     }).populate('department');
+exports.viewRequest = async (req, res) => {
+  try {
 
-//     // if there's no department found
-//     if (!departmentFound) {
-//       return res
-//         .status(404)
-//         .send({
-//           error: `No department found with this id ${req.user.department}`,
-//         });
-//     }
+    let request = await Request.findOne({ _id: req.params.id });
 
-//     let request = await Request.findOne({ _id: req.params.id });
+    let sender = await StaffMember.findOne({ _id: request.sender });
 
-//     // if no request found
-//     if (!request) {
-//       return res.send({
-//         error: "No request is found with this id",
-//       });
-//     }
+    let receiver = await StaffMember.findOne({ _id: request.reciever });
 
-//     return res.status(200).send({
-//       data: request
-//     });
-//   } catch (err) {
-//     if (err.isJoi) {
-//       console.log(' JOI validation error: ', err);
-//       return res.send({ error: err.details[0].message });
-//     }
-//     res.status(500).send({ error: `Internal Server Error: ${err}` });
-//   }
-// };
+    console.log(request);
+
+    // if no request found
+    if (!request) {
+      return res.send({
+        error: "No request is found with this id",
+      });
+    }
+
+    return res.status(200).send({
+      data: {
+        sender: sender.name,
+        senderId: sender.gucId,
+        reciever: receiver.name,
+        recieverId: receiver.gucId,
+        requestData: request,
+      }
+    });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+    }
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
+  }
+};
