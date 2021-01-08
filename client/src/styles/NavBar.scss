@@ -1,17 +1,25 @@
 @import './colorSchema';
 
 .navbar {
-    background-color: $primary-navy-blue;
+    background-color: #343434;
     position: fixed;
     top: 0;
     width: 100%;
     padding: 3px;
     z-index: 999;
+    border-top: none;
+    border-bottom-right-radius: 12px;
+
+    // background: rgb(91, 91, 91);
+    // background: linear-gradient(270deg, rgba(91, 91, 91, 1) 0%, rgba(29, 29, 29, 1) 96%);
+
+    // background: rgb(0, 24, 41);
+    // background: linear-gradient(90deg, rgba(0, 24, 41, 1) 36%, rgba(71, 71, 71, 1) 94%);
 
     .profile-icon {
         margin-left: 10px;
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
     }
 
     .navbar-name {
@@ -24,7 +32,10 @@
 
     .nav-logo {
         position: absolute;
-        left: 40%;
+        left: 43%;
+        width: 100px;
+        height: 40px;
+        margin: 0 auto;
     }
 
     .logout-icon {

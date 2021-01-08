@@ -92,12 +92,13 @@ function App() {
                   <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
                   <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
                   <Route exact path = "/slotLinkingCC" render = {(props)=><SlotLinkingCC {...props}/>}/>
-
                   <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                   <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
                   <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
 
+                  //to be last
+                  <Route exact path='/' render={(props) => <Homepage {...props} />} />
                 </div>
               )}
           </ToastProvider>
