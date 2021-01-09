@@ -22,6 +22,7 @@ import './styles/attendanceRecord.scss';
 import './styles/profile.scss';
 import './styles/ChangePassword.scss';
 import './styles/tables.scss';
+import './styles/Request.scss';
 import './styles/Modal.scss';
 import './styles/notifications.scss';
 
@@ -54,6 +55,10 @@ import StaffAttendance from './pages/Staff/StaffAttendance';
 import StaffSchedule from './pages/Staff/StaffSchedule';
 
 import Test from './pages/test';
+import ViewRequests from './pages/HOD/viewRequests';
+import Request from './pages/HOD/Request';
+import ViewTeachingAssignments from './pages/HOD/ViewTeachingAssignments';
+import InstructorAssignment from './pages/HOD/InstructorAssignment';
 
 function App() {
   // eslint-disable-next-line
@@ -90,14 +95,20 @@ function App() {
                   <Route exact path='/viewMySchedule' render={(props) => <Schedule {...props} />} />
                   <Route exact path='/staff' render={(props) => <Staff {...props} />} />
                   <Route exact path='/test' render={(props) => <Test {...props} />} />
-                  <Route exact path="/courseSlotsCI" render={(props) => <CourseSlot {...props} />} />
-                  <Route exact path="/courseSlotCC" render={(props) => <CourseSlotCC {...props} />} />
-                  <Route exact path="/assignCC" render={(props) => <AssignCC {...props} />} />
-                  <Route exact path="/slotLinkingCC" render={(props) => <SlotLinkingCC {...props} />} />
+                  <Route exact path='/viewRequests' render={(props) => <ViewRequests {...props} />} />
+                  <Route exact path='/viewRequest/:id' render={(props) => <Request {...props} />} />
+
+                  <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
+                  <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
+                  <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
+                  <Route exact path = "/slotLinkingCC" render = {(props)=><SlotLinkingCC {...props}/>}/>
                   <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                   <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                   <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
                   <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
+                  <Route exact path='/teachingAssignments' render={(props) => <ViewTeachingAssignments {...props} />} />
+                  <Route exact path='/instructorAssignment' render={(props) => <InstructorAssignment {...props} />} />
+
 
                   {/* // to be last */}
                   <Route exact path='/' render={(props) => <Homepage {...props} />} />
