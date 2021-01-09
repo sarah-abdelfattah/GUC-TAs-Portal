@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     borderRadius: 10,
     padding: "2%",
+    boxShadow: "0px 0px 15px 0px rgba(0, 0, 0, 0.64)"
   },
   modal: {
     display: "flex",
