@@ -503,7 +503,7 @@ exports.sendRequest = async function (req, res) {
 //   var  senderId=req.user.gucId;
 //   var sender= await StaffMember.find({gucId:senderId}).populate();
 //   //var date=new Date(Date.parse(req.params.date))
-//   var ObjectId=req.params._id;
+//   var ObjectId=req.params.id;
 //   console.log("hereee"+ObjectId);
 //   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate()
 //   console.log(searchQuery);
@@ -518,7 +518,7 @@ exports.sendRequest = async function (req, res) {
 
 exports.AcceptOrRejectRep = async function (req, res) {
   try {
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
 
     var NewRequest = await Request.findOne({ _id: Requestid }).populate();
     if (!NewRequest) {
@@ -681,7 +681,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
 
 exports.AcceptOrRejectSlot = async function (req, res) {
   try {
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
     var accepted = false;
     if (!NewRequest) {
@@ -882,7 +882,7 @@ exports.CancelRequest = async function (req, res) {
     var senderId = req.user.gucId;
     var sender = await StaffMember.findOne({ gucId: senderId });
 
-    var id = req.params._id;
+    var id = req.params.id;
     var searchQuery = await Request.findOne({ _id: id, sender: sender }).populate();
     if (!searchQuery) {
       return res.send({ error: 'there is no such a request' });
