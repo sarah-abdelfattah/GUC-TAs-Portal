@@ -1001,6 +1001,7 @@ exports.CancelRequest = async function (req, res) {
     }
     await Request.deleteOne({ _id: id });
     return res.send({ data: 'Request deleted successfully' });
+    
   } catch (err) {
     console.log(err);
     return res.send({ error: err });

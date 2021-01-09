@@ -19,7 +19,7 @@ function Sent() {
     
     useEffect(async()=>{
         try{
-         
+            
             const response =   await axiosCall("get", "requests/viewMyRequest");
             if(response.data.error){
                 addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
@@ -43,9 +43,29 @@ function Sent() {
         }
     },[])
     
- const handleSubmit= async (e,rowData) =>{
+ const handleDelete=  async (rowData)  =>{
 try{
- console.log("heloooooo")
+   
+  if(rowData.status=='pending'){
+    
+  const response =   await axiosCall("delete", `${link}/requests/CancelRequest/${rowData.id}`);
+     
+    addToast(response.data.data, {
+              appearance: "success",
+              autoDismiss: true,
+            });
+ const filtered = await rows.filter((req) =>  req.id!==rowData.id );
+        setRows(filtered);
+}
+else
+{
+     addToast("Sorry you can't cancel this Request", {
+              appearance: "warning",
+              autoDismiss: true,
+            });
+
+}
+
 }
 catch(e){
             console.log('~ err', e);
@@ -74,13 +94,29 @@ catch(e){
                          
                       document.location.href = `/viewReq/${rowData.id}` 
                     }}
-
+             actions={[
+                {
+                  title: "Delete",
+                  icon: "delete",
+                  tooltip: "Delete Request",
+                  onClick: (event, rowData) => {
+                    handleDelete(rowData);
+                  },
+                },
+              ]}
                     
                     options={{
+                          actionsColumnIndex: -1,
                         headerStyle: {
                         backgroundColor: '#01579b',
-                        color: '#FFF'
-                        }
+                        color: '#FFF', 
+                        fontSize: "18px",
+                         margin: "0",
+                         padding: "0 0 10px 0",
+                        },
+                         rowStyle: {
+                             fontSize: "15px",
+                },
                     }}
                        />
             </Grid>

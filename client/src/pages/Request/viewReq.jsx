@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     borderRadius: 10,
     padding: "2%",
-    width:500,
+    width:"70%",
     
     
   },
@@ -67,7 +67,7 @@ useEffect(() => {
             "get",
             `${link}/requests/viewReq/${props.match.params.id}`
           );
-          console.log(response);
+          
           if (response.data.data.error) {
             addToast(response.data.data.error, {
               appearance: "warning",
@@ -77,9 +77,9 @@ useEffect(() => {
           
             let req = response.data.data.request;
              setRequest(req);
-             console.log(req)
+             
              //'Replacement Request', 'Slot Request', 'Change DayOff', 'Leave Request'
-             console.log(req.type)
+            
             if(req.type=='Leave Request'){
               setType(req.leavetype)
             }
