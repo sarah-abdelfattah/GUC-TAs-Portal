@@ -13,11 +13,11 @@ router.get('/viewRecievedReplacementRequest', auth.AcademicMemberAuth, RequestCo
 router.get('/viewSlotRequest', auth.CCAuth, RequestController.viewSlotRequest);
 router.get('/viewRecievedRequest/:type', auth.HODAuth, RequestController.viewRecievedRequest);
 router.get('/viewNotification', auth.AcademicMemberAuth, RequestController.viewNotification);
-router.put('/AcceptOrRejectRep/:_id', auth.AcademicMemberAuth, RequestController.AcceptOrRejectRep);
-router.put('/AcceptOrRejectChangeDay/:_id', auth.HODAuth, RequestController.AcceptOrRejectChangeDay);
-router.put('/AcceptOrRejectSlot/:_id', auth.CCAuth, RequestController.AcceptOrRejectSlot);
-router.put('/AcceptOrRejectLeave/:_id', auth.HODAuth, RequestController.AcceptOrRejectLeave);
-router.delete('/CancelRequest/:_id', auth.AcademicMemberAuth, RequestController.CancelRequest);
+router.put('/AcceptOrRejectRep/:id', auth.AcademicMemberAuth, RequestController.AcceptOrRejectRep);
+router.put('/AcceptOrRejectChangeDay/:id', auth.HODAuth, RequestController.AcceptOrRejectChangeDay);
+router.put('/AcceptOrRejectSlot/:id', auth.CCAuth, RequestController.AcceptOrRejectSlot);
+router.put('/AcceptOrRejectLeave/:id', auth.HODAuth, RequestController.AcceptOrRejectLeave);
+router.delete('/CancelRequest/:id', auth.AcademicMemberAuth, RequestController.CancelRequest);
 
 router.post('/checkRep',RequestController.chechRep);
 router.get('/dayOff',RequestController.getDayOff);
@@ -38,5 +38,8 @@ router.get('/hisCourses',RequestController.getCourses);
 router.post('/sendrequest', RequestController.sendRequest);
 
 router.put('/acceptRejectSlotLinking', auth.CCAuth, RequestController.slotLinkingReqResponse);
+
+// to get request by id
+router.get('/viewRequest/:id', RequestController.viewRequest);
 
 module.exports = router;

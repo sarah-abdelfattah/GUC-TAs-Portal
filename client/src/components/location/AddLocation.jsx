@@ -89,7 +89,7 @@ function AddLocation() {
           <Input
             className="crud-input"
             value={location}
-            onChange={(event) =>  678765789098765432(event.target.value)}
+            onChange={(event) =>  setRoomLocation(event.target.value)}
           />
         </FormControl>
 
