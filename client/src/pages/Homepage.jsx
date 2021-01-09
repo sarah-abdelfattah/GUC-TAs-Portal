@@ -21,25 +21,21 @@ function Homepage() {
   useEffect(() => {
     async function fetchData() {
       setmodal(false);
-
       //get user
       try {
-        const user = await checkLogin();
+        const temp = await checkLogin();
+
+        const user = (await axiosCall("get", `staffMembers/all/${temp.gucId}`))
+          .data.data;
+
         setUser(user);
 
-        const dbUser = (
-          await axiosCall("get", `staffMembers/all/${user.gucId}`)
-        ).data.data;
-
-        if (!dbUser.lastLogIn || dbUser.lastLogIn === null) {
+        if (!user.lastLogIn || user.lastLogIn === null) {
+          console.log(
+            "🚀 ~ file: Homepage.jsx ~ line 34 ~ fetchData ~ user",
+            user.lastLogIn
+          );
           setmodal(true);
-          const res = await axiosCall("put", "staffMembers/lastLogin");
-          if (res.data.error) {
-            addToast(res.data.error, {
-              appearance: "error",
-              autoDismiss: true,
-            });
-          }
         }
 
         //get location
@@ -81,6 +77,14 @@ function Homepage() {
         //get hours
         const hoursRes = await axiosCall("get", "attendance/viewHours");
         if (hoursRes.data) setHours(hoursRes.data);
+
+        const res = await axiosCall("put", "staffMembers/lastLogin");
+        if (res.data.error) {
+          addToast(res.data.error, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -144,7 +148,7 @@ function Homepage() {
         <div className="inner-homepage-box">
           <ul>
             <li>
-              <h5>Guc-Id: </h5>
+              <h5>GUC ID: </h5>
               <h6>{user.gucId} </h6>
             </li>
             <li>

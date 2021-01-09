@@ -149,7 +149,8 @@ exports.getAcademicMembers = async function (req, res) {
             // search in all academic members with a specific ID 
             else {
                 const gucId = req.params.staff;
-                const result = await StaffMember.findOne({ type: "Academic Member", gucId: gucId });
+                //TODO: needs to be editted bs 5ayfa had ykoon est5dmha
+                const result = await StaffMember.find({ type: "Academic Member", gucId: gucId });
                 if (result) return res.send({ data: result });
                 else return res.send({ error: "Sorry, no Academic Member with that id in the GUC" });
             }
@@ -163,7 +164,7 @@ exports.getAcademicMembers = async function (req, res) {
             // staff of type role with a specific ID 
             else {
                 const gucId = req.params.staff;
-                const result = await StaffMember.findOne({ type: type, gucId: gucId });
+                const result = await StaffMember.find({ type: type, gucId: gucId });
                 if (result) return res.send({ data: result });
                 else return res.send({ error: "Sorry, no user with that id with this type " });
             }
@@ -245,7 +246,8 @@ exports.registerStaff = async function (req, res) {
 
         //setting the automatic Id
         const typeStaff = await StaffMember.find({ type: type });
-        const num = typeStaff.length + 1;
+        // const num = typeStaff.length + 1;
+        const num = parseInt(typeStaff[typeStaff.length - 1].gucId.split("-")[1]) + 1
 
         var idRole = 'HR';
         if (type === 'Academic Member') {
@@ -257,10 +259,8 @@ exports.registerStaff = async function (req, res) {
 
         const attendanceRecord = [];
         const courses = [];
-        const password = await bcrypt.hash('123456', 12);;
-        console.log("🚀 ~ file: staffMemberController.js ~ line 278 ~ password", password);
+        const password = await bcrypt.hash('123456', 12);
 
-        // req.body.registeredDate = new Date()
         const newStaffMember = await StaffMember.create({
             gucId,
             name,
@@ -277,7 +277,7 @@ exports.registerStaff = async function (req, res) {
             courses,
             password
         });
-        console.log("🚀 ~ file: staffMemberController.js ~ line 297 ~ newStaffMember", newStaffMember);
+
         return res.send({ data: newStaffMember });
     } catch (err) {
         if (err.isJoi) {
@@ -872,8 +872,6 @@ async function viewReplacementSlots(staffObjId) {
                     case 6: repWeekDay = 'Saturday'; break;
                     default: repWeekDay = 'Sunday'; break;
                 }
-                // console.log(replacementReq[i].replacemntDate.getHours + ":" + replacementReq[i].replacemntDate.getMinutes);
-
                 repSlotAdded = {
                     day: repWeekDay,
                     time: replacementReq[i].replacemntDate,
@@ -894,7 +892,7 @@ exports.updateLogin = async function (req, res) {
     try {
         let user = req.user;
         const staff = await StaffMember.findOne({ gucId: user.gucId })
-        staff.lastLogin = new Date();
+        staff.lastLogIn = new Date();;
         const result = await staff.save();
         return res.send({ data: `updated lastLogin successfully ${result.lastLogin}` });
 

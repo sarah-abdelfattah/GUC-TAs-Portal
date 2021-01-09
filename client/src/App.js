@@ -24,6 +24,7 @@ import './styles/ChangePassword.scss';
 import './styles/tables.scss';
 import './styles/Request.scss';
 import './styles/Modal.scss';
+import './styles/notifications.scss';
 
 //Import the pages
 import NavBar from './components/NavBar';
@@ -47,7 +48,6 @@ import CourseSlotCC from './pages/CC/CourseSlotCRUD';
 import CourseSlot from './pages/AcademicMemberCourseSlot';
 import AssignCC from './pages/InstrCourseAssignCC';
 import SlotLinkingCC from './pages/SlotLinkingCC';
-
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
@@ -68,6 +68,8 @@ function App() {
 
   return (
     <div className='App'>
+      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar notify={false} />}
+      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
       <Router>
         <Switch>
           <ToastProvider>
@@ -108,14 +110,13 @@ function App() {
                   <Route exact path='/instructorAssignment' render={(props) => <InstructorAssignment {...props} />} />
 
 
+                  {/* // to be last */}
                   <Route exact path='/' render={(props) => <Homepage {...props} />} />
                 </div>
               )}
           </ToastProvider>
         </Switch>
       </Router>
-      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar />}
-      {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
     </div>
   );
 }

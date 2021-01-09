@@ -3,6 +3,7 @@ import axiosCall from "../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import checkLogin from "../helpers/checkLogin";
 
+// import NavBar from "../components/NavBar";
 import {
   FormControl,
   InputLabel,
@@ -35,7 +36,10 @@ function Profile(props) {
   useEffect(() => {
     async function fetchData() {
       //get user
-      let user = await checkLogin();
+      const res = await checkLogin();
+
+      let user = (await axiosCall("get", `staffMembers/all/${res.gucId}`)).data
+        .data;
 
       setId(user.gucId);
       setName(user.name);
@@ -46,10 +50,7 @@ function Profile(props) {
       setPosition(user.type);
 
       let dSalary = await axiosCall("get", `staffMembers/salary/${user.gucId}`);
-      console.log(
-        "🚀 ~ file: Profile.jsx ~ line 49 ~ fetchData ~ dSalary",
-        dSalary
-      );
+
       setDeductedSalary(dSalary.data.salary.toFixed(2));
 
       //get location
@@ -130,7 +131,7 @@ function Profile(props) {
       <div className="profile-all">
         <div className="profile-form">
           <FormControl className="profile-formControl">
-            <InputLabel className="profile-inputLabel">GUC Id</InputLabel>
+            <InputLabel className="profile-inputLabel">GUC ID</InputLabel>
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
 
@@ -290,6 +291,7 @@ function Profile(props) {
           </button>
         </div>
       </div>
+      {/* <NavBar notify={true} /> */}
     </div>
   );
 }

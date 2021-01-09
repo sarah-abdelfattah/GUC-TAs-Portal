@@ -12,7 +12,7 @@ import { MyButton } from "../../styles/StyledComponents";
 
 
 //Added for the CC
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 
 function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
@@ -69,7 +69,7 @@ function ViewAllStaff() {
           }
         } catch (err) {
           console.log("~ err", err);
-          // document.location.href = window.location.origin + "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
       fetchData();

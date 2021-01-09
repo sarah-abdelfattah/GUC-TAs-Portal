@@ -31,11 +31,11 @@ function DeleteCourse() {
 
   const handleFacOnChange = async (target) => {
     setFacultyChosen(target.value);
-    const facCode = faculties.find(({ _id }) => _id === target.value).code;
+    // const facCode = faculties.find(({ _id }) => _id === target.value).code;
 
     const depResult = await axiosCall(
       "get",
-      `departments/department/${facCode}/all`
+      `departments/department/${target.value}/all`
     );
     setDepartments(depResult.data.data);
   };
@@ -55,9 +55,9 @@ function DeleteCourse() {
 
   const handleSubmit = async () => {
     try {
-      let code;
-      if (faculties)
-        code = await faculties.find(({ _id }) => _id === facultyChosen).code;
+      // let code;
+      // if (faculties)
+      //   code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
       let depName;
       if (departments)
@@ -68,7 +68,7 @@ function DeleteCourse() {
         courseName = await courses.find(({ _id }) => _id === courseChosen).name;
 
       const body = {
-        facultyCode: code.toUpperCase(),
+        facultyCode: facultyChosen.toUpperCase(),
         departmentName: depName,
         courseName: courseName,
       };
@@ -112,8 +112,8 @@ function DeleteCourse() {
               faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={faculty._id}
-                  key={faculty._id}
+                  value={faculty.code}
+                  key={faculty.code}
                 >
                   {faculty.code} - {faculty.name}
                 </MenuItem>
