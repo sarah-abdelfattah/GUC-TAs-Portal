@@ -5,10 +5,11 @@ import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
-import { Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
+import { MyButton } from "../../styles/StyledComponents";
+
 
 //Added for the CC
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -113,8 +114,8 @@ function ViewAllStaff() {
       <Fade>
         <h3 className="general-header">Staff Members</h3>
         <hr className="general-line" />
-        <Grid container spacing={1}>
-          <Grid item xs={10}>
+        <Grid container spacing = {1}>
+          <Grid item xs = {10}>
             <MaterialTable
               title=""
               columns={[
@@ -141,7 +142,7 @@ function ViewAllStaff() {
               actions={[
                 {
                   icon: "save",
-                  tooltip: "Save User",
+                  tooltip: "view schedule",
                   onClick: (event, rowData) => {
                     document.location.href =
                       window.location.origin +
@@ -158,15 +159,15 @@ function ViewAllStaff() {
               }}
               components={{
                 Action: (props) => (
-                  <Button
+                  <MyButton
                     onClick={(event) => props.action.onClick(event, props.data)}
                     color="primary"
                     variant="contained"
                     style={{ textTransform: "none", background: "#045CC8" }}
                     size="small"
                   >
-                    schedule
-                  </Button>
+                    View schedule
+                  </MyButton>
                 ),
                 Toolbar: (props) => (
                   <Autocomplete
@@ -177,11 +178,11 @@ function ViewAllStaff() {
                       handleOnChange(newValue);
                     }}
                     getOptionLabel={(option) => option.course}
-                    style={{ width: "30%", margin: "auto" }}
+                    style={{ width: 200, margin: "auto" }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="View staff members per course"
+                        label="filter by course"
                         margin="normal"
                       />
                     )}

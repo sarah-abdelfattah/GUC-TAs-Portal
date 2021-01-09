@@ -116,7 +116,7 @@ exports.sendRequest = async function (req, res) {
       return res.send({ data: newRequest });
     }
 
-    if (type == 'Change DayOff') {
+    if (type === 'Change DayOff') {
       //TODO to be changed
       const newDayOff = req.body.newDayOff;
       if (!newDayOff) return res.status(400).send({ error: 'Please enter all the missing fields' });
@@ -503,7 +503,7 @@ exports.sendRequest = async function (req, res) {
 //   var  senderId=req.user.gucId;
 //   var sender= await StaffMember.find({gucId:senderId}).populate();
 //   //var date=new Date(Date.parse(req.params.date))
-//   var ObjectId=req.params._id;
+//   var ObjectId=req.params.id;
 //   console.log("hereee"+ObjectId);
 //   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate()
 //   console.log(searchQuery);
@@ -518,7 +518,7 @@ exports.sendRequest = async function (req, res) {
 
 exports.AcceptOrRejectRep = async function (req, res) {
   try {
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
 
     var NewRequest = await Request.findOne({ _id: Requestid }).populate();
     if (!NewRequest) {
@@ -628,9 +628,10 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
 
     var NewRequest = await Request.findOne({ _id: Requestid }).populate();
+    console.log(NewRequest);
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
@@ -642,6 +643,8 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
       NewRequest.status = 'accepted';
       var senderId = NewRequest.sender._id;
       var sender = await StaffMember.findOne({ _id: senderId }).populate();
+
+      console.log(sender)
 
       sender.dayOff = NewRequest.newDayOff;
       await sender.save();
@@ -656,14 +659,18 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
 
       return res.send({ data: NewRequest });
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      // updates
+      NewRequest.status = 'rejected';
+      NewRequest.comment = req.body.comment;
+      await NewRequest.save();
+
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
       });
       await newNotificatin.save();
-      // updates
-      NewRequest.status = 'rejected';
-      await NewRequest.save();
       return res.send({ data: NewRequest });
     }
   } catch (err) {
@@ -674,7 +681,7 @@ exports.AcceptOrRejectChangeDay = async function (req, res) {
 
 exports.AcceptOrRejectSlot = async function (req, res) {
   try {
-    const Requestid = req.params._id;
+    const Requestid = req.params.id;
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
     var accepted = false;
     if (!NewRequest) {
@@ -735,8 +742,10 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       });
     }
 
-    const Requestid = req.params._id;
-    var NewRequest = await Request.findOne({ _id: Requestid, reciever: req.user }).populate();
+    const Requestid = req.params.id;
+    const reciever1 = await StaffMember.findOne({_id: req.user.id})
+    console.log(req.user.id);
+    var NewRequest = await Request.findOne({ _id: Requestid, reciever: reciever1 }).populate();
     var accepted = req.body.accept_or_reject_request;
     if (!NewRequest) {
       return res.send({ error: 'there is no request with this id' });
@@ -848,6 +857,10 @@ exports.AcceptOrRejectLeave = async function (req, res) {
       await sender.save();
       await NewRequest.save();
     } else {
+      var senderId = NewRequest.sender._id;
+      var sender = await StaffMember.findOne({ _id: senderId }).populate();
+      console.log("here");
+      console.log(sender)
       const newNotificatin = new Notification({
         reciever: sender,
         message: '  your' + NewRequest.subject + 'was Rejected',
@@ -869,7 +882,7 @@ exports.CancelRequest = async function (req, res) {
     var senderId = req.user.gucId;
     var sender = await StaffMember.findOne({ gucId: senderId });
 
-    var id = req.params._id;
+    var id = req.params.id;
     var searchQuery = await Request.findOne({ _id: id, sender: sender }).populate();
     if (!searchQuery) {
       return res.send({ error: 'there is no such a request' });
@@ -1126,5 +1139,41 @@ exports.slotLinkingReqResponse = async (req, res) => {
   }
       console.log('~ err', err);
       res.status(500).send({ error: `Internal Server Error: ${err}` });
+  }
+};
+
+exports.viewRequest = async (req, res) => {
+  try {
+
+    let request = await Request.findOne({ _id: req.params.id });
+
+    let sender = await StaffMember.findOne({ _id: request.sender });
+
+    let receiver = await StaffMember.findOne({ _id: request.reciever });
+
+    console.log(request);
+
+    // if no request found
+    if (!request) {
+      return res.send({
+        error: "No request is found with this id",
+      });
+    }
+
+    return res.status(200).send({
+      data: {
+        sender: sender.name,
+        senderId: sender.gucId,
+        reciever: receiver.name,
+        recieverId: receiver.gucId,
+        requestData: request,
+      }
+    });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+    }
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
