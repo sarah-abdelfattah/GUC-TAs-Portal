@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
-import React, { useState, useEffect } from "react";
+//import React, { useState, useEffect } from "react";
 import '../src/styles/slotsAssignedTable.scss';
 // import '../src/styles/courseSlot.scss'
 import '../src/styles/courseSlotCRUDCC.scss'
@@ -55,12 +55,13 @@ import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
 import StaffAttendance from './pages/Staff/StaffAttendance';
 import StaffSchedule from './pages/Staff/StaffSchedule';
+import Rtx from './pages/Request/viewReq'
 
 
 import Test from './pages/test';
 
 function App() {
-  console.log("hna 1")
+ 
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
@@ -99,7 +100,7 @@ function App() {
                   <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                   <Route exact path='/department' render={(props) => <Department {...props} />} />
                   <Route exact path='/request' render={(props) => <Request {...props} />} />
-                  <Route exact path='/viewReq/:id' render={(props) => <viewReqest {...props} />} />
+                  <Route exact path='/viewReq/:id' render={(props)=> <Rtx {...props}/>} />
                   <Route exact path='/course' render={(props) => <Course {...props} />} />
                   <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                   <Route exact path='/profile' render={(props) => <Profile {...props} />} />

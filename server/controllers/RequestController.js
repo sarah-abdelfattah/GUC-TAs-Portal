@@ -1065,6 +1065,34 @@ exports.getDayOff = async function (req, res) {
   }
 }
 
+exports.viewRequestA = async (req, res) => {
+  try {
+
+    let request = await Request.findOne({ _id: req.params.id });
+
+    
+
+    console.log(request);
+
+    // if no request found
+    if (!request) {
+      return res.send({
+        error: "No request is found with this id",
+      });
+    }
+
+    return res.status(200).send({
+      data: {request}
+    });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+    }
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
+  }
+};
+
 
 
 

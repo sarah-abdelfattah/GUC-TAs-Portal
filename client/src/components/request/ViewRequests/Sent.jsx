@@ -29,6 +29,7 @@ function Sent() {
               return {
                 id:req._id,
                 date:  req.date,
+                type: req.type,
                 status: req.status,
                 subject: req.subject, 
               };
@@ -51,34 +52,7 @@ catch(e){
            // document.location.href = window.location.origin + "/unauthorized";
         }
 
- }
-    // const handleSubmit = async (e,rowData) =>{
-    //     let submittedStatus = e.currentTarget.value;
-    //     try{
-
-             
-    //         const response = await axiosCall("put", "requests/acceptRejectSlotLinking", {
-    //             reqNumber: rowData.id,
-    //             status: submittedStatus
-    //         });
-           
-    //         if(response.data.error){
-    //             addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
-    //         }else{
-    //             if(submittedStatus === "accepted" && response.data.data === "The slot-linking request is rejected successfully"){
-    //                 addToast(`The slot-linking request is rejected since there is no locations of type ${rowData.locationType} at the requested time.`,
-    //                 {appearance: 'warning',autoDismiss: true});
-    //             }else{
-    //                 addToast(response.data.data, {appearance: 'success',autoDismiss: true});
-    //             }
-    //             setReqIDRes(rowD ata.id)
-    //         }
-    //     }catch(e){
-    //         console.log('~ err', e);
-    //        // document.location.href = window.location.origin + "/unauthorized";
-    //     }
-   // }
-    
+ } 
     return (
         <div className="my-table"> 
         <Fade>
@@ -91,15 +65,14 @@ catch(e){
                     columns={[
                       
                         { title: "Date", field: "date"}, 
+                        { title: "Type", field: "type"}, 
                         { title: "Subject", field: "subject"}, 
                         { title: "Status", field: "status"},
                     ]}
                     data={rows} 
-                    onRowClick={(event, rowData) => {
+                    onRowClick={(event, rowData) => { 
                          
-                      document.location.href = `/viewReq/${rowData.id}`
-                    
-                      
+                      document.location.href = `/viewReq/${rowData.id}` 
                     }}
 
                     
