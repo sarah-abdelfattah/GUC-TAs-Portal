@@ -108,7 +108,8 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-            Date: {request.date}
+
+            Date: {new Date(Date.parse(request.date)).getDate()+"/"+(new Date(Date.parse(request.date)).getMonth()+1)+"/"+new Date(Date.parse(request.date)).getFullYear()+" at "+new Date(Date.parse(request.date)).getHours()+":"+new Date(Date.parse(request.date)).getMinutes()}
           </Typography>
           <Typography
             className={classes.text}
@@ -126,7 +127,8 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-            Replacemnt Date: { request.replacemntDate}
+            Replacemnt Date:   
+         {new Date(Date.parse(request.replacemntDate)).getDate()+"/"+(new Date(Date.parse(request.replacemntDate)).getMonth()+1)+"/"+new Date(Date.parse(request.replacemntDate)).getFullYear()+" at "+new Date(Date.parse(request.replacemntDate)).getHours()+":"+new Date(Date.parse(request.replacemntDate)).getMinutes()}
            </Typography>
       
           <Typography
@@ -201,7 +203,8 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-          CompensationDate:{request.CompensationDate}
+           
+          CompensationDate:{new Date(Date.parse(request.CompensationDate)).getDate()+"/"+(new Date(Date.parse(request.CompensationDate)).getMonth()+1)+"/"+new Date(Date.parse(request.CompensationDate)).getFullYear()}
           </Typography>
           <Typography
             className={classes.text}
@@ -209,7 +212,9 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-          LeaveDate: {request.LeaveDate}
+          LeaveDate: { 
+          new Date(Date.parse(request.LeaveDate)).getDate()+"/"+(new Date(Date.parse(request.LeaveDate)).getMonth()+1)+"/"+new Date(Date.parse(request.LeaveDate)).getFullYear() 
+          }
           </Typography>
                <Typography
             className={classes.text}
@@ -241,11 +246,11 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-           Maternity Date: {request.startDate}
+           Maternity Date: {new Date(Date.parse(request.startDate)).getDate()+"/"+(new Date(Date.parse(request.startDate)).getMonth()+1)+"/"+new Date(Date.parse(request.startDate)).getFullYear()}
           </Typography>
              <Typography
             className={classes.text}
-            color="textPrimary"
+            color="textPrimary"    
             component="h6"
             variant="h6"
           >
@@ -272,7 +277,9 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-        Accident Date: {request.AccidentDate}
+        Accident Date: { 
+        new Date(Date.parse(request.AccidentDate)).getDate()+"/"+(new Date(Date.parse(request.AccidentDate)).getMonth()+1)+"/"+new Date(Date.parse(request.AccidentDate)).getFullYear()
+        }
           </Typography>
 
              <Typography
@@ -294,7 +301,10 @@ useEffect(() => {
             component="h6"
             variant="h6"
           >
-            AnnualLeave Date:{request.AnnualLeaveDate}
+            AnnualLeave Date:{ 
+            new Date(Date.parse(request.AnnualLeaveDate)).getDate()+"/"+(new Date(Date.parse(request.AnnualLeaveDate)).getMonth()+1)+"/"+new Date(Date.parse(request.AnnualLeaveDate)).getFullYear()
+            
+            }
           </Typography>
           
             {   

@@ -22,8 +22,7 @@ router.delete('/CancelRequest/:id', auth.AcademicMemberAuth, RequestController.C
 router.post('/checkRep',RequestController.chechRep);
 router.get('/dayOff',RequestController.getDayOff);
 router.get('/hisCourses',RequestController.getCourses);
-      
- router.get('/viewReq/:id',RequestController.viewRequestA);     
+router.get('/viewReq/:id',RequestController.viewRequestA);     
 //const { auth } = require("../../utils/authentication");
 //router.get("/viewMyRequest",RequestController.viewmyReequests);
 // //with staus

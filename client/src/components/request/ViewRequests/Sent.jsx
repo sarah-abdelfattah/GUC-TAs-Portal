@@ -3,21 +3,20 @@ import React, { useState, useEffect } from "react";
  
 import axiosCall from "../../../helpers/axiosCall";
  
-import { useToasts } from "react-toast-notifications";
-import Button from '@material-ui/core/Button';
+import { useToasts } from "react-toast-notifications"; 
 import MaterialTable from "material-table";
 import { Grid } from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles"
+import {makeStyles} from "@material-ui/core/styles";
 import Fade from "react-reveal/Fade";
 import { link } from "../../../helpers/constants.js";
  
 function Sent() {
     const {addToast} = useToasts(); 
     const [rows,setRows] = useState([]);
-    const [reqIDRes,setReqIDRes] = useState(0);
+   
     
     
-    useEffect(async()=>{
+ useEffect(async()=>{
         try{
             
             const response =   await axiosCall("get", "requests/viewMyRequest");
@@ -26,9 +25,11 @@ function Sent() {
             }
             else{ 
       let myRequests  = response.data.data.map((req) => {
+            var date=new Date(Date.parse(req.date)) 
+            var x= date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
               return {
                 id:req._id,
-                date:  req.date,
+                date:x,
                 type: req.type,
                 status: req.status,
                 subject: req.subject, 
