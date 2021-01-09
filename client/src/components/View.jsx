@@ -1,10 +1,10 @@
 import React from "react";
-import add from "../assets/add.svg";
+import view from "../assets/view.svg";
 
-function Add(props) {
+function View(props) {
   return (
-    <div className="crud-button crud-add green" onClick={props.onClick}>
-      <img src={add} alt="add-icon" className="icon" />
+    <div className="crud-button crud-view orange" onClick={props.onClick}>
+      <img src={view} alt="add-icon" className="icon" />
       {props.textClassified ? (
         <h5 className="text">{props.textClassified} </h5>
       ) : (
@@ -14,4 +14,4 @@ function Add(props) {
   );
 }
 
-export default Add;
+export default View;
