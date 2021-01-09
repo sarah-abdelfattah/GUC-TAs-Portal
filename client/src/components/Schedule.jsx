@@ -77,12 +77,13 @@ function Schedule(props) {
     async function fetchData() {
       try {
         await checkLogin();
-        await auth(["Course Instructor"]);
 
         let response;
         if (props.gucId) {
+          await auth(["Course Instructor","Teaching Assistant"]);
           response = await axios.get(`${link}/staffMembers/viewMySchedule`);
         } else if (props.id) {
+          await auth(["Course Instructor"]);
           response = await axios.get(
             `${link}/staffMembers/viewStaffSchedule/${props.id}`
           );
