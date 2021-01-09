@@ -16,7 +16,7 @@ import Popper from "@material-ui/core/Popper";
 import TextField from "@material-ui/core/TextField";
  
 import { Button } from "@material-ui/core";
-
+import auth from "../../helpers/auth";
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 500,
@@ -57,12 +57,15 @@ const [request, setRequest] = useState([]);
 const [type, setType]=useState("");
 
 useEffect(() => {
+  
+  
     const loggedInUser = localStorage.getItem("user");
     if (!loggedInUser) {
       document.location.href = "/login";
     } else {
       async function fetchData() {
         try {
+          await auth(["Course Instructor", "Teaching Assistant"]);
           const response = await axiosCall(
             "get",
             `${link}/requests/viewReq/${props.match.params.id}`
