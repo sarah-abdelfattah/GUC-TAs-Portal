@@ -36,7 +36,9 @@ exports.sendRequest = async function (req, res) {
       const recieverId = req.body.recieverId;
       const location = req.body.location;
       const coursename = req.body.course;
-
+      if(recieverId==sender.gucId){
+         return res.send({ error: "Sorry you can't send this Request" });
+      }
       //const course=await Course.findOne({name:coursename})
 
 
@@ -205,8 +207,36 @@ exports.sendRequest = async function (req, res) {
       if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
       return res.send({ error: 'Please Enter correct Slot Time' });
       }
-
-
+     // if()
+      var recordDay=date.getDay();
+      if(recordDay==5){
+         return res.send({ error: 'Sorry it is Friday ' });
+      }
+         var Day;
+        switch (recordDay) {
+          case 1:
+            Day = 'Monday';
+            break;
+          case 2:
+            Day = 'Tuesday';
+            break;
+          case 3:
+            Day = 'Wednesday';
+            break;
+          case 4:
+            Day = 'Thursday';
+            break;
+          case 5:
+            Day = 'Friday';
+            break;
+          case 6:
+            Day = 'Saturday';
+            break;
+          case 0:
+            Day = 'Sunday';
+            break;
+        }
+      
       var foundCourse = await Course.findOne({ name: coursename }).populate();
 
       var f2;
