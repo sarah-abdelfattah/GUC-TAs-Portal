@@ -695,7 +695,7 @@ exports.deleteInstructor = async function (req, res) {
       department: departmentFound._id,
       type: 'Academic Member',
       role: 'Course Instructor'
-    }).populate();
+    }).populate('courses');
 
     if (!instructor) {
       return res.send({
@@ -714,25 +714,38 @@ exports.deleteInstructor = async function (req, res) {
       })
     }
 
+    let deleteInstructor = false;
+
     // case instructor doesn't have any courses assigned in this department
     if (instructor.courses.length === 0) {
       return res.send({
         error: `Sorry, there's no course with this name ${courseName} assigned to this instructor`,
       })
     }
-
     // case he have already assigned courses
     else {
-      const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
-      instructor.courses.splice(InstructorIndex, 1);
-      await instructor.save();
+      instructor.courses.forEach((item) => {
+        // check if that course already have a coverage and if the coverage is zero, then safely delete the instructor from the course
+        if(item.coverage === 0){
+          const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
+          instructor.courses.splice(InstructorIndex, 1);
+          deleteInstructor = true;
+        }
+      })
     }
 
-    return res.status(200).send({
-      data: {
-        error: `Course deleted successfully`,
-      }
-    });
+    if(deleteInstructor) {
+      await instructor.save();
+      return res.status(200).send({
+        data: {
+          error: `Course deleted successfully`,
+        }
+      });
+    } else {
+      return res.send({
+        error: `Sorry, can not delete a course with coverage ${course.coverage} for that instructor`,
+      })
+    }
 
   } catch (err) {
     if (err.isJoi) {
