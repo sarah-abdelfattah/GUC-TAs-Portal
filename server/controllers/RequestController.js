@@ -97,7 +97,7 @@ exports.sendRequest = async function (req, res) {
       if (!flag) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
-      const subject = type + ' with ' + rec.name + ' for course ' + coursename + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+      const subject = type + ' with ' + rec.name +" ID: "+rec.gucId+ ' for course ' + coursename + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
       const x = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":00"
       const newRequest = new Request({
         //TODO a4eel el sender
