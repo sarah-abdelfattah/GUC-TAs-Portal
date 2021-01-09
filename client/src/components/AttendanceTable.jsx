@@ -59,10 +59,6 @@ function AttendanceTable(props) {
       async function fetchData() {
         try {
           let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
-          console.log(
-            "🚀 ~ file: AttendanceTable.jsx ~ line 63 ~ fetchData ~ temp",
-            temp
-          );
           let staff = "";
           if (temp.data.data) staff = temp.data.data;
 
@@ -461,7 +457,7 @@ function AttendanceTable(props) {
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
-                          value={value ? value : ""}
+                          value={value}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -476,7 +472,6 @@ function AttendanceTable(props) {
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardTimePicker
                           value={value}
-                          defaultValue="00:00 "
                           onChange={onChange}
                           ampm={false}
                         />
@@ -491,7 +486,8 @@ function AttendanceTable(props) {
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <TimePicker
-                          value={value}
+                          value={value ? value : null}
+                          defaultValue={null}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -524,7 +520,6 @@ function AttendanceTable(props) {
                 data={data}
                 options={{
                   search: true,
-                  // filtering: true,
                   sorting: true,
                   actionsColumnIndex: -1,
                   headerStyle: {
