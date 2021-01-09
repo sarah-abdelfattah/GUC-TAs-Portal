@@ -56,7 +56,7 @@ function Request(props) {
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
   const [accept_or_reject_request, setAccept_or_reject_request] = useState(false);
-  const [comment, setComment] = useState([]);
+  const [comment, setComment] = useState("");
   const { addToast } = useToasts();
   const classes = useStyles();
 
@@ -119,6 +119,10 @@ function Request(props) {
       try{
         const response = await axiosCall("put",`${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,rejectBody)
         console.log(response);
+        addToast("Request accepted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
 
       } catch(err) {
         console.error("~err", err);
