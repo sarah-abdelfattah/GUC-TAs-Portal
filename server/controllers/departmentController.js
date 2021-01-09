@@ -612,7 +612,7 @@ exports.updateInstructor = async function (req, res) {
       department: departmentFound._id,
       type: 'Academic Member',
       role: 'Course Instructor'
-    }).populate();
+    }).populate('courses');
 
     if (!instructor) {
       return res.send({
