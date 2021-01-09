@@ -5,6 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
 import { link } from "../../helpers/constants.js";
 import Fade from "react-reveal/Fade";
+import { MyButton } from "../../styles/StyledComponents";
 
 function ViewCourseCoverage() {
   const [data, setData] = useState([]); //table data
@@ -55,9 +56,26 @@ function ViewCourseCoverage() {
               data={data}
               options={{
                 headerStyle: {
-                  backgroundColor: "#045CC8",
-                  color: "#FFF",
+                  backgroundColor: "#ECEFF4",
+                  color: "#000000",
+                  fontSize: 16
                 },
+              }}
+              components={{
+                Toolbar: (props) => (
+                  <div style={{padding: '10px 10px', margin: 'auto'}}>
+                  <MyButton
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                      (document.location.href =
+                        window.location.origin + "/CourseCoverage")
+                    }
+                  >
+                   My courses coverage
+                  </MyButton>
+                  </div>
+                ),
               }}
             />
           </Grid>

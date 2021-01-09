@@ -34,7 +34,7 @@ function Login() {
     const user = { gucId, password };
     if (gucId === "" || password === "") {
       addToast("Please enter your GUC ID and Password", {
-        appearance: "warning",
+        appearance: "error",
         autoDismiss: true,
       });
     } else {
@@ -43,12 +43,12 @@ function Login() {
         console.log(response);
         if (response.data.err) {
           addToast(response.data.err, {
-            appearance: "warning",
+            appearance: "error",
             autoDismiss: true,
           });
         } else if (response.data.JOI_validation_error) {
           addToast(response.data.JOI_validation_error, {
-            appearance: "warning",
+            appearance: "error",
             autoDismiss: true,
           });
         } else {
@@ -61,7 +61,7 @@ function Login() {
         }
       } catch (err) {
         addToast("wrong Id or password", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }

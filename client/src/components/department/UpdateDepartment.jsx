@@ -25,37 +25,62 @@ function UpdateFaculty() {
   useEffect(() => {
     async function fetchData() {
       const facResult = await axiosCall("get", "faculties/faculty/all");
-      const staffResult = await axiosCall(
-        "get",
-        "staffMembers/AC/Course Instructor/all"
-      );
+      // const staffResult = await axiosCall(
+      //   "get",
+      //   "staffMembers/AC/Course Instructor/all"
+      // );
       setFaculties(facResult.data.data);
-      setNewFacultyChosen(facResult.data.data);
-      setStaff(staffResult.data.data);
+      // setNewFacultyChosen(facResult.data.data);
+      // setStaff(staffResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
 
   const handleOnChange = async (target) => {
     setFacultyChosen(target.value);
-    const facCode = faculties.find(({ _id }) => _id === target.value).code;
+    // const facCode = faculties.find(({ _id }) => _id === target.value).code;
+
+    console.log(
+      "🚀 ~ file: UpdateDepartment.jsx ~ line 47 ~ handleOnChange ~ facultyChosen",
+      facultyChosen
+    );
 
     const depResult = await axiosCall(
       "get",
-      `departments/department/${facCode}/all`
+      `departments/department/${target.value}/all`
+    );
+    console.log(
+      "🚀 ~ file: UpdateDepartment.jsx ~ line 47 ~ handleOnChange ~ depResult",
+      depResult
     );
     setDepartments(depResult.data.data);
+  };
+
+  const handleDepOnChange = async (target) => {
+    setDepChosen(target.value);
+    // const depName = departments.find(({ _id }) => _id === target.value).name;
+
+    const staffResult = await axiosCall(
+      "get",
+      "staffMembers/AC/Course Instructor/all"
+    );
+
+    const staffOfDep = staffResult.data.data.filter(
+      (staff) => staff.department === target.value
+    );
+
+    setStaff(staffOfDep);
   };
 
   const handleSubmit = async () => {
     try {
       let dep;
       if (depChosen)
-        dep = await departments.find(({ _id }) => _id === depChosen).name;
+        dep = (await departments.find(({ _id }) => _id === depChosen)).name;
 
-      let code;
-      if (faculties)
-        code = await faculties.find(({ _id }) => _id === facultyChosen).code;
+      // let code;
+      // if (faculties)
+      //   code = (await faculties.find(({ _id }) => _id === facultyChosen)).code;
 
       let HOD;
       if (HODChosen)
@@ -63,20 +88,25 @@ function UpdateFaculty() {
 
       let newFac;
       if (newFacultyChosen)
-        newFac = await faculties.find(({ _id }) => _id === newFacultyChosen)
-          .code;
+        console.log(
+          "🚀 ~ file: UpdateDepartment.jsx ~ line 95 ~ handleSubmit ~ newFacultyChosen",
+          newFacultyChosen
+        );
+
+      // newFac = await faculties.find(({ _id }) => _id === newFacultyChosen)
+      //   .code;
 
       const body = {
-        facultyCode: code.toUpperCase(),
+        facultyCode: facultyChosen.toUpperCase(),
         depName: dep,
         HOD: HODChosen ? HOD : undefined,
-        newFacultyCode: newFacultyChosen ? newFac : undefined,
+        newFacultyCode: newFacultyChosen ? newFacultyChosen : undefined,
       };
 
       const res = await axiosCall("put", "departments/department", body);
 
       if (res.data.data) {
-        addToast("Department created successfully", {
+        addToast("Department updated successfully", {
           appearance: "success",
           autoDismiss: true,
         });
@@ -117,8 +147,8 @@ function UpdateFaculty() {
               faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={faculty._id}
-                  key={faculty._id}
+                  value={faculty.code}
+                  key={faculty.code}
                 >
                   {faculty.code} - {faculty.name}
                 </MenuItem>
@@ -135,7 +165,7 @@ function UpdateFaculty() {
             className="crud-select"
             value={depChosen}
             onChange={(event) => {
-              setDepChosen(event.target.value);
+              handleDepOnChange(event.target);
             }}
           >
             {departments.length > 0 &&
@@ -176,6 +206,9 @@ function UpdateFaculty() {
                 </MenuItem>
               ))}
           </Select>
+          <FormHelperText className="crud-helperText">
+            ^ Course Instructors under this department
+          </FormHelperText>
         </FormControl>
 
         <FormControl className="crud-formControl">
@@ -193,8 +226,8 @@ function UpdateFaculty() {
               faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={faculty._id}
-                  key={faculty._id}
+                  value={faculty.code}
+                  key={faculty.code}
                 >
                   {faculty.code} - {faculty.name}
                 </MenuItem>

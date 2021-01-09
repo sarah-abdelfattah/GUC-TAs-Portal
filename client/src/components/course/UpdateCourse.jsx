@@ -38,11 +38,11 @@ function UpdateCourse() {
 
   const handleFacOnChange = async (target) => {
     setFacultyChosen(target.value);
-    const facCode = faculties.find(({ _id }) => _id === target.value).code;
+    // const facCode = faculties.find(({ _id }) => _id === target.value).code;
 
     const depResult = await axiosCall(
       "get",
-      `departments/department/${facCode}/all`
+      `departments/department/${target.value}/all`
     );
     setDepartments(depResult.data.data);
   };
@@ -69,9 +69,9 @@ function UpdateCourse() {
 
   const handleSubmit = async () => {
     try {
-      let code;
-      if (faculties)
-        code = await faculties.find(({ _id }) => _id === facultyChosen).code;
+      // let code;
+      // if (faculties)
+      //   code = await faculties.find(({ _id }) => _id === facultyChosen).code;
 
       let depName;
       if (departments)
@@ -87,7 +87,7 @@ function UpdateCourse() {
           .name;
 
       const body = {
-        facultyCode: code.toUpperCase(),
+        facultyCode: facultyChosen.toUpperCase(),
         departmentName: depName,
         courseName: courseName,
         newDepartment: newDepChosen ? newDepName : undefined,
@@ -140,8 +140,8 @@ function UpdateCourse() {
               faculties.map((faculty) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={faculty._id}
-                  key={faculty._id}
+                  value={faculty.code}
+                  key={faculty.code}
                 >
                   {faculty.code} - {faculty.name}
                 </MenuItem>

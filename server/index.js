@@ -19,6 +19,7 @@ const academicMemberRoutes = require('./routes/academicMembers');
 const slots = require('./routes/slots');
 const staffMembers = require('./routes/staffMembers');
 const requests = require('./routes/requests');
+const notifications = require('./routes/notifications');
 
 // Create the app
 const app = express();
@@ -91,6 +92,8 @@ app.use('/academicMember', academicMemberRoutes);
 app.use('/slots', slots);
 app.use('/staffMembers', staffMembers);
 app.use('/requests', requests);
+app.use('/notifications', notifications);
+
 
 app.post('/logOut', async function (req, res) {
   const tokenFound = await Token.findOne({ tokenId: req.header('auth-token') });
