@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { link } from "../../helpers/constants";
-
+import { checkHOD, link } from "../../helpers/constants";
 import Button from "react-bootstrap/Button";
 import {
   FormControl,
@@ -28,6 +27,7 @@ function InstructorAssignment() {
     delete: false,
   });
   const [id, setID] = useState("");
+  const [HOD, setHOD] = useState(false);
 
   const { addToast } = useToasts();
 
@@ -46,6 +46,12 @@ function InstructorAssignment() {
         document.location.href = window.location.origin + "/login";
       } else {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall("get", `${link}/departments/courses`);
           console.log(response);
           if (response.data.error) {
@@ -186,7 +192,8 @@ function InstructorAssignment() {
     }
   };
 
-  return (
+  if(HOD)
+   return (
     <div className="crud-outer-container">
       <div className="crud-container">
         <Add
@@ -373,7 +380,9 @@ function InstructorAssignment() {
         </div>
       )}
     </div>
-  );
+  ); 
+  else 
+  return null;
 }
 
 export default InstructorAssignment;

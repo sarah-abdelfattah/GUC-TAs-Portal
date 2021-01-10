@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Avatar from "react-avatar";
 import Typography from "@material-ui/core/Typography";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import { dateFormat } from "../../helpers/constants.js";
@@ -56,12 +56,12 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
-  const [accept_or_reject_request, setAccept_or_reject_request] = useState(false);
   const [comment, setComment] = useState("");
   const { addToast } = useToasts();
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [HOD, setHOD] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -77,6 +77,12 @@ function Request(props) {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall(
             "get",
             `${link}/requests/viewRequest/${props.match.params.id}`
@@ -114,7 +120,7 @@ function Request(props) {
   }, []);
 
   const handleAccept = async function () {
-    setAccept_or_reject_request(true);
+    let accept_or_reject_request = true;
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
@@ -136,7 +142,10 @@ function Request(props) {
       try{
         const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
         console.log(response);
-
+        addToast("Request accepted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
       } catch(err) {
         console.error("~err", err);
         addToast("Failed to accept request", {
@@ -150,7 +159,7 @@ function Request(props) {
   // in case of rejection and optionally leave a comment
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAccept_or_reject_request(false);
+    let accept_or_reject_request = false;
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
@@ -185,6 +194,7 @@ function Request(props) {
     }
   };
 
+  if(HOD)
   return (
     <div className={classes.modal}>
       <Card className={classes.root}>
@@ -302,5 +312,6 @@ function Request(props) {
       </Card>
     </div>
   );
+  else return null;
 }
 export default Request;
