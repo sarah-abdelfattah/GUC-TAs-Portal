@@ -68,7 +68,7 @@ function InstructorAssignment() {
           }
         } catch (e) {
           console.log("~ err", e);
-          //document.location.href = window.location.origin + "/unauthorized";
+          document.location.href = window.location.origin + "/unauthorized";
         }
       }
     }

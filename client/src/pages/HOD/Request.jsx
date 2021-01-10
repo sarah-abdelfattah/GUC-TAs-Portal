@@ -121,7 +121,7 @@ function Request(props) {
   }, []);
 
   const handleAccept = async function () {
-    setAccept_or_reject_request(true);
+    setAccept_or_reject_request(prevCheck => !prevCheck);
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
@@ -157,7 +157,7 @@ function Request(props) {
   // in case of rejection and optionally leave a comment
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAccept_or_reject_request(false);
+    setAccept_or_reject_request(prevCheck => !prevCheck);
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
