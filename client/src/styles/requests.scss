@@ -1,7 +1,7 @@
 @import './colorSchema';
 
 .btn {
-    background-color: $secondary-gray !important;
+    // background-color: $secondary-gray !important;
     width: 180px;
     border: none;
 
@@ -32,6 +32,6 @@
     }
 }
 
-.btn {
-    background: inherit;
-}
+// .btn {
+//     // background: inherit;
+// }

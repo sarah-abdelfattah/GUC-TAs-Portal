@@ -25,10 +25,15 @@ function SideBar() {
   useEffect(() => {
     async function fetchData() {
       const res = await checkLogin();
+      console.log("🚀 ~ file: SideBar.jsx ~ line 28 ~ fetchData ~ res", res);
 
       const depResult = await axiosCall(
         "get",
         "departments/department/all/all"
+      );
+      console.log(
+        "🚀 ~ file: SideBar.jsx ~ line 33 ~ fetchData ~ depResult",
+        depResult
       );
 
       if (res.role === "Course Instructor") setUser("Course Instructor");
@@ -39,6 +44,7 @@ function SideBar() {
         let HOD = await depResult.data.data.find(({ HOD }) => HOD === res.id);
 
         if (HOD) {
+          console.log("yes");
           setUser("HOD");
         }
       }

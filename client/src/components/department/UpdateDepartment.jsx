@@ -83,8 +83,10 @@ function UpdateFaculty() {
       //   code = (await faculties.find(({ _id }) => _id === facultyChosen)).code;
 
       let HOD;
-      if (HODChosen)
+
+      if (HODChosen && HODChosen !== "none")
         HOD = await staff.find(({ _id }) => _id === HODChosen).gucId;
+      else HOD = "none";
 
       let newFac;
       if (newFacultyChosen)
@@ -195,6 +197,9 @@ function UpdateFaculty() {
               setHODChosen(event.target.value);
             }}
           >
+            <MenuItem className="crud-menuItem" value={"none"} key={"none"}>
+              NONE
+            </MenuItem>
             {staff.length > 0 &&
               staff.map((member) => (
                 <MenuItem

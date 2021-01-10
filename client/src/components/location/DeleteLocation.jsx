@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import Modal from "react-bootstrap/Modal";
 
 import {
   FormControl,
@@ -17,6 +18,10 @@ function DeleteLocation() {
   const [roomChosen, setRoomChosen] = useState("");
   const [capacity, setRoomCapacity] = useState("");
   const [type, setRoomType] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const { addToast } = useToasts();
 
@@ -37,6 +42,7 @@ function DeleteLocation() {
 
   const handleSubmit = async () => {
     try {
+      setShow(false);
       let name;
       if (rooms)
         name = await rooms.find(({ _id }) => _id === roomChosen).location;
@@ -118,10 +124,26 @@ function DeleteLocation() {
         variant="danger"
         className="crud-submit crud-delete-btn red"
         disabled={roomChosen === "" ? true : false}
-        onClick={handleSubmit}
+        // onClick={handleSubmit}
+        onClick={handleShow}
       >
         Delete Location
       </Button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>DELETE</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this location?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={handleSubmit}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

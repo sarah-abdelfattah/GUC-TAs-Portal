@@ -27,9 +27,9 @@ function ChangeDayOff() {
         newDayOff: NewDayOff,
         reason: Reason,
       };
-      if (NewDayOff == CurDayOff) {
+      if (NewDayOff === CurDayOff) {
         addToast("already Your Current DayOff", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         setDayOff("");

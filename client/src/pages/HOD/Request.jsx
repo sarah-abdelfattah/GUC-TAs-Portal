@@ -38,10 +38,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
   button: {
-    margin: "auto"
+    margin: "auto",
   },
   margin: {
-   margin: "auto"
+    margin: "auto",
   },
   text: {
     margin: theme.spacing(1),
@@ -55,7 +55,9 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
-  const [accept_or_reject_request, setAccept_or_reject_request] = useState(false);
+  const [accept_or_reject_request, setAccept_or_reject_request] = useState(
+    false
+  );
   const [comment, setComment] = useState("");
   const { addToast } = useToasts();
   const classes = useStyles();
@@ -83,7 +85,7 @@ function Request(props) {
           console.log(response);
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -114,32 +116,38 @@ function Request(props) {
 
   const handleAccept = async function () {
     setAccept_or_reject_request(true);
-    const rejectBody = {accept_or_reject_request, comment}
-    if(request.type === "Change DayOff"){
-      try{
-        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,rejectBody)
+    const rejectBody = { accept_or_reject_request, comment };
+    if (request.type === "Change DayOff") {
+      try {
+        const response = await axiosCall(
+          "put",
+          `${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,
+          rejectBody
+        );
         console.log(response);
         addToast("Request accepted successfully", {
           appearance: "success",
           autoDismiss: true,
         });
-
-      } catch(err) {
+      } catch (err) {
         console.error("~err", err);
         addToast("Failed to accept request", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }
     } else {
-      try{
-        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
+      try {
+        const response = await axiosCall(
+          "put",
+          `${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,
+          rejectBody
+        );
         console.log(response);
-
-      } catch(err) {
+      } catch (err) {
         console.error("~err", err);
         addToast("Failed to accept request", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }
@@ -150,34 +158,42 @@ function Request(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAccept_or_reject_request(false);
-    const rejectBody = {accept_or_reject_request, comment}
-    if(request.type === "Change DayOff"){
-      try{
-        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,rejectBody)
+    const rejectBody = { accept_or_reject_request, comment };
+    if (request.type === "Change DayOff") {
+      try {
+        const response = await axiosCall(
+          "put",
+          `${link}/requests/AcceptOrRejectChangeDay/${props.match.params.id}`,
+          rejectBody
+        );
         console.log(response);
         addToast("Request rejected successfully", {
           appearance: "success",
           autoDismiss: true,
         });
-      } catch(err) {
+      } catch (err) {
         console.error("~err", err);
         addToast("Failed to reject request", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }
     } else {
-      try{
-        const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
+      try {
+        const response = await axiosCall(
+          "put",
+          `${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,
+          rejectBody
+        );
         console.log(response);
         addToast("Request rejected successfully", {
           appearance: "success",
           autoDismiss: true,
         });
-      } catch(err) {
+      } catch (err) {
         console.error("~err", err);
         addToast("Failed to reject request", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }
@@ -245,58 +261,62 @@ function Request(props) {
           </Typography>
         </CardContent>
         <div>
-        {(() => {
-        if (request.status === "pending") {
-          return (
-            <CardActions>
-          <AcceptButton
-            onClick={handleAccept}
-            variant="contained"
-            color="primary"
-            className={classes.margin}
-            startIcon={<CheckCircleIcon />}
-          >
-            {" "}
-            Accept
-          </AcceptButton>
-          <RejectButton
-            onClick={handleClick}
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-            startIcon={<CancelIcon />}
-          >
-            {" "}
-            Reject
-          </RejectButton>
-          <Popper id={id} open={open} anchorEl={anchorEl}>
-            <div className={classes.paper}>
-              <form onSubmit={handleSubmit} noValidate autoComplete="off">
-                <TextField
-                  value={comment}
-                  onChange={({ target }) => setComment(target.value)}
-                  id="standard-multiline-static"
-                  label="Reason for rejection"
-                  multiline
-                  rows={4}
-                />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                >
-                  Confirm
-                </Button>
-              </form>
-            </div>
-          </Popper>
-        </CardActions>
-          );
-        } else {
-          return (<div />);
-        }
-        })()}
+          {(() => {
+            if (request.status === "pending") {
+              return (
+                <CardActions>
+                  <AcceptButton
+                    onClick={handleAccept}
+                    variant="contained"
+                    color="primary"
+                    className={classes.margin}
+                    startIcon={<CheckCircleIcon />}
+                  >
+                    {" "}
+                    Accept
+                  </AcceptButton>
+                  <RejectButton
+                    onClick={handleClick}
+                    variant="contained"
+                    color="secondary"
+                    className={classes.button}
+                    startIcon={<CancelIcon />}
+                  >
+                    {" "}
+                    Reject
+                  </RejectButton>
+                  <Popper id={id} open={open} anchorEl={anchorEl}>
+                    <div className={classes.paper}>
+                      <form
+                        onSubmit={handleSubmit}
+                        noValidate
+                        autoComplete="off"
+                      >
+                        <TextField
+                          value={comment}
+                          onChange={({ target }) => setComment(target.value)}
+                          id="standard-multiline-static"
+                          label="Reason for rejection"
+                          multiline
+                          rows={4}
+                        />
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                          className={classes.button}
+                        >
+                          Confirm
+                        </Button>
+                      </form>
+                    </div>
+                  </Popper>
+                </CardActions>
+              );
+            } else {
+              return <div />;
+            }
+          })()}
         </div>
       </Card>
     </div>

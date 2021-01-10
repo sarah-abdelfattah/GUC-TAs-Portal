@@ -10,6 +10,7 @@ import {
   MenuItem,
   Input,
 } from "@material-ui/core";
+import Modal from "react-bootstrap/Modal";
 
 import { useToasts } from "react-toast-notifications";
 import { axiosCall } from "../../helpers/axiosCall";
@@ -31,6 +32,11 @@ function InstructorAssignment() {
 
   const { addToast } = useToasts();
 
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const handleOnChange = (target) => {
     setCourse(target.value);
   };
@@ -46,11 +52,14 @@ function InstructorAssignment() {
         document.location.href = window.location.origin + "/login";
       } else {
         try {
-          const response = await axiosCall("get", `${link}/departments/courses`);
+          const response = await axiosCall(
+            "get",
+            `${link}/departments/courses`
+          );
           console.log(response);
           if (response.data.error) {
             addToast(response.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -62,7 +71,7 @@ function InstructorAssignment() {
           }
         } catch (e) {
           console.log("~ err", e);
-          document.location.href = window.location.origin + "/unauthorized";
+          // document.location.href = window.location.origin + "/unauthorized";
         }
       }
     }
@@ -79,9 +88,10 @@ function InstructorAssignment() {
         optionSelected = "put";
       } else if (crudBtns.delete) {
         optionSelected = "delete";
+        setShow(false);
       } else {
         addToast("You should specify an option", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         return;
@@ -96,11 +106,9 @@ function InstructorAssignment() {
         }
       );
 
-      console.log(response);
-
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {
@@ -139,7 +147,7 @@ function InstructorAssignment() {
         optionSelected = "delete";
       } else {
         addToast("You should specify an option", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         return;
@@ -151,7 +159,7 @@ function InstructorAssignment() {
         {
           gucId: id,
           newName: newCourse,
-          oldName: course
+          oldName: course,
         }
       );
 
@@ -159,7 +167,7 @@ function InstructorAssignment() {
 
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {
@@ -273,27 +281,25 @@ function InstructorAssignment() {
                 ? "crud-submit crud-update-btn blue"
                 : "crud-submit crud-delete-btn red"
             }
-            disabled={
-              id === "" || course === ""
-                ? true
-                : false
-            }
-            onClick={handleSubmit}
+            disabled={id === "" || course === "" ? true : false}
+            onClick={crudBtns.delete ? handleShow : handleSubmit}
           >
             {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
           </Button>
         </div>
       )}
-      { !crudBtns.update ? null : (
+      {!crudBtns.update ? null : (
         <div className="crud-inner-container">
           <div className="crud-form">
             <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">New Course Name</InputLabel>
+              <InputLabel className="crud-inputLabel">
+                New Course Name
+              </InputLabel>
               <Select
                 className="crud-select"
                 value={newCourse}
                 onChange={(event) => {
-                    handleUpdateOnChange(event.target);
+                  handleUpdateOnChange(event.target);
                 }}
               >
                 {courses.length > 0 &&
@@ -313,7 +319,9 @@ function InstructorAssignment() {
             </FormControl>
 
             <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Old Course Name</InputLabel>
+              <InputLabel className="crud-inputLabel">
+                Old Course Name
+              </InputLabel>
               <Select
                 className="crud-select"
                 value={course}
@@ -361,17 +369,28 @@ function InstructorAssignment() {
                 ? "crud-submit crud-update-btn blue"
                 : "crud-submit crud-delete-btn red"
             }
-            disabled={
-              id === "" || course === ""
-                ? true
-                : false
-            }
+            disabled={id === "" || course === "" ? true : false}
             onClick={handleUpdateSubmit}
           >
             {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
           </Button>
         </div>
       )}
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>DELETE</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this instructor from this course?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={() => handleSubmit()}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

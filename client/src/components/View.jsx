@@ -8,7 +8,7 @@ function View(props) {
       {props.textClassified ? (
         <h5 className="text">{props.textClassified} </h5>
       ) : (
-        <h5 className="text">Add {props.text} </h5>
+        <h5 className="text">View {props.text} </h5>
       )}{" "}
     </div>
   );

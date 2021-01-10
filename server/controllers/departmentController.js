@@ -114,6 +114,7 @@ exports.updateDepartment = async function (req, res) {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
     let { facultyCode, depName, HOD, newFacultyCode } = req.body;
+    console.log("🚀 ~ file: departmentController.js ~ line 117 ~ req.body", req.body);
 
     facultyCode = facultyCode.toUpperCase();
 
@@ -133,23 +134,32 @@ exports.updateDepartment = async function (req, res) {
       return res.send({ error: "No department with this name under this faculty" });
 
     if (HOD) {// staff found? 
-      const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
-      if (!staffMember)
-        return res.send({ error: "No staff member with this ID" });
+      if (HOD === "none") {
+        depFound.HOD = undefined;
+        console.log("🚀 ~ file: departmentController.js ~ line 138 ~ depFound", depFound);
+      }
+      else {
+        const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
+        if (!staffMember)
+          return res.send({ error: "No staff member with this ID" });
 
-      //staff is not TA and not HR 
-      if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-        return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
+        //staff is not TA and not HR 
+        if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
+          return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
 
-      //staff of the same faculty?
-      if (!(staffMember.faculty.equals(facultyFound._id)))
-        return res.send({ error: "Sorry Head of the department should be of the same faculty" });
+        //staff of the same faculty?
+        if (!(staffMember.faculty.equals(facultyFound._id)))
+          return res.send({ error: "Sorry Head of the department should be of the same faculty" });
 
-      const dep = await Department.findOne({ HOD: staffMember._id, })
-      if (dep && dep.HOD.name != HOD)
-        return res.send({ error: "Sorry this staff is a HOD of another department" });
+        const dep = await Department.findOne({ HOD: staffMember._id, })
+        if (dep) {
+          if (dep.HOD != staffMember.id)
+            return res.send({ error: "Sorry this staff is a HOD of another department" });
+          else return res.send({ error: "This staff is already the HOD of this department" });
+        }
 
-      depFound.HOD = staffMember;
+        depFound.HOD = staffMember;
+      }
     }
 
     if (newFacultyCode) {
