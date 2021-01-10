@@ -36,7 +36,9 @@ exports.sendRequest = async function (req, res) {
       const recieverId = req.body.recieverId;
       const location = req.body.location;
       const coursename = req.body.course;
-
+      if(recieverId==sender.gucId){
+         return res.send({ error: "Sorry you can't send this Request" });
+      }
       //const course=await Course.findOne({name:coursename})
 
 
@@ -95,7 +97,7 @@ exports.sendRequest = async function (req, res) {
       if (!flag) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
-      const subject = type + ' with ' + rec.name + ' for course ' + coursename + ' at ' + req.body.replacementDate;
+      const subject = type + ' with ' + rec.name +" ID: "+rec.gucId+ ' for course ' + coursename + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
       const x = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":00"
       const newRequest = new Request({
         //TODO a4eel el sender
@@ -205,8 +207,36 @@ exports.sendRequest = async function (req, res) {
       if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
       return res.send({ error: 'Please Enter correct Slot Time' });
       }
-
-
+     // if()
+      var recordDay=date.getDay();
+      if(recordDay==5){
+         return res.send({ error: 'Sorry it is Friday ' });
+      }
+         var Day;
+        switch (recordDay) {
+          case 1:
+            Day = 'Monday';
+            break;
+          case 2:
+            Day = 'Tuesday';
+            break;
+          case 3:
+            Day = 'Wednesday';
+            break;
+          case 4:
+            Day = 'Thursday';
+            break;
+          case 5:
+            Day = 'Friday';
+            break;
+          case 6:
+            Day = 'Saturday';
+            break;
+          case 0:
+            Day = 'Sunday';
+            break;
+        }
+      
       var foundCourse = await Course.findOne({ name: coursename }).populate();
 
       var f2;
@@ -218,7 +248,7 @@ exports.sendRequest = async function (req, res) {
 
       if (!f2) return res.status(400).send({ error: 'This academic member does not teach this course' });
 
-      const subject = type + ' at ' + req.body.date + 'of course ' + coursename;
+      const subject = type + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear(); + ' of course ' + coursename;
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -279,7 +309,7 @@ exports.sendRequest = async function (req, res) {
         const document = req.body.document;
         if (!document) return res.send({ error: 'Please enter all the required fields' });
 
-        const subject = type + ' (' + leaveType + ') at ' + req.body.SickDayDate;
+        const subject = type + ' (' + leaveType + ') at ' + SickDayDate.getDate()+"/"+(SickDayDate.getMonth()+1)+"/"+SickDayDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -392,7 +422,7 @@ exports.sendRequest = async function (req, res) {
           error: 'Sorry you have submitted for with this compensation date before'
         });
 
-        const subject = type + ' (' + leaveType + ') at ' + req.body.CompensationDate;
+        const subject = type + ' (' + leaveType + ') at ' + CompensationDate.getDate()+"/"+(CompensationDate.getMonth()+1)+"/"+CompensationDate.getFullYear();
         const newRequest = new Request({
           //TODO a4eel el sender
           sender: sender,
@@ -453,7 +483,7 @@ exports.sendRequest = async function (req, res) {
         if (!flag) {
           return res.send({ error: 'Sorry you cannot submit this request' });
         }
-        const subject = type + ' (' + leaveType + ') at ' + req.body.AnnualLeaveDate;
+        const subject = type + ' (' + leaveType + ') at ' + AnnualLeaveDate.getDate()+"/"+(AnnualLeaveDate.getMonth()+1)+"/"+AnnualLeaveDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -478,7 +508,7 @@ exports.sendRequest = async function (req, res) {
         if (!doc || !startDate) return res.send({ error: 'Please enter all the missing fields' });
         if (`${startDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
-        const subject = type + ' (' + leaveType + ') at ' + req.body.startDate;
+        const subject = type + ' (' + leaveType + ') at ' +  startDate.getDate()+"/"+(startDate.getMonth()+1)+"/"+startDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -504,7 +534,8 @@ exports.sendRequest = async function (req, res) {
         const AccidentDate = new Date(req.body.AccidentDate);
         if (!AccidentDate || `${AccidentDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
-        const subject = type + ' (' + leaveType + ') at ' + req.body.AccidentDate;
+        const subject = type + ' (' + leaveType + ') at ' +AccidentDate.getDate()+"/"+(AccidentDate.getMonth()+1)+"/"+AccidentDate.getFullYear();
+
         // add status and sender
         const Arr = await Request.find({ type: 'Leave Request', leavetype: 'Accidental', sender: sender, status: 'accepted' });
         //var lucky = await Request.filter({type:"Leave Request" ,leaveType:"Accidental"  });
@@ -600,13 +631,14 @@ exports.AcceptOrRejectRep = async function (req, res) {
     var objId = req.user._id;
     var staff = await StaffMember.findOne({ gucId: id }).populate();
     var accepted = false;
-
+       
     const AcceptOrReject = req.body.AcceptOrReject;
     if (!AcceptOrReject) {
       return res.send({ error: 'please enter AcceptOrReject ' });
     }
-
-    if (AcceptOrReject === 'accepted') {
+     
+    if (req.body.AcceptOrReject === 'accepted') {
+      console.log("hnaa")
       var date = NewRequest.replacemntDate;
       const teachingCoursesObjIDs = staff.courses;
       var flag = false;
@@ -615,7 +647,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
       for (i = 0; i < teachingCoursesObjIDs.length; i++) {
         const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
         if (!teachingCourse) {
-          return 'You do not have the access to view any courses';
+          return  res.send( {error:'You do not have the access to view any courses'});
         }
         teachingCourses.push(teachingCourse);
       }
@@ -631,16 +663,17 @@ exports.AcceptOrRejectRep = async function (req, res) {
         }
       }
       if (flag) {
-        return res.send({ error: 'you cannot accept this request, you donnot have this free slot in your Schedule' });
+        return res.send({ data : 'you cannot accept this request, you do not have this free slot in your Schedule' });
       } else {
         accepted = true;
       }
     }
+    else{ 
     if (AcceptOrReject === 'rejected') {
       accepted = false;
     } else {
       return res.send({ error: 'enter accepted or rejected please' });
-    }
+    }}
 
     if (accepted) {
       var senderId = NewRequest.sender._id;
@@ -669,7 +702,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
       await NewRequest.save();
     }
 
-    return res.send({ data: NewRequest });
+    return res.send({ data: NewRequest.status });
   } catch (err) {
     console.log(err);
     return res.send({ error: err });
@@ -971,6 +1004,7 @@ exports.CancelRequest = async function (req, res) {
     }
     await Request.deleteOne({ _id: id });
     return res.send({ data: 'Request deleted successfully' });
+    
   } catch (err) {
     console.log(err);
     return res.send({ error: err });

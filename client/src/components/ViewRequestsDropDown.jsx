@@ -14,7 +14,7 @@ function ViewRequestsDropDown() {
   };
 
   return (
-    <div className="RequestsDropDown">
+    <div>
       <div
         className="crud-inner-container request-select"
         style={{
@@ -23,14 +23,11 @@ function ViewRequestsDropDown() {
       >
         <Select
           className="crud-select "
-           
           placeholder="Select Type"
-          
-        
           value={value}
-            onChange={(event) => {
-              setValue(event.target.value);
-            }}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
         >
           <MenuItem
             className="crud-menuItem "
@@ -50,7 +47,7 @@ function ViewRequestsDropDown() {
       </div>
 
       {value === "Sent Requests" ? (
-        <Sent/>
+        <Sent />
       ) : value === "Received Requests" ? (
         <Received />
       ) : null}
