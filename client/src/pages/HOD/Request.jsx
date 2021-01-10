@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Avatar from "react-avatar";
 import Typography from "@material-ui/core/Typography";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import { dateFormat } from "../../helpers/constants.js";
@@ -62,6 +62,7 @@ function Request(props) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [HOD, setHOD] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -77,6 +78,12 @@ function Request(props) {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall(
             "get",
             `${link}/requests/viewRequest/${props.match.params.id}`
@@ -185,6 +192,7 @@ function Request(props) {
     }
   };
 
+  if(HOD)
   return (
     <div className={classes.modal}>
       <Card className={classes.root}>
@@ -302,5 +310,6 @@ function Request(props) {
       </Card>
     </div>
   );
+  else return null;
 }
 export default Request;

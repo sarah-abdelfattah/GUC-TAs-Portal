@@ -4,7 +4,7 @@ import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Fade from "react-reveal/Fade";
@@ -18,6 +18,7 @@ function ViewAllStaff() {
   const [data, setData] = useState([]); //table data
   const [courses, setCourses] = useState([]); //table data
   const { addToast } = useToasts();
+  const [HOD, setHOD] = useState(false);
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
@@ -26,6 +27,12 @@ function ViewAllStaff() {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall(
             "get",
             `${link}/departments/getAllStaffMembers/all`
@@ -109,6 +116,7 @@ function ViewAllStaff() {
     }
   }
 
+  if(HOD)
   return (
     <div className="my-table">
       <Fade>
@@ -195,6 +203,7 @@ function ViewAllStaff() {
       </Fade>
     </div>
   );
+  else return null;
 }
 
 export default ViewAllStaff;
