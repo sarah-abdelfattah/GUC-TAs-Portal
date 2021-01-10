@@ -38,13 +38,14 @@ exports.sendRequest = async function (req, res) {
       const coursename = req.body.course;
 
       //const course=await Course.findOne({name:coursename})
-      const x = req.body.replacementDate;
 
-      const date = new Date(Date.parse(x));
+
+      const date = new Date(Date.parse(req.body.replacementDate));
+
       if (!date) return res.send({ error: 'Please enter a valid date' });
 
       // const departmentt=senderInfo. !replacementdate
-      if (!recieverId || !location || !coursename || !x) {
+      if (!recieverId || !location || !coursename || !date) {
         return res.send({ error: 'Please enter all the missing fields' });
       }
 
@@ -95,12 +96,14 @@ exports.sendRequest = async function (req, res) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
       const subject = type + ' with ' + rec.name + ' for course ' + coursename + ' at ' + req.body.replacementDate;
+      const x = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":00"
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
         reciever: rec,
         type: type,
         replacemntDate: date,
+        string: x,
         location: location,
         coursename: coursename,
         subject: subject,
@@ -119,14 +122,17 @@ exports.sendRequest = async function (req, res) {
     if (type === 'Change DayOff') {
       //TODO to be changed
       const newDayOff = req.body.newDayOff;
-      if (!newDayOff) return res.status(400).send({ error: 'Please enter all the missing fields' });
+      if (!newDayOff) return res.send({ error: 'Please enter all the missing fields' });
 
-      var department = await Department.findOne({ _id: sender.department._id });
+      var department = await Department.findOne({ _id: sender.department._id }).populate();
       if (!department) return res.status(400).send({ error: 'This department does not exist.' });
       if (!department.HOD === null) return res.status(400).send({ error: 'This department has no HOD yet.' });
 
-      const recid = department.HOD._id;
+      const recid = department.HOD;
+
       const rec = await StaffMember.findOne({ _id: recid });
+      if (!rec)
+        return res.status(400).send({ error: 'No Staff with this Id' });
 
       const currentDayOff = sender.dayOff;
 
@@ -135,6 +141,8 @@ exports.sendRequest = async function (req, res) {
       if (currentDayOff === newDayOff) return res.status(400).send({ error: 'This is already your current day off' });
 
       const subject = type + ' Request from ' + currentDayOff + ' to ' + newDayOff;
+
+
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -145,6 +153,7 @@ exports.sendRequest = async function (req, res) {
         subject: subject,
         reason: req.body.reason,
       });
+
       if (!newRequest.reason) delete newRequest.reason;
 
       await newRequest.save();
@@ -160,19 +169,43 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Slot Request') {
       const coursename = req.body.course;
-      const x = req.body.date;
+
+      const date = new Date(Date.parse(req.body.date));
       const locationType = req.body.locationType;
-      if (!coursename || !x || !locationType) return res.send({ error: 'Please enter all the missing fields' });
+      if (!coursename || !date || !locationType) return res.send({ error: 'Please enter all the missing fields' });
       if (locationType !== 'Tutorial Room' && locationType !== 'Lecture Hall' && locationType !== 'Lab') return res.send({ error: 'Please enter a valid location type' });
 
       const course = await Course.findOne({ name: coursename });
       if (!course) return res.send({ error: 'This course is not found' });
-
+      if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });
       const rec = course.courseCoordinator;
       if (!rec) return res.send({ error: 'This course has no course coordinator yet' });
 
-      const date = new Date(Date.parse(x));
-      if (!date || `${date}` === 'Invalid Date') return res.send({ error: 'Please enter the correct date' });
+      var flag = false;
+      const x1 = new Date(Date.now());
+
+      if (date.getFullYear() == x1.getFullYear()) {
+        if (date.getMonth() == x1.getMonth()) {
+          if (date.getDate() > x1.getDate()) {
+            flag = true; //Ican accept annual leave
+          }
+        }
+        if (date.getMonth() > x1.getMonth()) {
+          flag = true;
+        }
+      }
+      if (date.getFullYear() > x1.getFullYear()) {
+        flag = true;
+      }
+      if (!flag) {
+        return res.send({ error: 'Sorry you cannot submit this request' });
+      }
+      //check for the time
+      //console.log(date.get)
+      if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
+      return res.send({ error: 'Please Enter correct Slot Time' });
+      }
+
 
       var foundCourse = await Course.findOne({ name: coursename }).populate();
 
@@ -202,13 +235,15 @@ exports.sendRequest = async function (req, res) {
 
     if (type == 'Leave Request') {
       //const department =sender.department;
-      var department = await Department.findOne({ _id: sender.department._id });
-      if (!department) return res.status(400).send({ error: 'This department does not exist' });
-      if (!department.HOD === null) return res.status(400).send({ error: 'This department does not have a HOD yet' });
+      var department = await Department.findOne({ _id: sender.department._id }).populate();
+
+      if (!department) return res.send({ error: 'This department does not exist' });
+
+      if (!department.HOD) return res.send({ error: 'This department does not have a HOD yet' });
       const recid = department.HOD._id;
       const rec = await StaffMember.findOne({ _id: recid });
       const leaveType = req.body.leaveType;
-      if (!leaveType) return res.send({ error: 'Please enter all the missing fields' });
+      if (!leaveType) return res.send({ error: 'Please enter leave type' });
 
       if (leaveType == 'Sick') {
         const SickDayDate = new Date(Date.parse(req.body.SickDayDate));
@@ -262,7 +297,8 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Compensation') {
-        const cdate = req.body.CompensationDate;
+
+
         const CompensationDate = new Date(Date.parse(req.body.CompensationDate)); //date
         const LeaveDate = new Date(Date.parse(req.body.LeaveDate));
         const reason = req.body.reason;
@@ -283,6 +319,7 @@ exports.sendRequest = async function (req, res) {
         } else {
           if (LeaveDate.getFullYear() == CompensationDate.getFullYear()) {
             if (LeaveDate.getMonth() == CompensationDate.getMonth()) {
+
               if (CompensationDate.getDate() > LeaveDate.getDate()) {
                 flag = true;
               }
@@ -294,7 +331,8 @@ exports.sendRequest = async function (req, res) {
             }
           }
         }
-        if (!flag) return res.status(400).send({ error: 'Please enter a valid compensation date & leave date' });
+
+        if (!flag) return res.send({ error: 'Please enter a valid compensation & leave date' });
 
         const AttendanceRecord = sender.attendanceRecords;
 
@@ -304,15 +342,17 @@ exports.sendRequest = async function (req, res) {
         var recdate;
         var f3;
         for (i = 0; i < AttendanceRecord.length; i++) {
-          if (AttendanceRecord[i].date == cdate) {
-            record = AttendanceRecord[i].date;
-            recdate = new Date(Date.parse(record));
+          record = AttendanceRecord[i].date;
+          recdate = new Date(Date.parse(record));
+          if (recdate == CompensationDate) {
             recordDay = recdate.getDay();
-            console.log(recordDay);
+            // console.log(recordDay);
             f3 = true;
             break;
           }
         }
+        if (!f3) return res.send({ error: 'Sorry you did not attend this Day' })
+
         var Day;
         switch (recordDay) {
           case 1:
@@ -338,7 +378,7 @@ exports.sendRequest = async function (req, res) {
             break;
         }
 
-        if (Day != sender.dayOff) return res.status(400).send({ error: 'Please enter a valid compensation date' });
+        if (Day != sender.dayOff) return res.send({ error: 'Please enter a valid compensation date' });
 
         // search in his requests that there is no compensation request on the same day
         var f1 = false;
@@ -348,7 +388,9 @@ exports.sendRequest = async function (req, res) {
           if (leavetype && request.leavetype == 'Compensation') f1 = true;
         }
 
-        if (f1) return res.status(400).send({ error: 'Sorry you have submitted for with this compensation date before' });
+        if (f1) return res.send({
+          error: 'Sorry you have submitted for with this compensation date before'
+        });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.CompensationDate;
         const newRequest = new Request({
@@ -363,7 +405,7 @@ exports.sendRequest = async function (req, res) {
           subject: subject,
         });
         await newRequest.save();
-        return res.status(200).send({ data: newRequest });
+        return res.send({ data: newRequest });
       }
 
       if (leaveType == 'Annual') {
@@ -374,26 +416,24 @@ exports.sendRequest = async function (req, res) {
         const AnnualLeaveDate = new Date(Date.parse(x));
         const replacement = req.body.rep || [];
 
-        if (!AnnualLeaveDate) return res.status(400).send({ error: 'Please enter all the required fields' });
-        if (`${AnnualLeaveDate}` === 'Invalid Date') return res.status(400).send({ error: 'Please enter the date in the correct format' });
+        if (!AnnualLeaveDate) return res.send({ error: 'Please enter all the required fields' });
+        if (`${AnnualLeaveDate}` === 'Invalid Date') return res.send({ error: 'Please enter the date in the correct format' });
 
-        for (i = 0; i < replacement.length; i++) {
-          var object = replacement[i];
-          if (!object.id || !object.date || !object.courseName) return res.status(400).send({ error: 'Please enter all data' });
-          const objectDate = new Date(Date.parse(object.date));
-          const rec = await StaffMember.findOne({ gucId: object.id }).populate();
-          const course = await Course.findOne({ name: object.courseName }).populate();
-          if (`${objectDate}` === 'Invalid Date' || !rec || !course) return res.status(400).send({ error: 'Please enter correct replacement data' });
-          if (objectDate.getFullYear() != AnnualLeaveDate.getFullYear() || objectDate.getMonth() != AnnualLeaveDate.getMonth() || objectDate.getDate() != AnnualLeaveDate.getDate())
-            return res.status(400).send({ error: 'Sorry you Cannot submit this Request: Wrong Date' });
-          foundReplacementRequest = await Request.findOne(
-            //a7ot status tany
-            { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: objectDate, coursename: object.courseName }
-          );
-          if (!foundReplacementRequest) {
-            return res.status(400).send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
-          }
-        }
+        // for (i = 0; i < replacement.length; i++) {
+        //   var object = replacement[i];
+        //   if (!object.id || !object.courseName) return res.status(400).send({ error: 'Please enter all data' });
+
+        //   const rec = await StaffMember.findOne({ gucId: object.id }).populate();
+        //   const course = await Course.findOne({ name: object.courseName }).populate();
+        //   if ( !rec || !course) return res.send({ error: 'Please enter correct replacement data' }); 
+        //   foundReplacementRequest = await Request.findOne(
+        //     //a7ot status tany
+        //     { type: 'Replacement Request', reciever: rec, status: 'accepted', sender: sender, replacemntDate: AnnualLeaveDate, coursename: object.courseName }
+        //   );
+        //   if (!foundReplacementRequest) {
+        //     return res.send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
+        //   }
+        // }
 
         var flag = false;
         const x1 = new Date(Date.now());
@@ -411,7 +451,7 @@ exports.sendRequest = async function (req, res) {
           flag = true;
         }
         if (!flag) {
-          return res.status(400).send({ error: 'Sorry you cannot submit this request' });
+          return res.send({ error: 'Sorry you cannot submit this request' });
         }
         const subject = type + ' (' + leaveType + ') at ' + req.body.AnnualLeaveDate;
 
@@ -431,7 +471,7 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Maternity') {
-        if (sender.gender !== 'female') return res.status(400).send({ error: 'Sorry this type of request is only for females' });
+        if (sender.gender !== 'female') return res.send({ error: 'Sorry this type of request is only for females' });
         var reason = req.body.reason || '';
         const doc = req.body.document;
         const startDate = new Date(Date.parse(req.body.startDate));
@@ -456,11 +496,12 @@ exports.sendRequest = async function (req, res) {
       }
 
       if (leaveType == 'Accidental') {
+
         var reason = req.body.reason || '';
 
         if (sender.leaveBalance === 0) return res.send({ error: 'Sorry you cannot because your balance is 0' });
 
-        const AccidentDate = new Date(Date.parse(req.body.AccidentDate));
+        const AccidentDate = new Date(req.body.AccidentDate);
         if (!AccidentDate || `${AccidentDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
         const subject = type + ' (' + leaveType + ') at ' + req.body.AccidentDate;
@@ -515,7 +556,38 @@ exports.sendRequest = async function (req, res) {
 //     }
 
 // }
+exports.chechRep = async function (req, res) {
+  try {
+    const id = req.body.id;
+    const courseName = req.body.courseName;
+    const senderid = req.user.gucId;
+    const dat = req.body.date
 
+
+
+    const sender = await StaffMember.findOne({ gucId: senderid }).populate();
+    const rec = await StaffMember.findOne({ gucId: id }).populate();
+    const course = await Course.findOne({ name: courseName }).populate();
+    if (!rec || !course) return res.send({ error: 'Please enter correct replacement data' });
+
+
+    foundReplacementRequest = await Request.findOne(
+      //a7ot status tany
+      { type: 'Replacement Request', reciever: rec, sender: sender, coursename: courseName, string: dat, status: 'accepted' }
+    );
+    console.log(foundReplacementRequest);
+    if (!foundReplacementRequest) {
+      return res.send({ error: 'Sorry you cannot submit this request: it is not an accepted replacement' });
+    }
+
+    return res.send("success")
+
+  }
+  catch (err) {
+    console.log('~ err', err);
+    return res.status(500).send({ error: err });
+  }
+};
 exports.AcceptOrRejectRep = async function (req, res) {
   try {
     const Requestid = req.params.id;
@@ -954,7 +1026,7 @@ exports.viewRecievedRequest = async function (req, res) {
     var recId = req.user.gucId;
     var rec = await StaffMember.findOne({ gucId: recId }).populate();
     if (req.params.type != 'Change DayOff' && req.params.type != 'Leave Request') {
-      return res.send({ data: 'there is no such a type' });
+      return res.send({ error: error });
     }
     var searchQuery = await Request.find({ reciever: rec, type: req.params.type }).populate();
     return res.send({ data: searchQuery });
@@ -992,31 +1064,92 @@ exports.viewNotification = async function (req, res) {
     return res.send({ error: err });
   }
 };
-exports.viewmyRequests = async function (req, res) {
-  try {
-    var senderId = req.user.gucId;
-    var sender = await StaffMember.findOne({ gucId: senderId }).populate();
-    ////if(!req.params){
-    console.log(sender);
-    var searchQuery = await Request.find({ sender: sender }).populate(); //or something
-    //var Arr=[];
-    // for(i=0;i<searchQuery.length;i++){
-    // Arr[i]=searchQuery[i].subject
-    // }
-    return res.send({ data: searchQuery });
-    //}
-    // else{
 
-    //   var ObjectId=req.params.id;
-    //  console.log("hnaa "+ObjectId);
-    //   var searchQuery = await Request.findOne({ObjectId:ObjectId}).populate()
-    //   console.log(searchQuery);
-    //   return res.send({data: searchQuery  });
-    //   }
-  } catch (err) {
+
+exports.getDayOff = async function (req, res) {
+  try {
+    const senderId = req.user.gucId;
+    var sender = await StaffMember.findOne({ gucId: senderId }).populate();
+    return res.send({ data: sender.dayOff });
+  }
+  catch (err) {
     console.log(err);
     return res.send({ error: err });
   }
+}
+
+exports.viewRequestA = async (req, res) => {
+  try {
+
+    let request = await Request.findOne({ _id: req.params.id });
+
+    
+
+    console.log(request);
+
+    // if no request found
+    if (!request) {
+      return res.send({
+        error: "No request is found with this id",
+      });
+    }
+
+    return res.status(200).send({
+      data: {request}
+    });
+  } catch (err) {
+    if (err.isJoi) {
+      console.log(' JOI validation error: ', err);
+      return res.send({ error: err.details[0].message });
+    }
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
+  }
+};
+
+
+
+
+
+
+exports.getCourses = async function (req, res) {
+  try {
+    const senderId = req.user.gucId;
+
+    var instructor = await StaffMember.findOne({ gucId: senderId }).populate('courses');
+
+    if (instructor) {
+      var courseNames = instructor.courses.map((course) => course.name);
+
+      return res.send({ data: courseNames });
+    }
+    else
+      return res.send({ error: "this staff has no courses" });
+  }
+  catch (err) {
+    console.log(err);
+    return res.send({ error: err });
+  }
+}
+
+
+
+exports.viewmyRequests = async function (req, res) {
+  try {
+    var senderId = req.user.gucId;
+    const sender = await StaffMember.findOne({ gucId: senderId }).populate();
+    ////if(!req.params){
+     
+
+    var searchQuery = await Request.find({ sender: sender }).populate(); //or something
+   
+
+    console.log(searchQuery)
+    return res.send({ data: searchQuery });
+    
+  } catch (err) {
+    console.log(err);
+    return res.send({ error: err });
+  }  
 };
 
 // Function 37: Accept/reject “slot linking” requests from academic members linked to his/her course.

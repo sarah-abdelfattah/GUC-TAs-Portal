@@ -19,6 +19,7 @@ function AddLocation() {
 
   const handleSubmit = async () => {
     try {
+
       const body = {
         type: type,
         location: location.toUpperCase(),
@@ -88,7 +89,7 @@ function AddLocation() {
           <Input
             className="crud-input"
             value={location}
-            onChange={(event) => setRoomLocation(event.target.value)}
+            onChange={(event) =>  setRoomLocation(event.target.value)}
           />
         </FormControl>
 
@@ -108,7 +109,7 @@ function AddLocation() {
         variant="success"
         className="crud-submit crud-add-btn green"
         disabled={
-          type === "" || capacity === "" || location === "" ? true : false
+        type === "" || capacity === "" || location === "" ? true : false
         }
         onClick={handleSubmit}
       >

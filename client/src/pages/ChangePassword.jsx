@@ -20,6 +20,7 @@ function ChangePassword() {
 
   const { addToast } = useToasts();
 
+  
   useEffect(() => {
     async function fetchData() {
       const user = await checkLogin();
