@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { link } from "../../helpers/constants";
+import { checkHOD, link } from "../../helpers/constants";
 import { useToasts } from "react-toast-notifications";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -26,6 +26,7 @@ function ViewTeachingAssignments() {
   const [thurss, setThurss] = useState([]);
   const { addToast } = useToasts();
   const [courses, setCourses] = useState([]);
+  const [HOD, setHOD] = useState(false);
 
   const orderDays = (arr) => {
     var newArr = [];
@@ -88,6 +89,12 @@ function ViewTeachingAssignments() {
         document.location.href = window.location.origin + "/login";
       } else {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const courses = await axiosCall("get", `${link}/departments/courses`);
           setCourses(courses.data.data);
           let firstCourse = courses.data.data[0].course;
@@ -235,6 +242,7 @@ function ViewTeachingAssignments() {
   });
   const classes = useStyles();
 
+  if(HOD)
   return (
     <div>
       <div className="my-table">
@@ -439,6 +447,7 @@ function ViewTeachingAssignments() {
       </div>
     </div>
   );
+  else return null;
 }
 
 export default ViewTeachingAssignments;
