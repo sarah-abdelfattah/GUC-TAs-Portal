@@ -56,7 +56,6 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
-  const [accept_or_reject_request, setAccept_or_reject_request] = useState(false);
   const [comment, setComment] = useState("");
   const { addToast } = useToasts();
   const classes = useStyles();
@@ -121,7 +120,7 @@ function Request(props) {
   }, []);
 
   const handleAccept = async function () {
-    setAccept_or_reject_request(prevCheck => !prevCheck);
+    let accept_or_reject_request = true;
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
@@ -143,7 +142,10 @@ function Request(props) {
       try{
         const response = await axiosCall("put",`${link}/requests/AcceptOrRejectLeave/${props.match.params.id}`,rejectBody)
         console.log(response);
-
+        addToast("Request accepted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
       } catch(err) {
         console.error("~err", err);
         addToast("Failed to accept request", {
@@ -157,7 +159,7 @@ function Request(props) {
   // in case of rejection and optionally leave a comment
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAccept_or_reject_request(prevCheck => !prevCheck);
+    let accept_or_reject_request = false;
     const rejectBody = {accept_or_reject_request, comment}
     if(request.type === "Change DayOff"){
       try{
