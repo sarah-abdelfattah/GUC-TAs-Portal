@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "2%",
     width:"70%",
     
-    
+       
+
   },
   modal: {
     display: "flex",

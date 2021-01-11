@@ -21,7 +21,7 @@ function RequestsDropDown() {
   };
 
   return (
-    <div className="RequestsDropDown">
+    <div >
       <div
         className="crud-inner-container request-select"
         style={{
