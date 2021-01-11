@@ -3,11 +3,10 @@ import axiosCall from './axiosCall';
 const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
+require('dotenv').config();
 var tmp;
-if (process.env.NODE_ENV === "production"){
-    // here will be the production link
-    // tmp = '';
-}
+if (process.env.NODE_ENV === "production")
+    tmp = 'https://guc-cms.ahmedashraf.me/api/v1.0';
 else 
     tmp = `http://localhost:5000`;
 export const link = tmp;
