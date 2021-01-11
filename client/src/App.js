@@ -103,40 +103,41 @@ function App() {
               </div>
             ) : (
                 <div className='myApp'>
-                  <Route exact path='/home' render={(props) => <Homepage {...props} />} />
-                  <Route exact path='/location' render={(props) => <Location {...props} />} />
-                  <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
-                  <Route exact path='/department' render={(props) => <Department {...props} />} />
-                  <Route exact path='/request' render={(props) => <Request {...props} />} />
-                  <Route exact path='/viewReq/:id' render={(props)=> <Rtx {...props}/>} />
-                  <Route exact path='/course' render={(props) => <Course {...props} />} />
-                  <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
-                  <Route exact path='/profile' render={(props) => <Profile {...props} />} />
-                  <Route exact path='/changePassword' render={(props) => <ChangePassword {...props} />} />
-                  <Route exact path='/viewStaff' render={(props) => <ViewAllStaff {...props} />} />
-                  <Route exact path='/viewCourseCoverage' render={(props) => <ViewCourseCoverage {...props} />} />
-                  <Route exact path='/CourseCoverage' render={(props) => <CourseCoverage {...props} />} />
-                  <Route exact path='/SlotsAssigned' render={(props) => <SlotsAssigned {...props} />} />
-                  <Route exact path='/viewMySchedule' render={(props) => <Schedule {...props} />} />
-                  <Route exact path='/staff' render={(props) => <Staff {...props} />} />
-                  <Route exact path='/test' render={(props) => <Test {...props} />} />
-                  <Route exact path='/viewRequests' render={(props) => <ViewRequests {...props} />} />
-                  <Route exact path='/viewRequest/:id' render={(props) => <RequestItem {...props} />} />
+                  <Switch>
+                    <Route exact path='/home' render={(props) => <Homepage {...props} />} />
+                    <Route exact path='/location' render={(props) => <Location {...props} />} />
+                    <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
+                    <Route exact path='/department' render={(props) => <Department {...props} />} />
+                    <Route exact path='/request' render={(props) => <Request {...props} />} />
+                    <Route exact path='/viewReq/:id' render={(props)=> <Rtx {...props}/>} />
+                    <Route exact path='/course' render={(props) => <Course {...props} />} />
+                    <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
+                    <Route exact path='/profile' render={(props) => <Profile {...props} />} />
+                    <Route exact path='/changePassword' render={(props) => <ChangePassword {...props} />} />
+                    <Route exact path='/viewStaff' render={(props) => <ViewAllStaff {...props} />} />
+                    <Route exact path='/viewCourseCoverage' render={(props) => <ViewCourseCoverage {...props} />} />
+                    <Route exact path='/CourseCoverage' render={(props) => <CourseCoverage {...props} />} />
+                    <Route exact path='/SlotsAssigned' render={(props) => <SlotsAssigned {...props} />} />
+                    <Route exact path='/viewMySchedule' render={(props) => <Schedule {...props} />} />
+                    <Route exact path='/staff' render={(props) => <Staff {...props} />} />
+                    <Route exact path='/test' render={(props) => <Test {...props} />} />
+                    <Route exact path='/viewRequests' render={(props) => <ViewRequests {...props} />} />
+                    <Route exact path='/viewRequest/:id' render={(props) => <RequestItem {...props} />} />
+                    <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
+                    <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
+                    <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
+                    <Route exact path = "/slotLinkingCC" render = {(props)=><SlotLinkingCC {...props}/>}/>
+                    <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
+                    <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
+                    <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
+                    <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
+                    <Route exact path='/teachingAssignments' render={(props) => <ViewTeachingAssignments {...props} />} />
+                    <Route exact path='/instructorAssignment' render={(props) => <InstructorAssignment {...props} />} />
+                    <Route exact path='*' render={(props) => <UnauthorizedPage {...props} />} />
 
-                  <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
-                  <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
-                  <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
-                  <Route exact path = "/slotLinkingCC" render = {(props)=><SlotLinkingCC {...props}/>}/>
-                  <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
-                  <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
-                  <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />
-                  <Route exact path='/viewStaffSchedule/:gucId' render={(props) => <StaffSchedule {...props} />} />
-                  <Route exact path='/teachingAssignments' render={(props) => <ViewTeachingAssignments {...props} />} />
-                  <Route exact path='/instructorAssignment' render={(props) => <InstructorAssignment {...props} />} />
-
-
-                  {/* // to be last */}
-                  <Route exact path='/' render={(props) => <Homepage {...props} />} />
+                    {/* // to be last */}
+                    <Route exact path='/' render={(props) => <Homepage {...props} />} />
+                  </Switch>
                 </div>
               )}
           </ToastProvider>
