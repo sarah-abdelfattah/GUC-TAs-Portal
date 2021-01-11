@@ -264,7 +264,9 @@ function Staff() {
           <Modal.Header closeButton>
             <Modal.Title>DELETE</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Are you sure you want to delete this course?</Modal.Body>
+          <Modal.Body>
+            Are you sure you want to delete this Staff Member?
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Close

@@ -180,7 +180,7 @@ function Profile(props) {
 
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">
-              Deducted Salary
+              Current Salary
             </InputLabel>
             <Input
               className="profile-input"

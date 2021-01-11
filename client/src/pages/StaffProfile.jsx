@@ -114,25 +114,17 @@ function StaffProfile(props) {
     try {
       let locName;
       if (rooms) locName = rooms.find(({ _id }) => _id === roomChosen);
-      console.log(
-        "🚀 ~ file: StaffProfile.jsx ~ line 111 ~ handleSubmit ~ locName",
-        locName.location
-      );
 
       let facName;
       let depName;
       let body;
       if (position === "Academic Member") {
-        console.log(
-          "🚀 ~ file: StaffProfile.jsx ~ line 120 ~ handleSubmit ~ position",
-          position
-        );
-
         if (faculties)
           facName = faculties.find(({ code }) => code === facultyChosen).code;
         if (deps)
           depName = deps.find(({ _id }) => _id === departmentChosen).name;
       }
+
       body = {
         gucId,
         name,
@@ -242,7 +234,7 @@ function StaffProfile(props) {
           </FormControl>
           <FormControl className="profile-formControl">
             <InputLabel className="profile-inputLabel">
-              Deducted Salary
+              Current Salary
             </InputLabel>
             <Input
               className="profile-input"

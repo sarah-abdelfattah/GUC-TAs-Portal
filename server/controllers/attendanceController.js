@@ -113,13 +113,13 @@ exports.addMissingSignInOut = async function (req, res) {
         const validateMissingSignInOut = await validation.addMissingSign.validateAsync(req.body);
 
         if (id === req.user.gucId) {
-            res.send("You are not able to add a missing signIn/Out for yourself");
+            res.send({ error: "You are not able to add a missing signIn/Out for yourself" });
             return;
         }
 
         const staff = await staffMember.findOne({ gucId: id });
         if (!staff) {
-            res.send("There is no staff with this ID: " + id);
+            res.send({ error: "There is no staff with this ID: " + id });
             return;
         }
         today = new Date();
