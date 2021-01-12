@@ -31,7 +31,7 @@ function ViewRequestsDropDown() {
         >
           <MenuItem
             className="crud-menuItem "
-            value="Sent Requests"
+            value="Sent Requests" 
             key="Sent Requests"
           >
             Sent Requests

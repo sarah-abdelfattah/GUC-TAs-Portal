@@ -97,6 +97,14 @@ exports.sendRequest = async function (req, res) {
       if (!flag) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
+       if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
+      return res.send({ error: 'Please Enter correct Slot Time' });
+      }
+     // if()
+      var recordDay=date.getDay();
+      if(recordDay==5){
+         return res.send({ error: 'Sorry it is Friday ' });
+      }
       const subject = type + ' with ' + rec.name +" ID: "+rec.gucId+ ' for course ' + coursename + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
       const x = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":00"
       const newRequest = new Request({
@@ -483,6 +491,10 @@ exports.sendRequest = async function (req, res) {
         if (!flag) {
           return res.send({ error: 'Sorry you cannot submit this request' });
         }
+      var recordDay=AnnualLeaveDate.getDay();
+      if(recordDay==5){
+          return res.send({ error: 'Sorry it is Friday ' });
+      }
         const subject = type + ' (' + leaveType + ') at ' + AnnualLeaveDate.getDate()+"/"+(AnnualLeaveDate.getMonth()+1)+"/"+AnnualLeaveDate.getFullYear();
 
         const newRequest = new Request({
