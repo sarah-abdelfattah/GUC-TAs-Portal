@@ -4,7 +4,7 @@ import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
-import { link } from "../helpers/constants.js";
+import { checkHODbyID, link } from "../helpers/constants.js";
 import Button from "react-bootstrap/Button";
 import Fade from "react-reveal/Fade";
 import add from "../assets/add.svg";
@@ -48,7 +48,24 @@ function Staff() {
               "attendance/viewStaffMissing"
             );
 
-            let data = await response.data.data.map((staff) => {
+            const facResult = (await axiosCall("get", "faculties/faculty/all"))
+              .data.data;
+            // console.log(
+            //   "🚀 ~ file: Staff.jsx ~ line 54 ~ fetchData ~ facResult",
+            //   facResult
+            // );
+            // const rr= facResult.find((fac) => fac.id === staff.faculty) ;
+            // console.log("🚀 ~ file: Staff.jsx ~ line 58 ~ fetchData ~ rr", rr);
+
+            const depResult = (
+              await axiosCall("get", "departments/department/all/all")
+            ).data.data;
+
+            const courseResult = (
+              await axiosCall("get", "courses/course/all/all/all")
+            ).data.data;
+
+            let data = response.data.data.map((staff) => {
               return {
                 name: staff.name,
                 gucId: staff.gucId,
@@ -58,6 +75,23 @@ function Staff() {
                 salary: staff.salary,
                 dayOff: staff.dayOff,
                 id: staff._id,
+                position: depResult.find((dep) => dep.HOD === staff._id)
+                  ? "HOD"
+                  : courseResult.find(
+                      (course) => course.courseCoordinator === staff._id
+                    )
+                  ? "Course Coordinator"
+                  : null,
+                faculty: facResult.map((fac) => {
+                  if (staff.faculty === fac._id) {
+                    return fac.code;
+                  } else return null;
+                }),
+                department: depResult.map((dep) => {
+                  if (staff.department === dep._id) {
+                    return dep.name;
+                  } else return null;
+                }),
                 location: locations.data.data
                   .map((location) => {
                     if (staff.officeLocation === location._id) {
@@ -81,7 +115,6 @@ function Staff() {
                   .filter((rec) => rec !== null),
               };
             });
-
             await setData(data);
           }
         } catch (err) {
@@ -179,6 +212,31 @@ function Staff() {
     }
   };
 
+  async function checkHODbyID(id) {
+    let found = false;
+    try {
+      const depResult = await axiosCall(
+        "get",
+        "departments/department/all/all"
+      );
+      if (depResult.data.data) {
+        let HOD = await depResult.data.data
+          .filter((element) => element.HOD !== undefined)
+          .forEach((element) => {
+            if (element.HOD === id) {
+              found = true;
+            } else {
+              found = false;
+            }
+            return found;
+          });
+      }
+    } catch (err) {
+      console.log("~err", err);
+    }
+    return found;
+  }
+
   return (
     <div className="my-table">
       <Fade>
@@ -203,12 +261,15 @@ function Staff() {
                 { title: "Name", field: "name" },
                 { title: "Gender", field: "gender" },
                 { title: "ID", field: "gucId" },
-                { title: "Role", field: "role" },
                 { title: "Email", field: "email" },
                 { title: "Day off", field: "dayOff" },
                 { title: "office", field: "location" },
                 { title: "Missing Days", field: "missingDays" },
                 { title: "Missing Hours", field: "missingHours" },
+                { title: "Role", field: "role" },
+                { title: "Position", field: "position" },
+                { title: "Faculty", field: "faculty" },
+                { title: "Department", field: "department" },
               ]}
               onRowClick={(event, rowData) =>
                 // <StaffProfile gucId={rowData.gucId} />

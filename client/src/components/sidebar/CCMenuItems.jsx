@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { Menu, MenuItem } from "react-pro-sidebar";
 
 //icons
-import { MdLocationOn, MdPersonAdd } from "react-icons/md";
-import { FaUniversity, FaClipboardList, FaBook } from "react-icons/fa";
+import { BsFillCalendarFill, BsLink } from "react-icons/bs";
 
-function TAMenuItems() {
+function CCMenuItems() {
   const [icons, setIcons] = useState({
-    courseCoverage: false,
-    staff: false,
+    courseSlotsCC: false,
+    slotLinkingCC: false,
   });
 
   const routeChange = (path) => {
@@ -25,24 +24,24 @@ function TAMenuItems() {
   return (
     <Menu iconShape="round" className="first-new">
       <MenuItem
-        icon={<MdPersonAdd />}
-        onMouseEnter={() => showTag("staff")}
+        icon={<BsFillCalendarFill />}
+        onMouseEnter={() => showTag("courseSlotsCC")}
         onMouseLeave={() => setIcons(false)}
-        onClick={() => routeChange("viewStaff")}
+        onClick={() => routeChange("courseSlotCC")}
       >
-        {icons.staff ? "Staff " : ""}
+        {icons.courseSlotsCC ? "Course Slots" : ""}
       </MenuItem>
 
       <MenuItem
-        icon={<FaBook />}
-        onMouseEnter={() => showTag("course")}
+        icon={<BsLink />}
+        onMouseEnter={() => showTag("slotLinkingCC")}
         onMouseLeave={() => setIcons(false)}
-        onClick={() => routeChange("viewCourseCoverage")}
+        onClick={() => routeChange("slotLinkingCC")}
       >
-        {icons.courseCoverage ? "Course Coverage" : ""}
+        {icons.slotLinkingCC ? "Slot Linking" : ""}
       </MenuItem>
     </Menu>
   );
 }
 
-export default TAMenuItems;
+export default CCMenuItems;

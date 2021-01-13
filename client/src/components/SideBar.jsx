@@ -6,17 +6,19 @@ import axiosCall from "../helpers/axiosCall";
 //icons
 import { AiFillHome } from "react-icons/ai";
 import { RiFolderWarningFill } from "react-icons/ri";
+import { BsTable } from "react-icons/bs";
 
 //users
 import HRMenuItems from "./sidebar/HRMenuItems";
 import HODMenuItems from "./sidebar/HODMenuItems";
 import CIMenuItems from "./sidebar/CIMenuItems";
-import TAMenuItems from "./sidebar/TAMenuItems";
+import CCMenuItems from "./sidebar/CCMenuItems";
 
 function SideBar() {
   const [user, setUser] = useState("");
   const [showHome, setHome] = useState(false);
   const [showRequest, setRequest] = useState(false);
+  const [showSchedule, setSchedule] = useState(false);
 
   const routeChange = (path) => {
     document.location.href = window.location.origin + `/${path}`;
@@ -25,15 +27,9 @@ function SideBar() {
   useEffect(() => {
     async function fetchData() {
       const res = await checkLogin();
-      console.log("🚀 ~ file: SideBar.jsx ~ line 28 ~ fetchData ~ res", res);
-
       const depResult = await axiosCall(
         "get",
         "departments/department/all/all"
-      );
-      console.log(
-        "🚀 ~ file: SideBar.jsx ~ line 33 ~ fetchData ~ depResult",
-        depResult
       );
 
       if (res.role === "Course Instructor") setUser("Course Instructor");
@@ -64,9 +60,22 @@ function SideBar() {
           {showHome ? "Home" : ""}
         </MenuItem>
 
+        {user !== "HR" ? (
+          <MenuItem
+            icon={<BsTable />}
+            onMouseEnter={() => setSchedule(true)}
+            onMouseLeave={() => setRequest(false)}
+            onClick={() => routeChange("setSchedule")}
+          >
+            {showSchedule ? "My Schedule" : ""}
+          </MenuItem>
+        ) : (
+          <></>
+        )}
+
         {user === "HOD" ? <HODMenuItems /> : <p />}
         {user === "Course Instructor" ? <CIMenuItems /> : <p />}
-        {user === "Teaching Assistant" ? <TAMenuItems /> : <p />}
+        {user === "Teaching Assistant" ? <CCMenuItems /> : <p />}
         {user === "HR" ? (
           <HRMenuItems />
         ) : (
