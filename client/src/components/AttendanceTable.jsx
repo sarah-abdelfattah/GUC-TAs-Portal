@@ -10,7 +10,6 @@ import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
-  TimePicker,
   KeyboardTimePicker,
 } from "@material-ui/pickers";
 

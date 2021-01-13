@@ -1,9 +1,7 @@
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ToastProvider } from 'react-toast-notifications';
-//import React, { useState, useEffect } from "react";
 import '../src/styles/slotsAssignedTable.scss';
-// import '../src/styles/courseSlot.scss'
 import '../src/styles/courseSlotCRUDCC.scss'
 
 
@@ -28,7 +26,6 @@ import './styles/Modal.scss';
 import './styles/notifications.scss';
 
 //Import the pages
-import checkLogin from "./helpers/checkLogin";
 import NavBar from './components/NavBar';
 import SideBar from './components/SideBar';
 import Homepage from './pages/Homepage';
@@ -51,15 +48,13 @@ import CourseSlotCC from './pages/CC/CourseSlotCRUD';
 import CourseSlot from './pages/AcademicMemberCourseSlot';
 import AssignCC from './pages/InstrCourseAssignCC';
 import SlotLinkingCC from './pages/SlotLinkingCC';
-import viewReqest from './pages/Request/viewReq';
+// import viewReqest from './pages/Request/viewReq';
 import Staff from './pages/Staff';
 import StaffProfile from './pages/StaffProfile';
 import NewStaffMember from './pages/NewStaffMember';
 import StaffAttendance from './pages/Staff/StaffAttendance';
 import StaffSchedule from './pages/Staff/StaffSchedule';
 import Rtx from './pages/Request/viewReq'
-
-
 import Test from './pages/test';
 import ViewRequests from './pages/HOD/viewRequests';
 import RequestItem from './pages/HOD/Request';
@@ -67,11 +62,10 @@ import ViewTeachingAssignments from './pages/HOD/ViewTeachingAssignments';
 import InstructorAssignment from './pages/HOD/InstructorAssignment';
 
 function App() {
- 
+
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
-
   var t = (document.title = 'GUC Portal');
 
   //var user = checkLogin() ;  //a3ml wait 1000 seconds msln
@@ -89,7 +83,6 @@ function App() {
 
 
   return (
-
     <div className='App'>
       {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <NavBar notify={false} />}
       {currentLocation === '/login' || currentLocation === '/unauthorized' ? null : <SideBar />}
@@ -109,7 +102,7 @@ function App() {
                     <Route exact path='/faculty' render={(props) => <Faculty {...props} />} />
                     <Route exact path='/department' render={(props) => <Department {...props} />} />
                     <Route exact path='/request' render={(props) => <Request {...props} />} />
-                    <Route exact path='/viewReq/:id' render={(props)=> <Rtx {...props}/>} />
+                    <Route exact path='/viewReq/:id' render={(props) => <Rtx {...props} />} />
                     <Route exact path='/course' render={(props) => <Course {...props} />} />
                     <Route exact path='/myAttendanceRecord' render={(props) => <MyAttendanceRecord {...props} />} />
                     <Route exact path='/profile' render={(props) => <Profile {...props} />} />
@@ -123,10 +116,10 @@ function App() {
                     <Route exact path='/test' render={(props) => <Test {...props} />} />
                     <Route exact path='/viewRequests' render={(props) => <ViewRequests {...props} />} />
                     <Route exact path='/viewRequest/:id' render={(props) => <RequestItem {...props} />} />
-                    <Route exact path = "/courseSlotsCI" render = {(props)=> <CourseSlot {...props}/>} />
-                    <Route exact path = "/courseSlotCC" render = {(props)=><CourseSlotCC {...props}/>}/>
-                    <Route exact path = "/assignCC" render = {(props)=><AssignCC {...props}/>}/>
-                    <Route exact path = "/slotLinkingCC" render = {(props)=><SlotLinkingCC {...props}/>}/>
+                    <Route exact path="/courseSlotsCI" render={(props) => <CourseSlot {...props} />} />
+                    <Route exact path="/courseSlotCC" render={(props) => <CourseSlotCC {...props} />} />
+                    <Route exact path="/assignCC" render={(props) => <AssignCC {...props} />} />
+                    <Route exact path="/slotLinkingCC" render={(props) => <SlotLinkingCC {...props} />} />
                     <Route exact path='/staffProfile/:gucId' render={(props) => <StaffProfile {...props} />} />
                     <Route exact path='/newStaffMember' render={(props) => <NewStaffMember {...props} />} />
                     <Route exact path='/viewStaffAttendance/:gucId' render={(props) => <StaffAttendance {...props} />} />

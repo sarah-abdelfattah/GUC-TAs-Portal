@@ -4,7 +4,7 @@ import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../helpers/axiosCall";
-import { checkHODbyID, link } from "../helpers/constants.js";
+import { link } from "../helpers/constants.js";
 import Button from "react-bootstrap/Button";
 import Fade from "react-reveal/Fade";
 import add from "../assets/add.svg";
@@ -205,31 +205,6 @@ function Staff() {
       });
     }
   };
-
-  async function checkHODbyID(id) {
-    let found = false;
-    try {
-      const depResult = await axiosCall(
-        "get",
-        "departments/department/all/all"
-      );
-      if (depResult.data.data) {
-        let HOD = await depResult.data.data
-          .filter((element) => element.HOD !== undefined)
-          .forEach((element) => {
-            if (element.HOD === id) {
-              found = true;
-            } else {
-              found = false;
-            }
-            return found;
-          });
-      }
-    } catch (err) {
-      console.log("~err", err);
-    }
-    return found;
-  }
 
   return (
     <div className="my-table">
