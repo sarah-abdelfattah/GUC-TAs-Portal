@@ -24,15 +24,24 @@ function AddDepartment() {
   useEffect(() => {
     async function fetchData() {
       const facResult = await axiosCall("get", "faculties/faculty/all");
-      const staffResult = await axiosCall(
-        "get",
-        "staffMembers/AC/Course Instructor/all"
-      );
       setFaculties(facResult.data.data);
-      setStaff(staffResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
+
+  const handleOnChange = async (target) => {
+    setFacultyChosen(target.value);
+    const staff = await axiosCall(
+      "get",
+      "staffMembers/AC/Course Instructor/all"
+    );
+
+    const staffOfFac = staff.data.data.filter(
+      (staff) => staff.faculty === target.value
+    );
+
+    setStaff(staffOfFac);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -82,7 +91,7 @@ function AddDepartment() {
             className="crud-select"
             value={facultyChosen}
             onChange={(event) => {
-              setFacultyChosen(event.target.value);
+              handleOnChange(event.target);
             }}
           >
             {faculties.length > 0 &&
@@ -135,6 +144,9 @@ function AddDepartment() {
                 </MenuItem>
               ))}
           </Select>
+          <FormHelperText className="crud-helperText">
+            ^ Course Instructors under this faculty
+          </FormHelperText>
         </FormControl>
       </div>
 

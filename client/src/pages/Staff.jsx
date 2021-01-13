@@ -50,12 +50,6 @@ function Staff() {
 
             const facResult = (await axiosCall("get", "faculties/faculty/all"))
               .data.data;
-            // console.log(
-            //   "🚀 ~ file: Staff.jsx ~ line 54 ~ fetchData ~ facResult",
-            //   facResult
-            // );
-            // const rr= facResult.find((fac) => fac.id === staff.faculty) ;
-            // console.log("🚀 ~ file: Staff.jsx ~ line 58 ~ fetchData ~ rr", rr);
 
             const depResult = (
               await axiosCall("get", "departments/department/all/all")

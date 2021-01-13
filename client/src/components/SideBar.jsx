@@ -32,6 +32,8 @@ function SideBar() {
         "departments/department/all/all"
       );
 
+      const courseResult = await axiosCall("get", "courses/course/all/all/all");
+
       if (res.role === "Course Instructor") setUser("Course Instructor");
       else if (res.role === "Teaching Assistant") setUser("Teaching Assistant");
       else setUser("HR");
@@ -42,6 +44,15 @@ function SideBar() {
         if (HOD) {
           console.log("yes");
           setUser("HOD");
+        }
+      }
+
+      if (courseResult.data.data) {
+        let CC = await courseResult.data.data.find(({ CC }) => CC === res.id);
+
+        if (CC) {
+          console.log(" CC yes");
+          setUser("CC");
         }
       }
     }
@@ -64,7 +75,7 @@ function SideBar() {
           <MenuItem
             icon={<BsTable />}
             onMouseEnter={() => setSchedule(true)}
-            onMouseLeave={() => setRequest(false)}
+            onMouseLeave={() => setSchedule(false)}
             onClick={() => routeChange("setSchedule")}
           >
             {showSchedule ? "My Schedule" : ""}
@@ -75,12 +86,12 @@ function SideBar() {
 
         {user === "HOD" ? <HODMenuItems /> : <p />}
         {user === "Course Instructor" ? <CIMenuItems /> : <p />}
-        {user === "Teaching Assistant" ? <CCMenuItems /> : <p />}
+        {user === "CC" ? <CCMenuItems /> : <p />}
         {user === "HR" ? (
           <HRMenuItems />
         ) : (
           <MenuItem
-            className="last-menuItem"
+            className={user !== "Teaching Assistant" ? `last-menuItem` : null}
             icon={<RiFolderWarningFill />}
             onMouseEnter={() => setRequest(true)}
             onMouseLeave={() => setRequest(false)}
