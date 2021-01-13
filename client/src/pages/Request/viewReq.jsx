@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import { addToast } from "react-toast-notifications";
 import auth from "../../helpers/auth";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 500,
