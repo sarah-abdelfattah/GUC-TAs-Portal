@@ -23,6 +23,7 @@ function Homepage() {
       setmodal(false);
       //get user
       try {
+        // localStorage.removeItem("user");
         const temp = await checkLogin();
 
         const user = (await axiosCall("get", `staffMembers/all/${temp.gucId}`))

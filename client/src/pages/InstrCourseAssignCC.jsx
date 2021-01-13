@@ -1,136 +1,150 @@
 import React, { useState, useEffect } from "react";
-import { link } from '../helpers/constants';
+import { link } from "../helpers/constants";
 
-import Button from '@material-ui/core/Button';
+import Button from "react-bootstrap/Button";
 import {
-    FormControl,
-    InputLabel,
-    Select,
-    FormHelperText,
-    MenuItem,
-    Input,
-  } from "@material-ui/core";
+  FormControl,
+  InputLabel,
+  Select,
+  FormHelperText,
+  MenuItem,
+  Input,
+} from "@material-ui/core";
 
-import { useToasts } from 'react-toast-notifications'
-import {axiosCall} from "../helpers/axiosCall";
+import { useToasts } from "react-toast-notifications";
+import { axiosCall } from "../helpers/axiosCall";
 
-
-import {axios} from '../helpers/axios';
+import { axios } from "../helpers/axios";
 import "../styles/_colorSchema.scss";
 
 function InstrCourseAssignCC() {
-    const [courses,setCourses] = useState([]);
-    const [course,setCourse] = useState("");
-    const [id,setID] = useState("");
-    const {addToast} = useToasts();
-    useEffect(()=>{
-        async function fetchData() {
-        const loggedInUser = localStorage.getItem("user");
-		if (!loggedInUser) {
-		  document.location.href = window.location.origin + "/login"; 
-		}else{
-            try{
-                const response = await axios.get(`${link}/academicMember/courseInstructor/courseCoverage`);
-                if(response.data.error){
-                    addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
-                }else{
-                    const coverageDisplay = response.data.data;
-                    const coursesState = coverageDisplay.map((course)=>{
-                        return course.course_name;
-                    })
-                    setCourses(coursesState);
-                }
-            }catch(e){
-                console.log('~ err', e);
-                document.location.href = window.location.origin + "/unauthorized";
-            }
+  const [courses, setCourses] = useState([]);
+  const [course, setCourse] = useState("");
+  const [id, setID] = useState("");
+  const { addToast } = useToasts();
+  useEffect(() => {
+    async function fetchData() {
+      const loggedInUser = localStorage.getItem("user");
+      if (!loggedInUser) {
+        document.location.href = window.location.origin + "/login";
+      } else {
+        try {
+          const response = await axios.get(
+            `${link}/academicMember/courseInstructor/courseCoverage`
+          );
+          if (response.data.error) {
+            addToast(response.data.error, {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          } else {
+            const coverageDisplay = response.data.data;
+            const coursesState = coverageDisplay.map((course) => {
+              return course.course_name;
+            });
+            setCourses(coursesState);
+          }
+        } catch (e) {
+          console.log("~ err", e);
+          document.location.href = window.location.origin + "/unauthorized";
         }
+      }
     }
     fetchData();
-    },[]);
-    const handleOnChange = (target) => {
-        setCourse(target.value);
-    };
+  }, []);
+  const handleOnChange = (target) => {
+    setCourse(target.value);
+  };
 
-    const handleSubmit = async()=>{
-        try{
-            let response = await axiosCall("post",`${link}/academicMember/courseInstructor/courseCoordinator`,
-            {
-                gucId: id,
-                courseName: course,
-            });
-
-            if(response.data.error){
-                addToast(response.data.error, {appearance: 'warning',autoDismiss: true});
-            }else if(response.data.data){
-                addToast(`The academic member '${response.data.data.courseCoordinator}' is assigned successfully to be the course coordinator of the course '${response.data.data.courseName}'`,
-                 {appearance: 'success',autoDismiss: true});
-            }else{
-                addToast("The GUC ID should be written in the corrent format: 'role-IDNumber' e.g. HR-1", {appearance: 'warning',autoDismiss: true});
-            }
-        }catch(e){
-            console.log('~ err', e);
-            document.location.href = window.location.origin + "/unauthorized";
+  const handleSubmit = async () => {
+    try {
+      let response = await axiosCall(
+        "post",
+        `${link}/academicMember/courseInstructor/courseCoordinator`,
+        {
+          gucId: id,
+          courseName: course,
         }
-    }
+      );
 
-    return (
-        <div>
-        <h3 className="general-header">Assign a Course Coordinator</h3>
-        <hr className="general-line" />
-        <br/>
-        <div className="crud-inner-container">
+      if (response.data.error) {
+        addToast(response.data.error, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      } else if (response.data.data) {
+        addToast(
+          `The academic member '${response.data.data.courseCoordinator}' is assigned successfully to be the course coordinator of the course '${response.data.data.courseName}'`,
+          { appearance: "success", autoDismiss: true }
+        );
+      } else {
+        addToast(
+          "The GUC ID should be written in the corrent format: 'role-IDNumber' e.g. HR-1",
+          { appearance: "error", autoDismiss: true }
+        );
+      }
+    } catch (e) {
+      console.log("~ err", e);
+      document.location.href = window.location.origin + "/unauthorized";
+    }
+  };
+
+  return (
+    <div>
+      <h3 className="general-header">Assign a Course Coordinator</h3>
+      <hr className="general-line" />
+      <br />
+      <div className="crud-inner-container">
         <div className="crud-form">
-            <FormControl className="crud-formControl" required>
+          <FormControl className="crud-formControl" required>
             <InputLabel className="crud-inputLabel">Course Name</InputLabel>
             <Select
-                className="crud-select"
-                value={course}
-                onChange={(event) => {
+              className="crud-select"
+              value={course}
+              onChange={(event) => {
                 handleOnChange(event.target);
-                }}
+              }}
             >
-                {courses.length > 0 &&
+              {courses.length > 0 &&
                 courses.map((coursename) => (
-                    <MenuItem
+                  <MenuItem
                     className="crud-menuItem"
                     value={coursename}
                     key={coursename}
-                    >
+                  >
                     {coursename}
-                    </MenuItem>
+                  </MenuItem>
                 ))}
             </Select>
             <FormHelperText className="crud-helperText">
-                This field is required
+              This field is required
             </FormHelperText>
-            </FormControl>
+          </FormControl>
 
-            <FormControl className="crud-formControl" required>
+          <FormControl className="crud-formControl" required>
             <InputLabel className="crud-inputLabel">Member GUC ID</InputLabel>
             <Input
-                className="crud-input"
-                value={id}
-                onChange={(event) => setID(event.target.value)}
+              className="crud-input"
+              value={id}
+              onChange={(event) => setID(event.target.value)}
             />
             <FormHelperText className="crud-helperText">
-                This field is required
+              This field is required
             </FormHelperText>
-            </FormControl>
+          </FormControl>
         </div>
 
         <Button
-            variant = "success"
-            className= "crud-submit crud-add-btn green"
-                        
-            disabled={id === "" || course === ""? true : false}
-            onClick={handleSubmit}
+          variant="success"
+          className="crud-submit crud-add-btn green"
+          disabled={id === "" || course === "" ? true : false}
+          onClick={handleSubmit}
         >
-            Assign
+          Assign
         </Button>
-        </div>
-        </div>
-    )
+      </div>
+    </div>
+  );
 }
 
-export default InstrCourseAssignCC
+export default InstrCourseAssignCC;

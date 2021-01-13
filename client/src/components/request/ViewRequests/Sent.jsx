@@ -18,7 +18,7 @@ function Sent() {
       const response = await axiosCall("get", "requests/viewMyRequest");
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {
@@ -38,12 +38,11 @@ function Sent() {
             subject: req.subject,
           };
         });
-
         setRows(myRequests);
       }
     } catch (e) {
       console.log("~ err", e);
-      //  document.location.href = window.location.origin + "/unauthorized";
+      document.location.href = window.location.origin + "/unauthorized";
     }
   }, []);
 
@@ -63,13 +62,13 @@ function Sent() {
         setRows(filtered);
       } else {
         addToast("Sorry you can't cancel this Request", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       }
     } catch (e) {
       console.log("~ err", e);
-      // document.location.href = window.location.origin + "/unauthorized";
+      document.location.href = window.location.origin + "/unauthorized";
     }
   };
   return (

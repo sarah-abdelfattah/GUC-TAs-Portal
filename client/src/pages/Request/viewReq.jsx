@@ -3,20 +3,11 @@ import { link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Avatar from "react-avatar";
 import Typography from "@material-ui/core/Typography";
-import { useToasts, addToast } from "react-toast-notifications";
-
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CancelIcon from "@material-ui/icons/Cancel";
-import Popper from "@material-ui/core/Popper";
-import TextField from "@material-ui/core/TextField";
-
-import { Button } from "@material-ui/core";
+import { addToast } from "react-toast-notifications";
 import auth from "../../helpers/auth";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 500,
@@ -68,15 +59,12 @@ function ViewReq(props) {
 
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
             let req = response.data.data.request;
             setRequest(req);
-
-            //'Replacement Request', 'Slot Request', 'Change DayOff', 'Leave Request'
-
             if (req.type == "Leave Request") {
               setType(req.leavetype);
             }
@@ -173,7 +161,24 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                coursename:{request.coursename}
+                Course name:{request.coursename}
+              </Typography>
+              <Typography
+                className={classes.text}
+                color="textPrimary"
+                component="h6"
+                variant="h6"
+              >
+                Slot Date:{" "}
+                {new Date(Date.parse(request.slotDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.slotDate)).getMonth() + 1) +
+                  "/" +
+                  new Date(Date.parse(request.slotDate)).getFullYear() +
+                  " at " +
+                  new Date(Date.parse(request.slotDate)).getHours() +
+                  ":" +
+                  new Date(Date.parse(request.slotDate)).getMinutes()}
               </Typography>
               <Typography
                 className={classes.text}

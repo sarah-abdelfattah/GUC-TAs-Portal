@@ -32,7 +32,7 @@ function ViewCourseCoverage() {
           );
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -67,22 +67,22 @@ function ViewCourseCoverage() {
                 headerStyle: {
                   backgroundColor: "#ECEFF4",
                   color: "#000000",
-                  fontSize: 16
+                  fontSize: 16,
                 },
               }}
               components={{
                 Toolbar: (props) => (
-                  <div style={{padding: '10px 10px', margin: 'auto'}}>
-                  <MyButton
+                  <div style={{ padding: "10px 10px", margin: "auto" }}>
+                    <MyButton
                       variant="contained"
                       color="primary"
                       onClick={() =>
-                      (document.location.href =
-                        window.location.origin + "/CourseCoverage")
-                    }
-                  >
-                   My courses coverage
-                  </MyButton>
+                        (document.location.href =
+                          window.location.origin + "/CourseCoverage")
+                      }
+                    >
+                      My courses coverage
+                    </MyButton>
                   </div>
                 ),
               }}

@@ -105,7 +105,7 @@ function ViewTeachingAssignments() {
           console.log(response);
           if (response.data.error) {
             addToast(response.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -176,7 +176,7 @@ function ViewTeachingAssignments() {
       console.log(response);
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {

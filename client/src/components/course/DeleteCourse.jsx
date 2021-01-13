@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import Modal from "react-bootstrap/Modal";
 
 import {
   FormControl,
@@ -18,6 +19,10 @@ function DeleteCourse() {
   const [depChosen, setDepChosen] = useState("");
   const [courses, setCourses] = useState({ departments: [] });
   const [courseChosen, setCourseChosen] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const { addToast } = useToasts();
 
@@ -41,20 +46,20 @@ function DeleteCourse() {
   };
 
   const handleDepOnChange = async (target) => {
-    const facCode = faculties.find(({ _id }) => _id === facultyChosen).code;
-
     setDepChosen(target.value);
     const depName = departments.find(({ _id }) => _id === target.value).name;
 
     const courseResult = await axiosCall(
       "get",
-      `courses/course/${facCode}/${depName}/all`
+      `courses/course/${facultyChosen}/${depName}/all`
     );
     setCourses(courseResult.data.data);
   };
 
   const handleSubmit = async () => {
     try {
+      setShow(false);
+
       // let code;
       // if (faculties)
       //   code = await faculties.find(({ _id }) => _id === facultyChosen).code;
@@ -181,10 +186,24 @@ function DeleteCourse() {
             ? true
             : false
         }
-        onClick={handleSubmit}
+        onClick={handleShow}
       >
         Delete Course
       </Button>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>DELETE</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this course?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={handleSubmit}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

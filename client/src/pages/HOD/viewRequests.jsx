@@ -38,27 +38,27 @@ function ViewRequests() {
           );
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
-            let data = response.data.data.map((request) =>{
-                return {
-                    sender: staff.data.data.map((staff) =>{
-                        if(staff._id === request.sender) {
-                            return staff.name;
-                        }
-                    }),
-                    reciever: staff.data.data.map((staff) =>{
-                        if(staff._id === request.reciever) {
-                            return staff.name;
-                        }
-                    }),
-                    status: request.status,
-                    type: request.type,
-                    date: dateFormat(request.date),
-                    id: request._id
-                }
+            let data = response.data.data.map((request) => {
+              return {
+                sender: staff.data.data.map((staff) => {
+                  if (staff._id === request.sender) {
+                    return staff.name;
+                  }
+                }),
+                reciever: staff.data.data.map((staff) => {
+                  if (staff._id === request.reciever) {
+                    return staff.name;
+                  }
+                }),
+                status: request.status,
+                type: request.type,
+                date: dateFormat(request.date),
+                id: request._id,
+              };
             });
             setData(data);
           }
@@ -74,39 +74,39 @@ function ViewRequests() {
   async function handleOnChange(event) {
     try {
       const res = await axiosCall(
-            "get",
-            `${link}/requests/viewRecievedRequest/${event.type}`
+        "get",
+        `${link}/requests/viewRecievedRequest/${event.type}`
       );
       const staff = await axiosCall(
         "get",
         `${link}/departments/getAllStaffMembers/all`
       );
       console.log(res);
-      let data = res.data.data.map((request) =>{
+      let data = res.data.data.map((request) => {
         return {
-            sender: staff.data.data.map((staff) =>{
-                if(staff._id === request.sender) {
-                    return staff.name;
-                }
-            }),
-            reciever: staff.data.data.map((staff) =>{
-                if(staff._id === request.reciever) {
-                    return staff.name;
-                }
-            }),
-            status: request.status,
-            type: request.type,
-            date: dateFormat(request.date),
-            id: request._id
-        }
-    });
-    setData(data);
+          sender: staff.data.data.map((staff) => {
+            if (staff._id === request.sender) {
+              return staff.name;
+            }
+          }),
+          reciever: staff.data.data.map((staff) => {
+            if (staff._id === request.reciever) {
+              return staff.name;
+            }
+          }),
+          status: request.status,
+          type: request.type,
+          date: dateFormat(request.date),
+          id: request._id,
+        };
+      });
+      setData(data);
     } catch (err) {
       console.log("~err", err);
     }
   }
 
-  const requestType = [{type: "Change DayOff"}, {type: "Leave Request"}];
+  const requestType = [{ type: "Change DayOff" }, { type: "Leave Request" }];
 
   if(HOD)
   return (
@@ -140,7 +140,7 @@ function ViewRequests() {
                 headerStyle: {
                   backgroundColor: "#ECEFF4",
                   color: "#000000",
-                  fontSize: 16
+                  fontSize: 16,
                 },
                 ToolbarStyle: {
                   backgroundColor: "#045CC8",
@@ -179,7 +179,9 @@ function ViewRequests() {
                   />
                 ),
               }}
-              onRowClick={(event, rowData) => document.location.href = `/viewRequest/${rowData.id}`}
+              onRowClick={(event, rowData) =>
+                (document.location.href = `/viewRequest/${rowData.id}`)
+              }
             />
           </Grid>
         </Grid>

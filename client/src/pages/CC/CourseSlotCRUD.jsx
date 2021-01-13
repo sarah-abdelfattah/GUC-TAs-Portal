@@ -173,13 +173,13 @@ function CourseSlotCRUD() {
       }
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else if (response.data.errorJ) {
         addToast(
           "The location should be written in the format: 'Building.RoomNumber' e.g.'C7.209'",
-          { appearance: "warning", autoDismiss: true }
+          { appearance: "error", autoDismiss: true }
         );
       } else {
         console.log(response.data.data);
@@ -215,22 +215,26 @@ function CourseSlotCRUD() {
     }
   };
 
-  useEffect(async () => {
-    try {
-      const response = await axios.get(`${link}/courses/coursesCC`);
-      if (response.data.error) {
-        addToast(response.data.error, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
-        const myCourses = response.data.data;
-        setCourses(myCourses);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axios.get(`${link}/courses/coursesCC`);
+        if (response.data.error) {
+          addToast(response.data.error, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+        } else {
+          const myCourses = response.data.data;
+          setCourses(myCourses);
+        }
+      } catch (e) {
+        console.log("~ err", e);
+        document.location.href = window.location.origin + "/unauthorized";
       }
-    } catch (e) {
-      console.log("~ err", e);
-      document.location.href = window.location.origin + "/unauthorized";
     }
+
+    fetchData();
   }, []);
 
   useEffect(() => {

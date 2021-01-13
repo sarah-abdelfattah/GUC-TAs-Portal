@@ -181,7 +181,6 @@ exports.registerStaff = async function (req, res) {
             req.body.role = undefined
             req.body.faculty = undefined
             req.body.department = undefined
-            req.body.courses = undefined
             let JOI_Result = await validation.registerSchema.validateAsync(req.body)
         } else if (req.body.type === 'Academic Member')
             JOI_Result = await validation.registerACSchema.validateAsync(req.body)

@@ -42,9 +42,7 @@ function Notification(props) {
 
         setData(results);
 
-        const result = (
-          await axiosCall("put", `notifications/notification/updateAll`)
-        ).data;
+        await axiosCall("put", `notifications/notification/updateAll`);
       } catch (err) {
         console.log("~err: ", err);
       }

@@ -47,16 +47,19 @@ function InstructorAssignment() {
       } else {
         try {
           let found = await checkHOD();
-          if(found){
-            setHOD(prevCheck => !prevCheck);
+          if (found) {
+            setHOD((prevCheck) => !prevCheck);
           } else {
-            document.location.href = window.location.origin + '/unauthorized'
+            document.location.href = window.location.origin + "/unauthorized";
           }
-          const response = await axiosCall("get", `${link}/departments/courses`);
+          const response = await axiosCall(
+            "get",
+            `${link}/departments/courses`
+          );
           console.log(response);
           if (response.data.error) {
             addToast(response.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -87,7 +90,7 @@ function InstructorAssignment() {
         optionSelected = "delete";
       } else {
         addToast("You should specify an option", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         return;
@@ -106,7 +109,7 @@ function InstructorAssignment() {
 
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {
@@ -157,7 +160,7 @@ function InstructorAssignment() {
         {
           gucId: id,
           newName: newCourse,
-          oldName: course
+          oldName: course,
         }
       );
 
@@ -192,197 +195,204 @@ function InstructorAssignment() {
     }
   };
 
-  if(HOD)
-   return (
-    <div className="crud-outer-container">
-      <div className="crud-container">
-        <Add
-          text="Instructor to course"
-          onClick={() =>
-            setBtns({
-              add: true,
-              update: false,
-              delete: false,
-            })
-          }
-        />
-        <Update
-          text="Instructor to course"
-          onClick={() =>
-            setBtns({
-              add: false,
-              update: true,
-              delete: false,
-            })
-          }
-        />
-        <Delete
-          text="Instructor from course"
-          onClick={() =>
-            setBtns({
-              add: false,
-              update: false,
-              delete: true,
-            })
-          }
-        />
-      </div>
-
-      {!crudBtns.add && !crudBtns.delete ? null : (
-        <div className="crud-inner-container">
-          <div className="crud-form">
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Course Name</InputLabel>
-              <Select
-                className="crud-select"
-                value={course}
-                onChange={(event) => {
-                  handleOnChange(event.target);
-                }}
-              >
-                {courses.length > 0 &&
-                  courses.map((coursename) => (
-                    <MenuItem
-                      className="crud-menuItem"
-                      value={coursename}
-                      key={coursename}
-                    >
-                      {coursename}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
-
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Member GUC ID</InputLabel>
-              <Input
-                className="crud-input"
-                value={id}
-                onChange={(event) => setID(event.target.value)}
-              />
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
-          </div>
-
-          <Button
-            variant={
-              crudBtns.add ? "success" : crudBtns.update ? "primary" : "danger"
+  if (HOD)
+    return (
+      <div className="crud-outer-container">
+        <div className="crud-container">
+          <Add
+            text="Instructor to course"
+            onClick={() =>
+              setBtns({
+                add: true,
+                update: false,
+                delete: false,
+              })
             }
-            className={
-              crudBtns.add
-                ? "crud-submit crud-add-btn green"
-                : crudBtns.update
-                ? "crud-submit crud-update-btn blue"
-                : "crud-submit crud-delete-btn red"
+          />
+          <Update
+            text="Instructor to course"
+            onClick={() =>
+              setBtns({
+                add: false,
+                update: true,
+                delete: false,
+              })
             }
-            disabled={
-              id === "" || course === ""
-                ? true
-                : false
+          />
+          <Delete
+            text="Instructor from course"
+            onClick={() =>
+              setBtns({
+                add: false,
+                update: false,
+                delete: true,
+              })
             }
-            onClick={handleSubmit}
-          >
-            {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
-          </Button>
+          />
         </div>
-      )}
-      { !crudBtns.update ? null : (
-        <div className="crud-inner-container">
-          <div className="crud-form">
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">New Course Name</InputLabel>
-              <Select
-                className="crud-select"
-                value={newCourse}
-                onChange={(event) => {
+
+        {!crudBtns.add && !crudBtns.delete ? null : (
+          <div className="crud-inner-container">
+            <div className="crud-form">
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">Course Name</InputLabel>
+                <Select
+                  className="crud-select"
+                  value={course}
+                  onChange={(event) => {
+                    handleOnChange(event.target);
+                  }}
+                >
+                  {courses.length > 0 &&
+                    courses.map((coursename) => (
+                      <MenuItem
+                        className="crud-menuItem"
+                        value={coursename}
+                        key={coursename}
+                      >
+                        {coursename}
+                      </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">
+                  Member GUC ID
+                </InputLabel>
+                <Input
+                  className="crud-input"
+                  value={id}
+                  onChange={(event) => setID(event.target.value)}
+                />
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <Button
+              variant={
+                crudBtns.add
+                  ? "success"
+                  : crudBtns.update
+                  ? "primary"
+                  : "danger"
+              }
+              className={
+                crudBtns.add
+                  ? "crud-submit crud-add-btn green"
+                  : crudBtns.update
+                  ? "crud-submit crud-update-btn blue"
+                  : "crud-submit crud-delete-btn red"
+              }
+              disabled={id === "" || course === "" ? true : false}
+              onClick={handleSubmit}
+            >
+              {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
+            </Button>
+          </div>
+        )}
+        {!crudBtns.update ? null : (
+          <div className="crud-inner-container">
+            <div className="crud-form">
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">
+                  New Course Name
+                </InputLabel>
+                <Select
+                  className="crud-select"
+                  value={newCourse}
+                  onChange={(event) => {
                     handleUpdateOnChange(event.target);
-                }}
-              >
-                {courses.length > 0 &&
-                  courses.map((coursename) => (
-                    <MenuItem
-                      className="crud-menuItem"
-                      value={coursename}
-                      key={coursename}
-                    >
-                      {coursename}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
+                  }}
+                >
+                  {courses.length > 0 &&
+                    courses.map((coursename) => (
+                      <MenuItem
+                        className="crud-menuItem"
+                        value={coursename}
+                        key={coursename}
+                      >
+                        {coursename}
+                      </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
 
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Old Course Name</InputLabel>
-              <Select
-                className="crud-select"
-                value={course}
-                onChange={(event) => {
-                  handleOnChange(event.target);
-                }}
-              >
-                {courses.length > 0 &&
-                  courses.map((coursename) => (
-                    <MenuItem
-                      className="crud-menuItem"
-                      value={coursename}
-                      key={coursename}
-                    >
-                      {coursename}
-                    </MenuItem>
-                  ))}
-              </Select>
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">
+                  Old Course Name
+                </InputLabel>
+                <Select
+                  className="crud-select"
+                  value={course}
+                  onChange={(event) => {
+                    handleOnChange(event.target);
+                  }}
+                >
+                  {courses.length > 0 &&
+                    courses.map((coursename) => (
+                      <MenuItem
+                        className="crud-menuItem"
+                        value={coursename}
+                        key={coursename}
+                      >
+                        {coursename}
+                      </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
 
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Member GUC ID</InputLabel>
-              <Input
-                className="crud-input"
-                value={id}
-                onChange={(event) => setID(event.target.value)}
-              />
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">
+                  Member GUC ID
+                </InputLabel>
+                <Input
+                  className="crud-input"
+                  value={id}
+                  onChange={(event) => setID(event.target.value)}
+                />
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <Button
+              variant={
+                crudBtns.add
+                  ? "success"
+                  : crudBtns.update
+                  ? "primary"
+                  : "danger"
+              }
+              className={
+                crudBtns.add
+                  ? "crud-submit crud-add-btn green"
+                  : crudBtns.update
+                  ? "crud-submit crud-update-btn blue"
+                  : "crud-submit crud-delete-btn red"
+              }
+              disabled={id === "" || course === "" ? true : false}
+              onClick={handleUpdateSubmit}
+            >
+              {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
+            </Button>
           </div>
-
-          <Button
-            variant={
-              crudBtns.add ? "success" : crudBtns.update ? "primary" : "danger"
-            }
-            className={
-              crudBtns.add
-                ? "crud-submit crud-add-btn green"
-                : crudBtns.update
-                ? "crud-submit crud-update-btn blue"
-                : "crud-submit crud-delete-btn red"
-            }
-            disabled={
-              id === "" || course === ""
-                ? true
-                : false
-            }
-            onClick={handleUpdateSubmit}
-          >
-            {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
-          </Button>
-        </div>
-      )}
-    </div>
-  ); 
-  else 
-  return null;
+        )}
+      </div>
+    );
+  else return null;
 }
 
 export default InstructorAssignment;

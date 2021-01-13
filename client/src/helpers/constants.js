@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const tokenKey = require('../config/keys').secretOrKey;
 
 require('dotenv').config();
+
 var tmp;
 if (process.env.NODE_ENV === "production")
     tmp = 'https://guc-cms.ahmedashraf.me/api/v1.0';
@@ -43,5 +44,3 @@ export async function checkHOD() {
     }
     return found;
 }
-  
-  
