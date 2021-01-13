@@ -13,7 +13,6 @@ import { link } from "../../../helpers/constants.js";
 function Sent() {
   const { addToast } = useToasts();
   const [rows, setRows] = useState([]);
-  const [reqIDRes, setReqIDRes] = useState(0);
 
   useEffect(async () => {
     try {
@@ -25,36 +24,57 @@ function Sent() {
         });
       } else {
         let myRequests = response.data.data.map((req) => {
+          var date = new Date(Date.parse(req.date));
+          var x =
+            date.getDate() +
+            "/" +
+            (date.getMonth() + 1) +
+            "/" +
+            date.getFullYear();
           return {
             id: req._id,
-            date: req.date,
+            date: x,
             type: req.type,
             status: req.status,
             subject: req.subject,
           };
         });
-
         setRows(myRequests);
       }
     } catch (e) {
       console.log("~ err", e);
-      //  document.location.href = window.location.origin + "/unauthorized";
+       document.location.href = window.location.origin + "/unauthorized";
     }
   }, []);
 
-  const handleSubmit = async (e, rowData) => {
+  const handleDelete = async (rowData) => {
     try {
-      console.log("heloooooo");
+      if (rowData.status == "pending") {
+        const response = await axiosCall(
+          "delete",
+          `${link}/requests/CancelRequest/${rowData.id}`
+        );
+
+        addToast(response.data.data, {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        const filtered = await rows.filter((req) => req.id !== rowData.id);
+        setRows(filtered);
+      } else {
+        addToast("Sorry you can't cancel this Request", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
     } catch (e) {
       console.log("~ err", e);
-      // document.location.href = window.location.origin + "/unauthorized";
+      document.location.href = window.location.origin + "/unauthorized";
     }
   };
   return (
     <div className="my-table">
       <Fade>
-        <h3 className="general-header">My Requests</h3>
-        <hr className="general-line" />
         <Grid container justify="center" alignItems="center" spacing={2}>
           <Grid item xs={10} sm={10} md={10}>
             <MaterialTable
@@ -69,10 +89,27 @@ function Sent() {
               onRowClick={(event, rowData) => {
                 document.location.href = `/viewReq/${rowData.id}`;
               }}
+              actions={[
+                {
+                  title: "Delete",
+                  icon: "delete",
+                  tooltip: "Delete Request",
+                  onClick: (event, rowData) => {
+                    handleDelete(rowData);
+                  },
+                },
+              ]}
               options={{
+                actionsColumnIndex: -1,
                 headerStyle: {
                   backgroundColor: "#01579b",
                   color: "#FFF",
+                  fontSize: "18px",
+                  margin: "0",
+                  padding: "0 0 10px 0",
+                },
+                rowStyle: {
+                  fontSize: "15px",
                 },
               }}
             />

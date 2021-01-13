@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Avatar from "react-avatar";
 import Typography from "@material-ui/core/Typography";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
 import { dateFormat } from "../../helpers/constants.js";
@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     borderRadius: 10,
     padding: "2%",
+    boxShadow: "0px 0px 15px 0px rgba(0, 0, 0, 0.64)",
   },
   modal: {
     display: "flex",
@@ -55,14 +56,12 @@ function Request(props) {
   const [title, setTitle] = useState([]);
   const [sender, setSender] = useState([]);
   const [gucId, setId] = useState([]);
-  const [accept_or_reject_request, setAccept_or_reject_request] = useState(
-    false
-  );
   const [comment, setComment] = useState("");
   const { addToast } = useToasts();
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [HOD, setHOD] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -78,6 +77,12 @@ function Request(props) {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if (found) {
+            setHOD((prevCheck) => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + "/unauthorized";
+          }
           const response = await axiosCall(
             "get",
             `${link}/requests/viewRequest/${props.match.params.id}`
@@ -115,7 +120,7 @@ function Request(props) {
   }, []);
 
   const handleAccept = async function () {
-    setAccept_or_reject_request(true);
+    let accept_or_reject_request = true;
     const rejectBody = { accept_or_reject_request, comment };
     if (request.type === "Change DayOff") {
       try {
@@ -144,6 +149,10 @@ function Request(props) {
           rejectBody
         );
         console.log(response);
+        addToast("Request accepted successfully", {
+          appearance: "success",
+          autoDismiss: true,
+        });
       } catch (err) {
         console.error("~err", err);
         addToast("Failed to accept request", {
@@ -157,7 +166,7 @@ function Request(props) {
   // in case of rejection and optionally leave a comment
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAccept_or_reject_request(false);
+    let accept_or_reject_request = false;
     const rejectBody = { accept_or_reject_request, comment };
     if (request.type === "Change DayOff") {
       try {
@@ -200,126 +209,128 @@ function Request(props) {
     }
   };
 
-  return (
-    <div className={classes.modal}>
-      <Card className={classes.root}>
-        <CardHeader
-          avatar={
-            <Avatar maxInitials={1} size={45} round={true} name={sender} />
-          }
-          title={title}
-          subheader={date}
-        />
-        <CardContent>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="h5"
-            variant="p"
-          >
-            Sender: {sender}
-          </Typography>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="h6"
-            variant="h6"
-          >
-            Sender ID: {gucId}
-          </Typography>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="h6"
-            variant="h6"
-          >
-            status: {request.status}
-          </Typography>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="h6"
-            variant="h6"
-          >
-            Reason:
-          </Typography>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="p"
-            variant="h6"
-          >
-            {request.reason}
-          </Typography>
-          <Typography
-            className={classes.text}
-            color="textPrimary"
-            component="h6"
-            variant="h6"
-          >
-            Document: {request.document}
-          </Typography>
-        </CardContent>
-        <div>
-          {(() => {
-            if (request.status === "pending") {
-              return (
-                <CardActions>
-                  <AcceptButton
-                    onClick={handleAccept}
-                    variant="contained"
-                    color="primary"
-                    className={classes.margin}
-                    startIcon={<CheckCircleIcon />}
-                  >
-                    {" "}
-                    Accept
-                  </AcceptButton>
-                  <RejectButton
-                    onClick={handleClick}
-                    variant="contained"
-                    color="secondary"
-                    className={classes.button}
-                    startIcon={<CancelIcon />}
-                  >
-                    {" "}
-                    Reject
-                  </RejectButton>
-                  <Popper id={id} open={open} anchorEl={anchorEl}>
-                    <div className={classes.paper}>
-                      <form
-                        onSubmit={handleSubmit}
-                        noValidate
-                        autoComplete="off"
-                      >
-                        <TextField
-                          value={comment}
-                          onChange={({ target }) => setComment(target.value)}
-                          id="standard-multiline-static"
-                          label="Reason for rejection"
-                          multiline
-                          rows={4}
-                        />
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                          className={classes.button}
-                        >
-                          Confirm
-                        </Button>
-                      </form>
-                    </div>
-                  </Popper>
-                </CardActions>
-              );
-            } else {
-              return <div />;
+  if (HOD)
+    return (
+      <div className={classes.modal}>
+        <Card className={classes.root}>
+          <CardHeader
+            avatar={
+              <Avatar maxInitials={1} size={45} round={true} name={sender} />
             }
-          })()}
-        </div>
-      </Card>
-    </div>
-  );
+            title={title}
+            subheader={date}
+          />
+          <CardContent>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="h5"
+              variant="p"
+            >
+              Sender: {sender}
+            </Typography>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="h6"
+              variant="h6"
+            >
+              Sender ID: {gucId}
+            </Typography>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="h6"
+              variant="h6"
+            >
+              status: {request.status}
+            </Typography>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="h6"
+              variant="h6"
+            >
+              Reason:
+            </Typography>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="p"
+              variant="h6"
+            >
+              {request.reason}
+            </Typography>
+            <Typography
+              className={classes.text}
+              color="textPrimary"
+              component="h6"
+              variant="h6"
+            >
+              Document: {request.document}
+            </Typography>
+          </CardContent>
+          <div>
+            {(() => {
+              if (request.status === "pending") {
+                return (
+                  <CardActions>
+                    <AcceptButton
+                      onClick={handleAccept}
+                      variant="contained"
+                      color="primary"
+                      className={classes.margin}
+                      startIcon={<CheckCircleIcon />}
+                    >
+                      {" "}
+                      Accept
+                    </AcceptButton>
+                    <RejectButton
+                      onClick={handleClick}
+                      variant="contained"
+                      color="secondary"
+                      className={classes.button}
+                      startIcon={<CancelIcon />}
+                    >
+                      {" "}
+                      Reject
+                    </RejectButton>
+                    <Popper id={id} open={open} anchorEl={anchorEl}>
+                      <div className={classes.paper}>
+                        <form
+                          onSubmit={handleSubmit}
+                          noValidate
+                          autoComplete="off"
+                        >
+                          <TextField
+                            value={comment}
+                            onChange={({ target }) => setComment(target.value)}
+                            id="standard-multiline-static"
+                            label="Reason for rejection"
+                            multiline
+                            rows={4}
+                          />
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                          >
+                            Confirm
+                          </Button>
+                        </form>
+                      </div>
+                    </Popper>
+                  </CardActions>
+                );
+              } else {
+                return <div />;
+              }
+            })()}
+          </div>
+        </Card>
+      </div>
+    );
+  else return null;
 }
 export default Request;

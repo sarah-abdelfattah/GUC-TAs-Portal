@@ -3,13 +3,15 @@ import MaterialTable from "material-table";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import Fade from "react-reveal/Fade";
 import { MyButton } from "../../styles/StyledComponents";
 
 function ViewCourseCoverage() {
   const [data, setData] = useState([]); //table data
   const { addToast } = useToasts();
+  const [HOD, setHOD] = useState(false);
+
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
@@ -18,6 +20,12 @@ function ViewCourseCoverage() {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall(
             "get",
             `${link}/departments/viewCourseCoverage`
@@ -40,6 +48,7 @@ function ViewCourseCoverage() {
     }
   }, []);
 
+  if(HOD)
   return (
     <div className="my-table">
       <Fade>
@@ -83,5 +92,6 @@ function ViewCourseCoverage() {
       </Fade>
     </div>
   );
+  else return null;
 }
 export default ViewCourseCoverage;

@@ -3,19 +3,11 @@ import { link } from "../../helpers/constants.js";
 import axiosCall from "../../helpers/axiosCall";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Avatar from "react-avatar";
 import Typography from "@material-ui/core/Typography";
-import { useToasts, addToast } from "react-toast-notifications";
+import { addToast } from "react-toast-notifications";
+import auth from "../../helpers/auth";
 
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CancelIcon from "@material-ui/icons/Cancel";
-import Popper from "@material-ui/core/Popper";
-import TextField from "@material-ui/core/TextField";
-
-import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 20,
     borderRadius: 10,
     padding: "2%",
-    width: 500,
+    width: "70%",
   },
   modal: {
     display: "flex",
@@ -60,11 +52,12 @@ function ViewReq(props) {
     } else {
       async function fetchData() {
         try {
+          await auth(["Course Instructor", "Teaching Assistant"]);
           const response = await axiosCall(
             "get",
             `${link}/requests/viewReq/${props.match.params.id}`
           );
-          console.log(response);
+
           if (response.data.data.error) {
             addToast(response.data.data.error, {
               appearance: "error",
@@ -73,9 +66,6 @@ function ViewReq(props) {
           } else {
             let req = response.data.data.request;
             setRequest(req);
-            console.log(req);
-            //'Replacement Request', 'Slot Request', 'Change DayOff', 'Leave Request'
-            console.log(req.type);
             if (req.type == "Leave Request") {
               setType(req.leavetype);
             }
@@ -106,7 +96,16 @@ function ViewReq(props) {
             component="h6"
             variant="h6"
           >
-            Date: {request.date}
+            Date:{" "}
+            {new Date(Date.parse(request.date)).getDate() +
+              "/" +
+              (new Date(Date.parse(request.date)).getMonth() + 1) +
+              "/" +
+              new Date(Date.parse(request.date)).getFullYear() +
+              " at " +
+              new Date(Date.parse(request.date)).getHours() +
+              ":" +
+              new Date(Date.parse(request.date)).getMinutes()}
           </Typography>
           <Typography
             className={classes.text}
@@ -124,7 +123,17 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                Replacemnt Date: {request.replacemntDate}
+                Replacemnt Date:
+                {new Date(Date.parse(request.replacemntDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.replacemntDate)).getMonth() +
+                    1) +
+                  "/" +
+                  new Date(Date.parse(request.replacemntDate)).getFullYear() +
+                  " at " +
+                  new Date(Date.parse(request.replacemntDate)).getHours() +
+                  ":" +
+                  new Date(Date.parse(request.replacemntDate)).getMinutes()}
               </Typography>
 
               <Typography
@@ -153,7 +162,24 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                coursename:{request.coursename}
+                Course name:{request.coursename}
+              </Typography>
+              <Typography
+                className={classes.text}
+                color="textPrimary"
+                component="h6"
+                variant="h6"
+              >
+                Slot Date:{" "}
+                {new Date(Date.parse(request.slotDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.slotDate)).getMonth() + 1) +
+                  "/" +
+                  new Date(Date.parse(request.slotDate)).getFullYear() +
+                  " at " +
+                  new Date(Date.parse(request.slotDate)).getHours() +
+                  ":" +
+                  new Date(Date.parse(request.slotDate)).getMinutes()}
               </Typography>
               <Typography
                 className={classes.text}
@@ -192,7 +218,13 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                CompensationDate:{request.CompensationDate}
+                CompensationDate:
+                {new Date(Date.parse(request.CompensationDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.CompensationDate)).getMonth() +
+                    1) +
+                  "/" +
+                  new Date(Date.parse(request.CompensationDate)).getFullYear()}
               </Typography>
               <Typography
                 className={classes.text}
@@ -200,7 +232,12 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                LeaveDate: {request.LeaveDate}
+                LeaveDate:{" "}
+                {new Date(Date.parse(request.LeaveDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.LeaveDate)).getMonth() + 1) +
+                  "/" +
+                  new Date(Date.parse(request.LeaveDate)).getFullYear()}
               </Typography>
               <Typography
                 className={classes.text}
@@ -230,7 +267,12 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                Maternity Date: {request.startDate}
+                Maternity Date:{" "}
+                {new Date(Date.parse(request.startDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.startDate)).getMonth() + 1) +
+                  "/" +
+                  new Date(Date.parse(request.startDate)).getFullYear()}
               </Typography>
               <Typography
                 className={classes.text}
@@ -258,7 +300,12 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                Accident Date: {request.AccidentDate}
+                Accident Date:{" "}
+                {new Date(Date.parse(request.AccidentDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.AccidentDate)).getMonth() + 1) +
+                  "/" +
+                  new Date(Date.parse(request.AccidentDate)).getFullYear()}
               </Typography>
 
               <Typography
@@ -278,7 +325,13 @@ function ViewReq(props) {
                 component="h6"
                 variant="h6"
               >
-                AnnualLeave Date:{request.AnnualLeaveDate}
+                AnnualLeave Date:
+                {new Date(Date.parse(request.AnnualLeaveDate)).getDate() +
+                  "/" +
+                  (new Date(Date.parse(request.AnnualLeaveDate)).getMonth() +
+                    1) +
+                  "/" +
+                  new Date(Date.parse(request.AnnualLeaveDate)).getFullYear()}
               </Typography>
 
               {request.replacements.reps.map((rep) => (

@@ -12,7 +12,7 @@ function ChangeDayOff() {
   const [CurDayOff, setCurDayOff] = useState("");
   const { addToast } = useToasts();
 
-  useEffect(() => {
+  useEffect(() => { 
     async function fetchData() {
       const Day = await axiosCall("get", "requests/dayOff");
       setCurDayOff(Day.data.data);
