@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
@@ -259,6 +259,7 @@ function Staff() {
                 },
               ]}
               options={{
+                search: true,
                 actionsColumnIndex: -1,
                 headerStyle: {
                   backgroundColor: "#FFF",
@@ -274,17 +275,20 @@ function Staff() {
               }}
               components={{
                 Toolbar: (props) => (
-                  <Button
-                    variant="success"
-                    className="add-new-staff green"
-                    onClick={() =>
-                      (document.location.href =
-                        window.location.origin + "/newStaffMember")
-                    }
-                  >
-                    <img src={add} alt="add-icon" className="icon" />
-                    <h5 className="text">New Staff Member </h5>
-                  </Button>
+                  <div style={{ display: "inline" }}>
+                    <MTableToolbar {...props} />
+                    <Button
+                      variant="success"
+                      className="add-new-staff green"
+                      onClick={() =>
+                        (document.location.href =
+                          window.location.origin + "/newStaffMember")
+                      }
+                    >
+                      <img src={add} alt="add-icon" className="icon" />
+                      <h5 className="text">New Staff Member </h5>
+                    </Button>
+                  </div>
                 ),
               }}
             />

@@ -48,7 +48,7 @@ function SideBar() {
       }
 
       if (courseResult.data.data) {
-        let CC = await courseResult.data.data.find(({ CC }) => CC === res.id);
+        let CC = await courseResult.data.data.find(({ CC }) => CC === res._id);
 
         if (CC) {
           console.log(" CC yes");
@@ -76,7 +76,7 @@ function SideBar() {
             icon={<BsTable />}
             onMouseEnter={() => setSchedule(true)}
             onMouseLeave={() => setSchedule(false)}
-            onClick={() => routeChange("setSchedule")}
+            onClick={() => routeChange("viewMySchedule")}
           >
             {showSchedule ? "My Schedule" : ""}
           </MenuItem>

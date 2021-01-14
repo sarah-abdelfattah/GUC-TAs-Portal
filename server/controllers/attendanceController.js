@@ -206,7 +206,7 @@ exports.addMissingSignInOut = async function (req, res) {
                     endTime: signOut,
                     status: 'Present',
                     absentsatisfied: false,
-                    absentStatus: null
+                    absentStatus: "None"
                 })
             }
         } else if (!signIn) {

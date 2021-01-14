@@ -20,6 +20,8 @@ function AttendanceTable(props) {
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const { addToast } = useToasts();
 
   const month = [
@@ -131,6 +133,14 @@ function AttendanceTable(props) {
     setData(originalData);
     setFiltered(false);
     setMonth("");
+  };
+
+  const handleDateChange = (date) => {
+    console.log(
+      "🚀 ~ file: AttendanceTable.jsx ~ line 139 ~ handleDateChange ~ date",
+      date
+    );
+    setSelectedDate(date);
   };
 
   const handleRowUpdate = async (newData, oldData) => {
@@ -308,11 +318,11 @@ function AttendanceTable(props) {
   const handleRowAdd = async (newData) => {
     let input = newData.date;
 
-    if (!newData.date || !newData.startTime || !newData.endTime) {
+    // console.log(selectedDate);
+    if (!newData.startTime || !newData.endTime) {
       return addToast("Please enter all details", {
         appearance: "error",
         autoDismiss: true,
-        autoDismissTimeout: 2000,
       });
     }
 
@@ -328,7 +338,7 @@ function AttendanceTable(props) {
       case "Mon":
         day = "Monday";
         break;
-      case "Tues":
+      case "Tue":
         day = "Tuesday";
         break;
       case "Wed":
@@ -341,7 +351,6 @@ function AttendanceTable(props) {
         return addToast("Sorry you cannot add a record on Friday", {
           appearance: "error",
           autoDismiss: true,
-          autoDismissTimeout: 2000,
         });
       default:
         break;
@@ -404,7 +413,6 @@ function AttendanceTable(props) {
       addToast("Record updated successfully", {
         appearance: "success",
         autoDismiss: true,
-        autoDismissTimeout: 2000,
       });
 
       let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
@@ -453,6 +461,7 @@ function AttendanceTable(props) {
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                           value={value}
+                          defaultValue={null}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -563,7 +572,9 @@ function AttendanceTable(props) {
                             onClick={() => handleFilter()}
                           />
                         </div>
-                      ) : null}
+                      ) : (
+                        <MTableToolbar {...props} />
+                      )}
 
                       {filtered ? (
                         <IoCloseSharp

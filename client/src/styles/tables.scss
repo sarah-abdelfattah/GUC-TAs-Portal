@@ -1,4 +1,5 @@
 @import "./colorSchema";
+
 .my-table {
     .MuiGrid-spacing-xs-1>.MuiGrid-item {
         padding: 0px !important;
@@ -11,6 +12,7 @@
         padding: 20px 0px !important;
         border-radius: 13px !important;
     }
+
     .MuiPaper-rounded {
         border-radius: 13px !important;
         margin: 0 auto !important;
@@ -71,6 +73,8 @@
         width: 210px;
         margin: 20px 0 0 20px;
         border-radius: 10px;
+        position: absolute;
+        top: 0px;
 
         .icon {
             display: inline;
