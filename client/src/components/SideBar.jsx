@@ -47,14 +47,18 @@ function SideBar() {
         }
       }
 
-      if (courseResult.data.data) {
-        let CC = await courseResult.data.data.find(({ CC }) => CC === res._id);
-
-        if (CC) {
-          console.log(" CC yes");
-          setUser("CC");
-        }
+      const courses = courseResult.data.data;
+      for (let i = 0; i < courses.length; i++) {
+        if (courses[i].courseCoordinator === res.id) setUser("CC");
       }
+
+      // if (courseResult.data.data) {
+      //   let CC = await courseResult.data.data.find(({ CC }) => console.log(CC));
+      //   if (CC) {
+      //     console.log(" CC yes");
+      //     setUser("CC");
+      //   }
+      // }
     }
     fetchData();
   }, []);

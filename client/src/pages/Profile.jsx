@@ -135,16 +135,12 @@ function Profile(props) {
             <Input className="profile-input" value={gucId} disabled={true} />
           </FormControl>
 
-          <FormControl
-            className={
-              update ? `profile-formControl toUpdate` : `profile-formControl`
-            }
-          >
+          <FormControl className={`profile-formControl`}>
             <InputLabel className="profile-inputLabel">Name</InputLabel>
             <Input
               className="profile-input"
               value={name}
-              disabled={update ? false : true}
+              disabled={true}
               onChange={(event) => setName(event.target.value)}
             />
           </FormControl>

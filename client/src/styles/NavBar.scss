@@ -41,11 +41,12 @@
 
     .notification {
         position: absolute;
-        right: 60px;
+        right: 65px;
         width: 40px;
         height: 30px;
         margin: 0;
         cursor: pointer;
+        z-index: 1001;
 
         &:hover {
             -webkit-animation: ring 4s .7s ease-in-out infinite;
@@ -55,6 +56,19 @@
             animation: ring 4s .7s ease-in-out infinite;
             transform-origin: 50% 4px;
         }
+    }
+
+    .notification-number {
+        position: absolute;
+        right: 63px;
+        top: 10px;
+        background: red;
+        text-align: center;
+        color: white;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: bold;
+        font-size: 13px;
     }
 
     .logout-icon {
@@ -95,9 +109,15 @@
         }
 
         .notification {
-            right: 45px;
+            right: 48px;
             width: 35px;
             height: 25px;
+        }
+
+        .notification-number {
+            right: 46px;
+            top: 10px;
+            font-size: 12px;
         }
 
         .logout-icon {
@@ -127,9 +147,14 @@
         }
 
         .notification {
-            right: 43px;
+            right: 45px;
             width: 25px;
             height: 23px;
+        }
+
+        .notification-number {
+            right: 38px;
+            top: 10px;
         }
 
         .logout-icon {

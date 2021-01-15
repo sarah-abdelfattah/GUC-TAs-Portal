@@ -11,26 +11,42 @@ import alert from "../assets/notification.svg";
 
 import Notification from "./Notification";
 
+import axiosCall from "../helpers/axiosCall";
+
 function NavBar(props) {
   const [name, setName] = useState("");
   const [notification, setNot] = useState(false);
+  const [notificationNumber, setNotNum] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
-      let res;
-      if (!props.notify) res = (await checkLogin()).gucId;
-      else res = (await checkLogin()).name;
+      let res = await (await checkLogin()).gucId;
       setName(res);
+
+      setInterval(async () => {
+        let res = await (await checkLogin()).gucId;
+        const notResult = await (await axiosCall("get", `notifications/${res}`))
+          .data.data;
+
+        if (notResult) {
+          let count = 0;
+          for (let i = 0; i < notResult.length; i++) {
+            if (!notResult[i].is_seen) {
+              count++;
+            }
+          }
+
+          setNotNum(count);
+        }
+      }, 3000);
     }
     fetchData();
-  }, []);
+  }, [notificationNumber]);
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
     document.location.href = window.location.origin + "/login";
   };
-
-  const handleNotifyClick = async () => {};
 
   return (
     <div>
@@ -60,6 +76,9 @@ function NavBar(props) {
           className="logout-icon"
           onClick={handleLogout}
         />
+        {parseInt(notificationNumber) > 0 ? (
+          <h6 className="notification-number">{notificationNumber}</h6>
+        ) : null}
       </Navbar>
       {notification ? (
         <div>

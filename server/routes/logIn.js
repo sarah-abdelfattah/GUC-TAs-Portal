@@ -51,7 +51,7 @@ router.post("", async function (req, res) {
                 department: staff.type === 'Academic Member' ? staff.department : undefined
             }
 
-            const token = jwt.sign(payload, tokenKey, { expiresIn: '24h' })
+            const token = jwt.sign(payload, tokenKey, { expiresIn: '1h' })
             await Token.create({ tokenId: token, iat: new Date() })
 
             if (!staff.lastLogIn) {

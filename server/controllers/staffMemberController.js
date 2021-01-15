@@ -306,7 +306,11 @@ exports.updateStaff = async function (req, res) {
         if (req.body.leaveBalance) newStaff.leaveBalance = leaveBalance;
 
         if (req.body.faculty && req.body.department && newStaff.type === 'Academic Member') {
-            console.log(req.body.department)
+            const oldDep = await Department.findOne({ _id: newStaff.department })
+            if (oldDep) {
+                oldDep.HOD = undefined;
+                await oldDep.save();
+            }
             faculty = faculty.toUpperCase();
             const facultyResult = await facultyHelper(faculty);
             if (facultyResult.error) return res.send(facultyResult);
@@ -314,7 +318,6 @@ exports.updateStaff = async function (req, res) {
 
             const departmentResult = await departmentHelper(faculty, department);
             if (departmentResult.error) return res.send(departmentResult);
-
             else newStaff.department = departmentResult;
         } else newStaff.faculty = undefined
         if (req.body.department && !req.body.faculty && newStaff.type === 'Academic Member')
