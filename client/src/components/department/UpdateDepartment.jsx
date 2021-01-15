@@ -25,40 +25,23 @@ function UpdateFaculty() {
   useEffect(() => {
     async function fetchData() {
       const facResult = await axiosCall("get", "faculties/faculty/all");
-      // const staffResult = await axiosCall(
-      //   "get",
-      //   "staffMembers/AC/Course Instructor/all"
-      // );
       setFaculties(facResult.data.data);
-      // setNewFacultyChosen(facResult.data.data);
-      // setStaff(staffResult.data.data);
     }
     fetchData();
   }, [facultyChosen]);
 
   const handleOnChange = async (target) => {
     setFacultyChosen(target.value);
-    // const facCode = faculties.find(({ _id }) => _id === target.value).code;
-
-    console.log(
-      "🚀 ~ file: UpdateDepartment.jsx ~ line 47 ~ handleOnChange ~ facultyChosen",
-      facultyChosen
-    );
 
     const depResult = await axiosCall(
       "get",
       `departments/department/${target.value}/all`
-    );
-    console.log(
-      "🚀 ~ file: UpdateDepartment.jsx ~ line 47 ~ handleOnChange ~ depResult",
-      depResult
     );
     setDepartments(depResult.data.data);
   };
 
   const handleDepOnChange = async (target) => {
     setDepChosen(target.value);
-    // const depName = departments.find(({ _id }) => _id === target.value).name;
 
     const staffResult = await axiosCall(
       "get",
@@ -78,23 +61,11 @@ function UpdateFaculty() {
       if (depChosen)
         dep = (await departments.find(({ _id }) => _id === depChosen)).name;
 
-      // let code;
-      // if (faculties)
-      //   code = (await faculties.find(({ _id }) => _id === facultyChosen)).code;
-
       let HOD;
-      if (HODChosen)
+
+      if (HODChosen && HODChosen !== "none")
         HOD = await staff.find(({ _id }) => _id === HODChosen).gucId;
-
-      let newFac;
-      if (newFacultyChosen)
-        console.log(
-          "🚀 ~ file: UpdateDepartment.jsx ~ line 95 ~ handleSubmit ~ newFacultyChosen",
-          newFacultyChosen
-        );
-
-      // newFac = await faculties.find(({ _id }) => _id === newFacultyChosen)
-      //   .code;
+      else HOD = "none";
 
       const body = {
         facultyCode: facultyChosen.toUpperCase(),
@@ -195,6 +166,9 @@ function UpdateFaculty() {
               setHODChosen(event.target.value);
             }}
           >
+            <MenuItem className="crud-menuItem" value={"none"} key={"none"}>
+              NONE
+            </MenuItem>
             {staff.length > 0 &&
               staff.map((member) => (
                 <MenuItem

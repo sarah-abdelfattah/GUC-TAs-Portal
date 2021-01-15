@@ -54,7 +54,7 @@ function UpdateLocation() {
           appearance: "success",
           autoDismiss: true,
         });
-
+        setRoomChosen("");
         setNewType("");
         setNewCapacity("");
       }

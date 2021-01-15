@@ -1,5 +1,6 @@
 require('dotenv').config();
 const axiosReq = require('axios');
+require('dotenv').config();
 var tmp;
 if (process.env.NODE_ENV === "production")
   tmp = 'https://guc-cms.ahmedashraf.me/api/v1.0';

@@ -18,6 +18,10 @@ function AddFaculty() {
       };
 
       const res = await axiosCall("post", "faculties/faculty", body);
+      console.log(
+        "🚀 ~ file: AddFaculty.jsx ~ line 21 ~ handleSubmit ~ res",
+        res
+      );
 
       if (res.data.data) {
         addToast("Faculty created successfully", {

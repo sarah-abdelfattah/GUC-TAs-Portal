@@ -23,6 +23,7 @@ function Homepage() {
       setmodal(false);
       //get user
       try {
+        // localStorage.removeItem("user");
         const temp = await checkLogin();
 
         const user = (await axiosCall("get", `staffMembers/all/${temp.gucId}`))
@@ -97,6 +98,23 @@ function Homepage() {
       const res = await axiosCall("post", "staffMembers/signIn");
 
       if (res.data.data) {
+        const date = new Date();
+
+        if (parseInt(date.getHours()) < 7)
+          return addToast("Signing in before 7AM is recorded as 7AM ", {
+            appearance: "warning",
+            autoDismiss: true,
+          });
+
+        if (
+          parseInt(date.getHours()) > 19 ||
+          (parseInt(date.getHours()) === 19 && parseInt(date.getMinutes()) > 0)
+        )
+          return addToast("Signing in after 7PM is recorded as 7PM ", {
+            appearance: "warning",
+            autoDismiss: true,
+          });
+
         addToast("Signed in successfully", {
           appearance: "success",
           autoDismiss: true,
@@ -122,6 +140,23 @@ function Homepage() {
       const res = await axiosCall("post", "staffMembers/signOut");
 
       if (res.data.data) {
+        const date = new Date();
+
+        if (parseInt(date.getHours()) < 7)
+          return addToast("Signing out before 7AM is recorded as 7AM ", {
+            appearance: "warning",
+            autoDismiss: true,
+          });
+
+        if (
+          parseInt(date.getHours()) > 19 ||
+          (parseInt(date.getHours()) === 19 && parseInt(date.getMinutes()) > 0)
+        )
+          return addToast("Signing out after 7PM is recorded as 7PM ", {
+            appearance: "warning",
+            autoDismiss: true,
+          });
+
         addToast("Signed out successfully", {
           appearance: "success",
           autoDismiss: true,

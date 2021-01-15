@@ -11,7 +11,6 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-// import { setgid } from "process";
 
 function NewStaffMember(props) {
   const [disable, setDisable] = useState(false);
@@ -62,13 +61,7 @@ function NewStaffMember(props) {
 
   const handleSubmit = async () => {
     try {
-      console.log("user", user);
-
       const res = await axiosCall("post", "staffMembers/staff", user);
-      console.log(
-        "🚀 ~ file: NewStaffMember.jsx ~ line 83 ~ handleSubmit ~ res",
-        res
-      );
 
       if (res.data.data) {
         addToast("Staff added successfully", {
