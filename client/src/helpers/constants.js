@@ -1,13 +1,12 @@
+require('dotenv').config();
 var tmp;
-if (process.env.NODE_ENV === "production"){
-    // here will be the production link
-    // tmp = '';
-}
-else 
-    tmp = `http://localhost:5000`;
+if (process.env.NODE_ENV === "production")
+    tmp = 'https://guc-cms.ahmedashraf.me/api/v1.0';
+else
+    tmp = `http://localhost:5000/`;
 export const link = tmp;
 
-export function dateFormat(input){
+export function dateFormat(input) {
     const date = new Date(input)
     const day = date.getDate();
     const month = date.getMonth() + 1;
