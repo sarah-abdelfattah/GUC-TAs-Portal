@@ -12,7 +12,7 @@ function ChangeDayOff() {
   const [CurDayOff, setCurDayOff] = useState("");
   const { addToast } = useToasts();
 
-  useEffect(() => {
+  useEffect(() => { 
     async function fetchData() {
       const Day = await axiosCall("get", "requests/dayOff");
       setCurDayOff(Day.data.data);
@@ -27,9 +27,9 @@ function ChangeDayOff() {
         newDayOff: NewDayOff,
         reason: Reason,
       };
-      if (NewDayOff == CurDayOff) {
+      if (NewDayOff === CurDayOff) {
         addToast("already Your Current DayOff", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         setDayOff("");

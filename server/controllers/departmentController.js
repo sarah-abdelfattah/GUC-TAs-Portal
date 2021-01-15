@@ -114,6 +114,7 @@ exports.updateDepartment = async function (req, res) {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
     let { facultyCode, depName, HOD, newFacultyCode } = req.body;
+    console.log("🚀 ~ file: departmentController.js ~ line 117 ~ req.body", req.body);
 
     facultyCode = facultyCode.toUpperCase();
 
@@ -133,23 +134,32 @@ exports.updateDepartment = async function (req, res) {
       return res.send({ error: "No department with this name under this faculty" });
 
     if (HOD) {// staff found? 
-      const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
-      if (!staffMember)
-        return res.send({ error: "No staff member with this ID" });
+      if (HOD === "none") {
+        depFound.HOD = undefined;
+        console.log("🚀 ~ file: departmentController.js ~ line 138 ~ depFound", depFound);
+      }
+      else {
+        const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
+        if (!staffMember)
+          return res.send({ error: "No staff member with this ID" });
 
-      //staff is not TA and not HR 
-      if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
-        return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
+        //staff is not TA and not HR 
+        if (staffMember.role === 'Teaching Assistant' || staffMember.type === 'HR')
+          return res.send({ error: "Sorry Head of the department cannot be Teaching Assistant or HR member" });
 
-      //staff of the same faculty?
-      if (!(staffMember.faculty.equals(facultyFound._id)))
-        return res.send({ error: "Sorry Head of the department should be of the same faculty" });
+        //staff of the same faculty?
+        if (!(staffMember.faculty.equals(facultyFound._id)))
+          return res.send({ error: "Sorry Head of the department should be of the same faculty" });
 
-      const dep = await Department.findOne({ HOD: staffMember._id, })
-      if (dep && dep.HOD.name != HOD)
-        return res.send({ error: "Sorry this staff is a HOD of another department" });
+        const dep = await Department.findOne({ HOD: staffMember._id, })
+        if (dep) {
+          if (dep.HOD != staffMember.id)
+            return res.send({ error: "Sorry this staff is a HOD of another department" });
+          else return res.send({ error: "This staff is already the HOD of this department" });
+        }
 
-      depFound.HOD = staffMember;
+        depFound.HOD = staffMember;
+      }
     }
 
     if (newFacultyCode) {
@@ -612,7 +622,7 @@ exports.updateInstructor = async function (req, res) {
       department: departmentFound._id,
       type: 'Academic Member',
       role: 'Course Instructor'
-    }).populate();
+    }).populate('courses');
 
     if (!instructor) {
       return res.send({
@@ -695,7 +705,7 @@ exports.deleteInstructor = async function (req, res) {
       department: departmentFound._id,
       type: 'Academic Member',
       role: 'Course Instructor'
-    }).populate();
+    }).populate('courses');
 
     if (!instructor) {
       return res.send({
@@ -714,25 +724,38 @@ exports.deleteInstructor = async function (req, res) {
       })
     }
 
+    let deleteInstructor = false;
+
     // case instructor doesn't have any courses assigned in this department
     if (instructor.courses.length === 0) {
       return res.send({
         error: `Sorry, there's no course with this name ${courseName} assigned to this instructor`,
       })
     }
-
     // case he have already assigned courses
     else {
-      const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
-      instructor.courses.splice(InstructorIndex, 1);
-      await instructor.save();
+      instructor.courses.forEach((item) => {
+        // check if that course already have a coverage and if the coverage is zero, then safely delete the instructor from the course
+        if(item.coverage === 0){
+          const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
+          instructor.courses.splice(InstructorIndex, 1);
+          deleteInstructor = true;
+        }
+      })
     }
 
-    return res.status(200).send({
-      data: {
-        error: `Course deleted successfully`,
-      }
-    });
+    if(deleteInstructor) {
+      await instructor.save();
+      return res.status(200).send({
+        data: {
+          error: `Course deleted successfully`,
+        }
+      });
+    } else {
+      return res.send({
+        error: `Sorry, can not delete a course with coverage ${course.coverage} for that instructor`,
+      })
+    }
 
   } catch (err) {
     if (err.isJoi) {

@@ -19,7 +19,7 @@ function Sick() {
 
       if (!OK) {
         addToast("please enter correct drive link", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {

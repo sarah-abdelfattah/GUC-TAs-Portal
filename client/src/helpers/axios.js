@@ -1,10 +1,10 @@
 const axiosReq = require('axios');
+require('dotenv').config();
 var tmp;
-//TODO: when deployed
-// if (process.env.NODE_ENV === "production")
-//     tmp = 'https://BASE_URL.herokuapp.com/api/';
-// else
-tmp = `http://localhost:5000/`;
+if (process.env.NODE_ENV === "production")
+    tmp = 'https://guc-cms.ahmedashraf.me/api/v1.0';
+else
+  tmp = `http://localhost:5000/`;
 export const link = tmp;
 
 export const axios = axiosReq.create({

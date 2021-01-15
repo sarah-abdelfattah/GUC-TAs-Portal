@@ -10,6 +10,7 @@ import {
   MenuItem,
   Input,
 } from "@material-ui/core";
+import Modal from "react-bootstrap/Modal";
 
 import { useToasts } from "react-toast-notifications";
 import { axiosCall } from "../helpers/axiosCall";
@@ -49,6 +50,10 @@ function AcademicMemberCourseSlot() {
   ];
 
   const { addToast } = useToasts();
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const handleOnChange = (target) => {
     setCourse(target.value);
@@ -66,7 +71,7 @@ function AcademicMemberCourseSlot() {
           );
           if (response.data.error) {
             addToast(response.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -95,9 +100,10 @@ function AcademicMemberCourseSlot() {
         optionSelected = "put";
       } else if (crudBtns.delete) {
         optionSelected = "delete";
+        setShow(false);
       } else {
         addToast("You should specify an option", {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
         return;
@@ -120,6 +126,8 @@ function AcademicMemberCourseSlot() {
         case "5th":
           convertedTiming = "03:45 PM";
           break;
+        default:
+          break;
       }
       response = await axiosCall(
         optionSelected,
@@ -136,7 +144,7 @@ function AcademicMemberCourseSlot() {
 
       if (response.data.error) {
         addToast(response.data.error, {
-          appearance: "warning",
+          appearance: "error",
           autoDismiss: true,
         });
       } else {
@@ -303,12 +311,29 @@ function AcademicMemberCourseSlot() {
                 ? true
                 : false
             }
-            onClick={handleSubmit}
+            onClick={crudBtns.delete ? handleShow : handleSubmit}
           >
             {crudBtns.add ? "Assign" : crudBtns.update ? "Update" : "Delete"}
           </Button>
         </div>
       )}
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>DELETE</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this course slot (SEE IF CORRECT)?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={() => handleSubmit()}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

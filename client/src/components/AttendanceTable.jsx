@@ -10,7 +10,6 @@ import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
-  TimePicker,
   KeyboardTimePicker,
 } from "@material-ui/pickers";
 
@@ -21,6 +20,8 @@ function AttendanceTable(props) {
   const [data, setData] = useState([]); //table data
   const [filtered, setFiltered] = useState(false);
   const [selectedMonth, setMonth] = useState("Month");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const { addToast } = useToasts();
 
   const month = [
@@ -59,10 +60,6 @@ function AttendanceTable(props) {
       async function fetchData() {
         try {
           let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
-          console.log(
-            "🚀 ~ file: AttendanceTable.jsx ~ line 63 ~ fetchData ~ temp",
-            temp
-          );
           let staff = "";
           if (temp.data.data) staff = temp.data.data;
 
@@ -71,17 +68,6 @@ function AttendanceTable(props) {
           if (staff) {
             setStaff(staff);
             let records = staff.attendanceRecords;
-            // console.log(
-            //   "🚀 ~ file: AttendanceTable.jsx ~ line 73 ~ fetchData ~ records",
-            //   records
-            // );
-            // for (let i = 0; i < records.length; i++) {
-            //   console.log(records[i].endTime);
-            //   let nweDate = "2021-01-01T" + records[i].endTime;
-            //   records[i].endTime = new Date(nweDate);
-
-            //   // console.log(t);
-            // }
 
             //sorted .. from most to least recent
             const result = records.sort(compare);
@@ -117,6 +103,10 @@ function AttendanceTable(props) {
             "get",
             `attendance/viewAttendance/${month1}/${month2}`
           );
+          console.log(
+            "🚀 ~ file: AttendanceTable.jsx ~ line 105 ~ handleFilter ~ res",
+            res
+          );
 
           addToast("filtered successfully", {
             appearance: "success",
@@ -143,6 +133,14 @@ function AttendanceTable(props) {
     setData(originalData);
     setFiltered(false);
     setMonth("");
+  };
+
+  const handleDateChange = (date) => {
+    console.log(
+      "🚀 ~ file: AttendanceTable.jsx ~ line 139 ~ handleDateChange ~ date",
+      date
+    );
+    setSelectedDate(date);
   };
 
   const handleRowUpdate = async (newData, oldData) => {
@@ -206,6 +204,10 @@ function AttendanceTable(props) {
         "attendance/addMissingSignInOut",
         body
       );
+      console.log(
+        "🚀 ~ file: AttendanceTable.jsx ~ line 194 ~ handleRowUpdate ~ res",
+        res
+      );
 
       if (res.data.data) {
         addToast("Record updated successfully", {
@@ -265,7 +267,6 @@ function AttendanceTable(props) {
         "attendance/addMissingSignInOut",
         body
       );
-
       if (res.data.data) {
         addToast("Record updated successfully", {
           appearance: "success",
@@ -317,11 +318,11 @@ function AttendanceTable(props) {
   const handleRowAdd = async (newData) => {
     let input = newData.date;
 
-    if (!newData.date || !newData.startTime || !newData.endTime) {
+    // console.log(selectedDate);
+    if (!newData.startTime || !newData.endTime) {
       return addToast("Please enter all details", {
         appearance: "error",
         autoDismiss: true,
-        autoDismissTimeout: 2000,
       });
     }
 
@@ -337,7 +338,7 @@ function AttendanceTable(props) {
       case "Mon":
         day = "Monday";
         break;
-      case "Tues":
+      case "Tue":
         day = "Tuesday";
         break;
       case "Wed":
@@ -350,7 +351,6 @@ function AttendanceTable(props) {
         return addToast("Sorry you cannot add a record on Friday", {
           appearance: "error",
           autoDismiss: true,
-          autoDismissTimeout: 2000,
         });
       default:
         break;
@@ -413,7 +413,6 @@ function AttendanceTable(props) {
       addToast("Record updated successfully", {
         appearance: "success",
         autoDismiss: true,
-        autoDismissTimeout: 2000,
       });
 
       let temp = await axiosCall("get", `staffMembers/all/${props.gucId}`);
@@ -461,7 +460,8 @@ function AttendanceTable(props) {
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
-                          value={value ? value : ""}
+                          value={value}
+                          defaultValue={null}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -471,12 +471,13 @@ function AttendanceTable(props) {
                   {
                     title: "Sign In",
                     field: "startTime",
+                    sorting: false,
                     filtering: false,
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardTimePicker
-                          value={value}
-                          defaultValue="00:00 "
+                          value={value ? value : null}
+                          defaultValue={null}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -490,8 +491,9 @@ function AttendanceTable(props) {
                     filtering: false,
                     editComponent: ({ value, onChange }) => (
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <TimePicker
-                          value={value}
+                        <KeyboardTimePicker
+                          value={value ? value : null}
+                          defaultValue={null}
                           onChange={onChange}
                           ampm={false}
                         />
@@ -524,7 +526,6 @@ function AttendanceTable(props) {
                 data={data}
                 options={{
                   search: true,
-                  // filtering: true,
                   sorting: true,
                   actionsColumnIndex: -1,
                   headerStyle: {
@@ -542,29 +543,42 @@ function AttendanceTable(props) {
                 components={{
                   Toolbar: (props) => (
                     <div className="select-table-container">
-                      <MTableToolbar {...props} />
-                      <Select
-                        className="table-select month"
-                        value={selectedMonth}
-                        onChange={(event) => setMonth(event.target.value)}
-                        placeholder="Month"
-                      >
-                        <MenuItem className="" value={"Month"} key={"Month"}>
-                          Month
-                        </MenuItem>
-                        {month.map((mon) => (
-                          <MenuItem className="" value={mon} key={mon}>
-                            {mon}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      {!HR ? (
+                        <div style={{ display: "inline" }}>
+                          <MTableToolbar {...props} />
+                          <Select
+                            className="table-select month"
+                            value={selectedMonth}
+                            onChange={(event) => setMonth(event.target.value)}
+                            placeholder="Month"
+                          >
+                            <MenuItem
+                              className=""
+                              value={"Month"}
+                              key={"Month"}
+                            >
+                              Month
+                            </MenuItem>
+                            {month.map((mon) => (
+                              <MenuItem className="" value={mon} key={mon}>
+                                {mon}
+                              </MenuItem>
+                            ))}
+                          </Select>
 
-                      <IoFilter
-                        className="filter-icon"
-                        onClick={() => handleFilter()}
-                      />
+                          <IoFilter
+                            style={{ display: "inline" }}
+                            className="filter-icon"
+                            onClick={() => handleFilter()}
+                          />
+                        </div>
+                      ) : (
+                        <MTableToolbar {...props} />
+                      )}
+
                       {filtered ? (
                         <IoCloseSharp
+                          style={{ display: "inline" }}
                           className="filter-icon"
                           onClick={handleRemoveFilter}
                         />

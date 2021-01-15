@@ -3,13 +3,15 @@ import MaterialTable from "material-table";
 import Grid from "@material-ui/core/Grid";
 import { useToasts } from "react-toast-notifications";
 import axiosCall from "../../helpers/axiosCall";
-import { link } from "../../helpers/constants.js";
+import { checkHOD, link } from "../../helpers/constants.js";
 import Fade from "react-reveal/Fade";
 import { MyButton } from "../../styles/StyledComponents";
 
 function ViewCourseCoverage() {
   const [data, setData] = useState([]); //table data
   const { addToast } = useToasts();
+  const [HOD, setHOD] = useState(false);
+
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
@@ -18,13 +20,19 @@ function ViewCourseCoverage() {
     } else {
       async function fetchData() {
         try {
+          let found = await checkHOD();
+          if(found){
+            setHOD(prevCheck => !prevCheck);
+          } else {
+            document.location.href = window.location.origin + '/unauthorized'
+          }
           const response = await axiosCall(
             "get",
             `${link}/departments/viewCourseCoverage`
           );
           if (response.data.data.error) {
             addToast(response.data.data.error, {
-              appearance: "warning",
+              appearance: "error",
               autoDismiss: true,
             });
           } else {
@@ -40,6 +48,7 @@ function ViewCourseCoverage() {
     }
   }, []);
 
+  if(HOD)
   return (
     <div className="my-table">
       <Fade>
@@ -58,22 +67,22 @@ function ViewCourseCoverage() {
                 headerStyle: {
                   backgroundColor: "#ECEFF4",
                   color: "#000000",
-                  fontSize: 16
+                  fontSize: 16,
                 },
               }}
               components={{
                 Toolbar: (props) => (
-                  <div style={{padding: '10px 10px', margin: 'auto'}}>
-                  <MyButton
+                  <div style={{ padding: "10px 10px", margin: "auto" }}>
+                    <MyButton
                       variant="contained"
                       color="primary"
                       onClick={() =>
-                      (document.location.href =
-                        window.location.origin + "/CourseCoverage")
-                    }
-                  >
-                   My courses coverage
-                  </MyButton>
+                        (document.location.href =
+                          window.location.origin + "/CourseCoverage")
+                      }
+                    >
+                      My courses coverage
+                    </MyButton>
                   </div>
                 ),
               }}
@@ -83,5 +92,6 @@ function ViewCourseCoverage() {
       </Fade>
     </div>
   );
+  else return null;
 }
 export default ViewCourseCoverage;

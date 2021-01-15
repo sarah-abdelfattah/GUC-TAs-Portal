@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import axiosCall from "../../helpers/axiosCall";
 import { useToasts } from "react-toast-notifications";
+import Modal from "react-bootstrap/Modal";
 
 import {
   FormControl,
@@ -14,6 +15,11 @@ import {
 function DeleteFaculty() {
   const [faculties, setFaculties] = useState({ faculties: [] });
   const [facultyChosen, setFacultyChosen] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -26,6 +32,8 @@ function DeleteFaculty() {
 
   const handleSubmit = async () => {
     try {
+      setShow(false);
+
       let code;
       if (faculties)
         code = await faculties.find(({ _id }) => _id === facultyChosen).code;
@@ -89,10 +97,25 @@ function DeleteFaculty() {
         variant="danger"
         className="crud-submit crud-delete-btn red"
         disabled={facultyChosen === "" ? true : false}
-        onClick={handleSubmit}
+        onClick={handleShow}
       >
         Delete Faculty
       </Button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>DELETE</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this faculty?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="danger" onClick={handleSubmit}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
