@@ -328,11 +328,10 @@ exports.updateStaff = async function (req, res) {
         if (req.body.officeLocation) {
             const refLocation = await Location.findOne({ location: req.body.officeLocation }).populate('officeLocation');
             if (!refLocation) return { error: 'Sorry room not found' };
-            if (req.body.officeLocation !== refLocation.location) {
-                const locResult = await locationHelper(req.body.officeLocation);
-                if (locResult.error) return res.send(locResult);
-                else newStaff.officeLocation = locResult;
-            }
+
+            const locResult = await locationHelper(req.body.officeLocation);
+            if (locResult.error) return res.send(locResult);
+            else newStaff.officeLocation = locResult;
         }
 
         if (req.body.salary) newStaff.salary = req.body.salary

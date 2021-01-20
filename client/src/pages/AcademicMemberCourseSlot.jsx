@@ -141,6 +141,10 @@ function AcademicMemberCourseSlot() {
           },
         }
       );
+      console.log(
+        "🚀 ~ file: AcademicMemberCourseSlot.jsx ~ line 146 ~ handleSubmit ~ response.data",
+        response.data
+      );
 
       if (response.data.error) {
         addToast(response.data.error, {
@@ -282,17 +286,21 @@ function AcademicMemberCourseSlot() {
               </FormHelperText>
             </FormControl>
 
-            <FormControl className="crud-formControl" required>
-              <InputLabel className="crud-inputLabel">Member GUC ID</InputLabel>
-              <Input
-                className="crud-input"
-                value={id}
-                onChange={(event) => setID(event.target.value)}
-              />
-              <FormHelperText className="crud-helperText">
-                This field is required
-              </FormHelperText>
-            </FormControl>
+            {!crudBtns.delete ? (
+              <FormControl className="crud-formControl" required>
+                <InputLabel className="crud-inputLabel">
+                  Member GUC ID
+                </InputLabel>
+                <Input
+                  className="crud-input"
+                  value={id}
+                  onChange={(event) => setID(event.target.value)}
+                />
+                <FormHelperText className="crud-helperText">
+                  This field is required
+                </FormHelperText>
+              </FormControl>
+            ) : null}
           </div>
 
           <Button

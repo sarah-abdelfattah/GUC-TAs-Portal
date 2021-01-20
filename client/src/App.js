@@ -62,24 +62,10 @@ import ViewTeachingAssignments from './pages/HOD/ViewTeachingAssignments';
 import InstructorAssignment from './pages/HOD/InstructorAssignment';
 
 function App() {
-
   // eslint-disable-next-line
   var currentLocation = window.location.pathname;
   // eslint-disable-next-line
   var t = (document.title = 'GUC Portal');
-
-  //var user = checkLogin() ;  //a3ml wait 1000 seconds msln
-  // const [flag, setFlag] = useState(false);
-  // useEffect(async () => {
-  //   if(currentLocation!='/login'){
-  //   let user =  await checkLogin() ;
-  //   if(user){
-  // if(user.type=="Academic Member"){
-  //   setFlag(true);
-  // }
-  //      } }
-
-  // }, []);
 
 
   return (

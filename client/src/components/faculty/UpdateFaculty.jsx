@@ -52,7 +52,8 @@ function UpdateFaculty() {
           autoDismiss: true,
         });
 
-        setName(newName);
+        setName("");
+        setFacultyChosen("");
         setNewName("");
       }
       if (res.data.error) {

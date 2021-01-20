@@ -114,8 +114,6 @@ exports.updateDepartment = async function (req, res) {
     let JOI_Result = await validation.departmentSchema.validateAsync(req.body)
 
     let { facultyCode, depName, HOD, newFacultyCode } = req.body;
-    console.log("🚀 ~ file: departmentController.js ~ line 117 ~ req.body", req.body);
-
     facultyCode = facultyCode.toUpperCase();
 
     //all data entered
@@ -136,7 +134,6 @@ exports.updateDepartment = async function (req, res) {
     if (HOD) {// staff found? 
       if (HOD === "none") {
         depFound.HOD = undefined;
-        console.log("🚀 ~ file: departmentController.js ~ line 138 ~ depFound", depFound);
       }
       else {
         const staffMember = await (await StaffMember.findOne({ gucId: HOD })).populate('staffMember');
@@ -594,7 +591,7 @@ exports.updateInstructor = async function (req, res) {
     let JOI_Result = await validation.departmentAssignmentSchema.validateAsync({ instructorId, courseName, newCourseName })
 
     if (!instructorId || !newCourseName || !courseName)
-      return res.send({ error: "Please enter new course name" });
+      return res.send({ error: "Please enter all needed info" });
 
     let HOD = await StaffMember.findOne({ gucId: req.user.gucId }).populate('HOD');
     let departmentFound = await Department.findOne({
@@ -649,7 +646,14 @@ exports.updateInstructor = async function (req, res) {
     for (let i = 0; i < instructor.courses.length; i++) {
       if ((instructor.courses[i]).equals(oldCourse._id)) {
         instructor.courses[i] = newCourse;
-        await instructor.save();
+
+        const res = await instructor.save();
+        const newInst = await StaffMember.findOneAndUpdate({
+          gucId: instructorId,
+          department: departmentFound._id,
+          type: 'Academic Member',
+          role: 'Course Instructor'
+        }, { courses: instructor.courses });
         break;
       }
     }
@@ -736,7 +740,7 @@ exports.deleteInstructor = async function (req, res) {
     else {
       instructor.courses.forEach((item) => {
         // check if that course already have a coverage and if the coverage is zero, then safely delete the instructor from the course
-        if(item.coverage === 0){
+        if (item.coverage === 0) {
           const InstructorIndex = instructor.courses.findIndex((el) => `${el._id}` === `${course._id}`)
           instructor.courses.splice(InstructorIndex, 1);
           deleteInstructor = true;
@@ -744,7 +748,7 @@ exports.deleteInstructor = async function (req, res) {
       })
     }
 
-    if(deleteInstructor) {
+    if (deleteInstructor) {
       await instructor.save();
       return res.status(200).send({
         data: {

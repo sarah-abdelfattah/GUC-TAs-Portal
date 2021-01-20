@@ -161,6 +161,10 @@ function Homepage() {
           appearance: "success",
           autoDismiss: true,
         });
+
+        //get hours
+        const hoursRes = await axiosCall("get", "attendance/viewHours");
+        if (hoursRes.data) setHours(hoursRes.data);
       }
 
       if (res.data.error) {

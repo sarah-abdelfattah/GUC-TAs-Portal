@@ -175,17 +175,13 @@ exports.updateCourse = async function (req, res) {
             const foundTime = timings.find(t => t === newSlot.time)
             if (!foundTime)
                 return res.send({ error: 'Sorry time should be one of: ' + timings });
-            // else new Date("Wed, 27 July 2016 13:30:00");
+
+            newSlot.time = new Date(`April 23, 2020 ${newSlot.time}:00`);
+
             const locResult = await locationHelper(newSlot.location.toUpperCase());
 
             if (locResult.error) return res.send(locResult);
             else newSlot.location = locResult;
-
-            // const madeSlot = new Slot({
-            //     day: newSlot.day,
-            //     time: newSlot.time,
-            //     location: newSlot.location
-            // })
 
             courseFound.slots.push(newSlot);
         }
@@ -240,16 +236,16 @@ exports.deleteCourse = async function (req, res) {
 }
 
 //Additional routes (used for frontend)
-exports.viewCoursesCC = async function(req,res){
-    try{
+exports.viewCoursesCC = async function (req, res) {
+    try {
         const id = req.user.gucId;
         const staff = await StaffMember.findOne({ gucId: id });
-        const courses = await Course.find({ courseCoordinator: staff._id});
-        courseNames = courses.map((course)=>{
+        const courses = await Course.find({ courseCoordinator: staff._id });
+        courseNames = courses.map((course) => {
             return course.name;
         })
-        res.send({data:courseNames});
-    }catch(e){
+        res.send({ data: courseNames });
+    } catch (e) {
         console.log('~ err', e);
         res.status(500).send({ error: `Internal Server Error: ${e}` });
     }

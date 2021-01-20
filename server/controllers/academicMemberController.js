@@ -104,6 +104,7 @@ const courseInstructorController = {
           populate: { path: 'slots.isAssigned' },
         });
 
+
       // Case: instructor not found
       if (!instructor)
         return res.status(404).send({
@@ -260,6 +261,7 @@ const courseInstructorController = {
           populate: { path: 'slots.isAssigned' },
         });
 
+
       // Case: instructor not found
       if (!instructor)
         return res.send({
@@ -303,6 +305,8 @@ const courseInstructorController = {
 
       const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
         const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
+        const hours = parseInt(slotTime[0].split(":")[0]);
+        slotTime[0] = hours < 10 ? `0${slotTime[0]}` : slotTime[0];
         const targetTime = req.body.slot.time.split(' ');
         targetTime[0] += ':00';
         return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === targetTime[0] && slotTime[1] === targetTime[1];
@@ -462,6 +466,7 @@ const courseInstructorController = {
       // * Get Course
       const course = await Course.findOne({
         name: req.body.courseName,
+        department: targetAC.department
       })
         .populate('courseCoordinator')
         .populate('slots.isAssigned');
@@ -482,6 +487,8 @@ const courseInstructorController = {
 
       const currentSlotIndex = course.slots.findIndex(({ day, time }) => {
         const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
+        const hours = parseInt(slotTime[0].split(":")[0]);
+        slotTime[0] = hours < 10 ? `0${slotTime[0]}` : slotTime[0];
         const currentTime = req.body.slot.time.split(' ');
         currentTime[0] += ':00';
         return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === currentTime[0] && slotTime[1] === currentTime[1];
@@ -495,7 +502,7 @@ const courseInstructorController = {
 
       // Case: assign the currentSlot to target AC
       if (!req.body.newSlot) {
-        if (course.slots[currentSlotIndex].isAssigned === null) return res.send(errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it'));
+        if (course.slots[currentSlotIndex].isAssigned === null) return res.send({ error: errorMsgs.notAssigned('current slot', 'You can use the "assign slot" route to assign it') });
 
         const currAC = course.slots[currentSlotIndex].isAssigned;
         course.slots[currentSlotIndex].isAssigned = targetAC;
@@ -674,6 +681,8 @@ const courseInstructorController = {
       // * Checking the slot cases
       const targetSlotIndex = course.slots.findIndex(({ day, time }) => {
         const slotTime = time.toLocaleString('en-EG').split(',')[1].trim().split(' '); // Should have an array with this ['11:45:00', 'AM']
+        const hours = parseInt(slotTime[0].split(":")[0]);
+        slotTime[0] = hours < 10 ? `0${slotTime[0]}` : slotTime[0];
         const targetTime = req.body.slot.time.split(' ');
         targetTime[0] += ':00';
         return day.toLowerCase() === req.body.slot.day.toLowerCase() && slotTime[0] === targetTime[0] && slotTime[1] === targetTime[1];

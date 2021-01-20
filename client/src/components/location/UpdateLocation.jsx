@@ -56,7 +56,10 @@ function UpdateLocation() {
         });
         setRoomChosen("");
         setNewType("");
+        setRoomCapacity("");
         setNewCapacity("");
+        const result = await axiosCall("get", "locations/room/all");
+        setRooms(result.data.data);
       }
       if (res.data.error) {
         addToast(res.data.error, {

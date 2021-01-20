@@ -36,8 +36,8 @@ exports.sendRequest = async function (req, res) {
       const recieverId = req.body.recieverId;
       const location = req.body.location;
       const coursename = req.body.course;
-      if(recieverId==sender.gucId){
-         return res.send({ error: "Sorry you can't send this Request" });
+      if (recieverId == sender.gucId) {
+        return res.send({ error: "Sorry you can't send this Request" });
       }
       //const course=await Course.findOne({name:coursename})
 
@@ -97,15 +97,15 @@ exports.sendRequest = async function (req, res) {
       if (!flag) {
         return res.send({ error: 'Sorry you cannot submit this request' });
       }
-       if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
-      return res.send({ error: 'Please Enter correct Slot Time' });
+      if ((date.getHours() != 8 && date.getMinutes() == 15) || (date.getHours() != 10 && date.getMinutes() == 0) || (date.getHours() != 11 && date.getMinutes() == 45) || (date.getHours() != 13 && date.getMinutes() == 45) || (date.getHours() != 15 && date.getMinutes() == 45)) {
+        return res.send({ error: 'Please Enter correct Slot Time' });
       }
-     // if()
-      var recordDay=date.getDay();
-      if(recordDay==5){
-         return res.send({ error: 'Sorry it is Friday ' });
+      // if()
+      var recordDay = date.getDay();
+      if (recordDay == 5) {
+        return res.send({ error: 'Sorry it is Friday ' });
       }
-      const subject = type + ' with ' + rec.name +" ID: "+rec.gucId+ ' for course ' + coursename + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+      const subject = type + ' with ' + rec.name + " ID: " + rec.gucId + ' for course ' + coursename + ' at ' + date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
       const x = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":00"
       const newRequest = new Request({
         //TODO a4eel el sender
@@ -212,39 +212,39 @@ exports.sendRequest = async function (req, res) {
       }
       //check for the time
       //console.log(date.get)
-      if((date.getHours()!=8&& date.getMinutes()==15)||(date.getHours()!=10&& date.getMinutes()==0)||(date.getHours()!=11&& date.getMinutes()==45)||(date.getHours()!=13&& date.getMinutes()==45)||(date.getHours()!=15&& date.getMinutes()==45)){
-      return res.send({ error: 'Please Enter correct Slot Time' });
+      if ((date.getHours() != 8 && date.getMinutes() == 15) || (date.getHours() != 10 && date.getMinutes() == 0) || (date.getHours() != 11 && date.getMinutes() == 45) || (date.getHours() != 13 && date.getMinutes() == 45) || (date.getHours() != 15 && date.getMinutes() == 45)) {
+        return res.send({ error: 'Please Enter correct Slot Time' });
       }
-     // if()
-      var recordDay=date.getDay();
-      if(recordDay==5){
-         return res.send({ error: 'Sorry it is Friday ' });
+      // if()
+      var recordDay = date.getDay();
+      if (recordDay == 5) {
+        return res.send({ error: 'Sorry it is Friday ' });
       }
-         var Day;
-        switch (recordDay) {
-          case 1:
-            Day = 'Monday';
-            break;
-          case 2:
-            Day = 'Tuesday';
-            break;
-          case 3:
-            Day = 'Wednesday';
-            break;
-          case 4:
-            Day = 'Thursday';
-            break;
-          case 5:
-            Day = 'Friday';
-            break;
-          case 6:
-            Day = 'Saturday';
-            break;
-          case 0:
-            Day = 'Sunday';
-            break;
-        }
-      
+      var Day;
+      switch (recordDay) {
+        case 1:
+          Day = 'Monday';
+          break;
+        case 2:
+          Day = 'Tuesday';
+          break;
+        case 3:
+          Day = 'Wednesday';
+          break;
+        case 4:
+          Day = 'Thursday';
+          break;
+        case 5:
+          Day = 'Friday';
+          break;
+        case 6:
+          Day = 'Saturday';
+          break;
+        case 0:
+          Day = 'Sunday';
+          break;
+      }
+
       var foundCourse = await Course.findOne({ name: coursename }).populate();
 
       var f2;
@@ -256,7 +256,7 @@ exports.sendRequest = async function (req, res) {
 
       if (!f2) return res.status(400).send({ error: 'This academic member does not teach this course' });
 
-      const subject = type + ' at ' + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear(); + ' of course ' + coursename;
+      const subject = type + ' at ' + date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear(); + ' of course ' + coursename;
       const newRequest = new Request({
         //TODO a4eel el sender
         sender: sender,
@@ -317,7 +317,7 @@ exports.sendRequest = async function (req, res) {
         const document = req.body.document;
         if (!document) return res.send({ error: 'Please enter all the required fields' });
 
-        const subject = type + ' (' + leaveType + ') at ' + SickDayDate.getDate()+"/"+(SickDayDate.getMonth()+1)+"/"+SickDayDate.getFullYear();
+        const subject = type + ' (' + leaveType + ') at ' + SickDayDate.getDate() + "/" + (SickDayDate.getMonth() + 1) + "/" + SickDayDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -430,7 +430,7 @@ exports.sendRequest = async function (req, res) {
           error: 'Sorry you have submitted for with this compensation date before'
         });
 
-        const subject = type + ' (' + leaveType + ') at ' + CompensationDate.getDate()+"/"+(CompensationDate.getMonth()+1)+"/"+CompensationDate.getFullYear();
+        const subject = type + ' (' + leaveType + ') at ' + CompensationDate.getDate() + "/" + (CompensationDate.getMonth() + 1) + "/" + CompensationDate.getFullYear();
         const newRequest = new Request({
           //TODO a4eel el sender
           sender: sender,
@@ -491,11 +491,11 @@ exports.sendRequest = async function (req, res) {
         if (!flag) {
           return res.send({ error: 'Sorry you cannot submit this request' });
         }
-      var recordDay=AnnualLeaveDate.getDay();
-      if(recordDay==5){
+        var recordDay = AnnualLeaveDate.getDay();
+        if (recordDay == 5) {
           return res.send({ error: 'Sorry it is Friday ' });
-      }
-        const subject = type + ' (' + leaveType + ') at ' + AnnualLeaveDate.getDate()+"/"+(AnnualLeaveDate.getMonth()+1)+"/"+AnnualLeaveDate.getFullYear();
+        }
+        const subject = type + ' (' + leaveType + ') at ' + AnnualLeaveDate.getDate() + "/" + (AnnualLeaveDate.getMonth() + 1) + "/" + AnnualLeaveDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -520,7 +520,7 @@ exports.sendRequest = async function (req, res) {
         if (!doc || !startDate) return res.send({ error: 'Please enter all the missing fields' });
         if (`${startDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
-        const subject = type + ' (' + leaveType + ') at ' +  startDate.getDate()+"/"+(startDate.getMonth()+1)+"/"+startDate.getFullYear();
+        const subject = type + ' (' + leaveType + ') at ' + startDate.getDate() + "/" + (startDate.getMonth() + 1) + "/" + startDate.getFullYear();
 
         const newRequest = new Request({
           //TODO a4eel el sender
@@ -546,7 +546,7 @@ exports.sendRequest = async function (req, res) {
         const AccidentDate = new Date(req.body.AccidentDate);
         if (!AccidentDate || `${AccidentDate}` === 'Invalid Date') return res.send({ error: 'Please enter a valid date' });
 
-        const subject = type + ' (' + leaveType + ') at ' +AccidentDate.getDate()+"/"+(AccidentDate.getMonth()+1)+"/"+AccidentDate.getFullYear();
+        const subject = type + ' (' + leaveType + ') at ' + AccidentDate.getDate() + "/" + (AccidentDate.getMonth() + 1) + "/" + AccidentDate.getFullYear();
 
         // add status and sender
         const Arr = await Request.find({ type: 'Leave Request', leavetype: 'Accidental', sender: sender, status: 'accepted' });
@@ -643,12 +643,12 @@ exports.AcceptOrRejectRep = async function (req, res) {
     var objId = req.user._id;
     var staff = await StaffMember.findOne({ gucId: id }).populate();
     var accepted = false;
-       
+
     const AcceptOrReject = req.body.AcceptOrReject;
     if (!AcceptOrReject) {
       return res.send({ error: 'please enter AcceptOrReject ' });
     }
-     
+
     if (req.body.AcceptOrReject === 'accepted') {
       console.log("hnaa")
       var date = NewRequest.replacemntDate;
@@ -659,7 +659,7 @@ exports.AcceptOrRejectRep = async function (req, res) {
       for (i = 0; i < teachingCoursesObjIDs.length; i++) {
         const teachingCourse = await Course.findById(teachingCoursesObjIDs[i]);
         if (!teachingCourse) {
-          return  res.send( {error:'You do not have the access to view any courses'});
+          return res.send({ error: 'You do not have the access to view any courses' });
         }
         teachingCourses.push(teachingCourse);
       }
@@ -675,17 +675,18 @@ exports.AcceptOrRejectRep = async function (req, res) {
         }
       }
       if (flag) {
-        return res.send({ data : 'you cannot accept this request, you do not have this free slot in your Schedule' });
+        return res.send({ data: 'you cannot accept this request, you do not have this free slot in your Schedule' });
       } else {
         accepted = true;
       }
     }
-    else{ 
-    if (AcceptOrReject === 'rejected') {
-      accepted = false;
-    } else {
-      return res.send({ error: 'enter accepted or rejected please' });
-    }}
+    else {
+      if (AcceptOrReject === 'rejected') {
+        accepted = false;
+      } else {
+        return res.send({ error: 'enter accepted or rejected please' });
+      }
+    }
 
     if (accepted) {
       var senderId = NewRequest.sender._id;
@@ -860,7 +861,7 @@ exports.AcceptOrRejectLeave = async function (req, res) {
     }
 
     const Requestid = req.params.id;
-    const reciever1 = await StaffMember.findOne({_id: req.user.id})
+    const reciever1 = await StaffMember.findOne({ _id: req.user.id })
     console.log(req.user.id);
     var NewRequest = await Request.findOne({ _id: Requestid, reciever: reciever1 }).populate();
     var accepted = req.body.accept_or_reject_request;
@@ -1016,7 +1017,7 @@ exports.CancelRequest = async function (req, res) {
     }
     await Request.deleteOne({ _id: id });
     return res.send({ data: 'Request deleted successfully' });
-    
+
   } catch (err) {
     console.log(err);
     return res.send({ error: err });
@@ -1129,7 +1130,7 @@ exports.viewRequestA = async (req, res) => {
 
     let request = await Request.findOne({ _id: req.params.id });
 
-    
+
 
     console.log(request);
 
@@ -1141,7 +1142,7 @@ exports.viewRequestA = async (req, res) => {
     }
 
     return res.status(200).send({
-      data: {request}
+      data: { request }
     });
   } catch (err) {
     if (err.isJoi) {
@@ -1184,18 +1185,18 @@ exports.viewmyRequests = async function (req, res) {
     var senderId = req.user.gucId;
     const sender = await StaffMember.findOne({ gucId: senderId }).populate();
     ////if(!req.params){
-     
+
 
     var searchQuery = await Request.find({ sender: sender }).populate(); //or something
-   
+
 
     console.log(searchQuery)
     return res.send({ data: searchQuery });
-    
+
   } catch (err) {
     console.log(err);
     return res.send({ error: err });
-  }  
+  }
 };
 
 // Function 37: Accept/reject “slot linking” requests from academic members linked to his/her course.
@@ -1315,9 +1316,9 @@ exports.slotLinkingReqResponse = async (req, res) => {
     if (err.isJoi) {
       console.log(' JOI validation error: ', err);
       return res.send({ error: err.details[0].message });
-  }
-      console.log('~ err', err);
-      res.status(500).send({ error: `Internal Server Error: ${err}` });
+    }
+    console.log('~ err', err);
+    res.status(500).send({ error: `Internal Server Error: ${err}` });
   }
 };
 

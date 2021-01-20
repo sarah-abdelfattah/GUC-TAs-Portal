@@ -316,8 +316,8 @@ exports.seedDB = async function () {
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '16:24',
+                    startTime: '08:00:00',
+                    endTime: '16:24:00',
                     status: 'Present'
                 }
             ],
@@ -337,8 +337,8 @@ exports.seedDB = async function () {
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '18:24',
+                    startTime: '08:00:00',
+                    endTime: '18:24:00',
                     status: 'Present'
                 }
             ],
@@ -357,8 +357,8 @@ exports.seedDB = async function () {
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '12:20',
+                    startTime: '08:00:00',
+                    endTime: '12:20:00',
                     status: 'Present'
                 }
             ],
@@ -415,31 +415,31 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
-                    startTime: '6:00',
-                    endTime: '16:24',
+                    startTime: '06:00:00',
+                    endTime: '16:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '20:24',
+                    startTime: '08:00:00',
+                    endTime: '20:24:00',
                     status: 'Present'
                 },
                 //7:24 hours
                 {
                     day: 'Tuesday',
                     date: '2020-12-14',
-                    startTime: '6:00',
-                    endTime: '14:24',
+                    startTime: '06:00:00',
+                    endTime: '14:24:00',
                     status: 'Present'
                 },
                 //11:00 hours
                 {
                     day: 'Wednesday',
                     date: '2020-12-15',
-                    startTime: '8:00',
-                    endTime: '20:24',
+                    startTime: '08:00:00',
+                    endTime: '20:24:00',
                     status: 'Present'
                 },
             ],
@@ -467,15 +467,15 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
-                    startTime: '8:00',
-                    endTime: '15:24',
+                    startTime: '08:00:00',
+                    endTime: '15:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '17:24',
+                    startTime: '08:00:00',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
             ],
@@ -504,32 +504,32 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
-                    startTime: '8:00',
-                    endTime: '15:24',
+                    startTime: '08:00:00',
+                    endTime: '15:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
+                    startTime: '08:00:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
                     date: '2020-12-14',
-                    endTime: '17:24',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Wednesday',
                     date: '2020-12-15',
-                    endTime: '17:24',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Saturday',
                     date: '2020-12-12',
-                    endTime: '17:24',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
 
@@ -582,15 +582,15 @@ exports.seedDB = async function () {
                 {
                     day: 'Monday',
                     date: '2020-12-12',
-                    startTime: '6:00',
-                    endTime: '16:24',
+                    startTime: '06:00:00',
+                    endTime: '16:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
                     date: '2020-12-13',
-                    startTime: '6:00',
-                    endTime: '14:24',
+                    startTime: '06:00:00',
+                    endTime: '14:24:00',
                     status: 'Present'
                 },
             ],
@@ -618,15 +618,15 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-12',
-                    startTime: '8:00',
-                    endTime: '15:24',
+                    startTime: '08:00:00',
+                    endTime: '15:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '17:24',
+                    startTime: '08:00:00',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
             ],
@@ -655,26 +655,26 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '15:24',
+                    startTime: '08:00:00',
+                    endTime: '15:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '8:00',
+                    startTime: '08:00:00',
                     status: 'Present'
                 },
                 {
                     day: 'Tuesday',
                     date: '2020-12-13',
-                    endTime: '17:24',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
                 {
                     day: 'Wednesday',
                     date: '2020-12-12',
-                    endTime: '17:24',
+                    endTime: '17:24:00',
                     status: 'Present'
                 },
 
@@ -700,15 +700,15 @@ exports.seedDB = async function () {
                 {
                     day: 'Sunday',
                     date: '2020-12-13',
-                    startTime: '8:00',
-                    endTime: '12:00',
+                    startTime: '08:00:00',
+                    endTime: '12:00:00',
                     status: 'Present'
                 },
                 {
                     day: 'Monday',
                     date: '2020-12-13',
-                    startTime: '12:01',
-                    endTime: '16:24',
+                    startTime: '12:01:00',
+                    endTime: '16:24:00',
                     status: 'Present'
                 },
             ],

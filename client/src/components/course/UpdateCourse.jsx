@@ -38,7 +38,6 @@ function UpdateCourse() {
 
   const handleFacOnChange = async (target) => {
     setFacultyChosen(target.value);
-    // const facCode = faculties.find(({ _id }) => _id === target.value).code;
 
     const depResult = await axiosCall(
       "get",
@@ -48,10 +47,10 @@ function UpdateCourse() {
   };
 
   const handleDepOnChange = async (target) => {
-    const facCode = faculties.find(({ _id }) => _id === facultyChosen).code;
+    const facCode = faculties.find(({ code }) => code === facultyChosen).code;
 
     setDepChosen(target.value);
-    const depName = departments.find(({ _id }) => _id === target.value).name;
+    const depName = departments.find(({ name }) => name === target.value).name;
 
     const courseResult = await axiosCall(
       "get",
@@ -69,21 +68,18 @@ function UpdateCourse() {
 
   const handleSubmit = async () => {
     try {
-      // let code;
-      // if (faculties)
-      //   code = await faculties.find(({ _id }) => _id === facultyChosen).code;
-
       let depName;
       if (departments)
-        depName = await departments.find(({ _id }) => _id === depChosen).name;
+        depName = await departments.find(({ name }) => name === depChosen).name;
 
       let courseName;
       if (courses)
-        courseName = await courses.find(({ _id }) => _id === courseChosen).name;
+        courseName = await courses.find(({ name }) => name === courseChosen)
+          .name;
 
       let newDepName;
       if (departments && newDepChosen !== "")
-        newDepName = await departments.find(({ _id }) => _id === newDepChosen)
+        newDepName = await departments.find(({ name }) => name === newDepChosen)
           .name;
 
       const body = {
@@ -95,10 +91,6 @@ function UpdateCourse() {
       };
 
       const res = await axiosCall("put", "courses/course", body);
-      console.log(
-        "🚀 ~ file: UpdateCourse.jsx ~ line 100 ~ handleSubmit ~ res",
-        res
-      );
 
       if (res.data.data) {
         addToast("Course updated successfully", {
@@ -111,9 +103,14 @@ function UpdateCourse() {
         setCourseChosen("");
         setCourses({ courses: [] });
         setNewDepChosen("");
+        setSlot({
+          day: "",
+          time: "",
+          location: "",
+        });
       }
 
-      if (res.data.error) {
+      if (res.data.error || res.data.error.errors.message) {
         addToast(res.data.error, {
           appearance: "error",
           autoDismiss: true,
@@ -165,8 +162,8 @@ function UpdateCourse() {
               departments.map((department) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={department._id}
-                  key={department._id}
+                  value={department.name}
+                  key={department.name}
                 >
                   {department.name}
                 </MenuItem>
@@ -188,8 +185,8 @@ function UpdateCourse() {
               courses.map((course) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={course._id}
-                  key={course._id}
+                  value={course.name}
+                  key={course.name}
                 >
                   {course.name}
                 </MenuItem>
@@ -211,8 +208,8 @@ function UpdateCourse() {
               departments.map((department) => (
                 <MenuItem
                   className="crud-menuItem"
-                  value={department._id}
-                  key={department._id}
+                  value={department.name}
+                  key={department.name}
                 >
                   {department.name}
                 </MenuItem>
